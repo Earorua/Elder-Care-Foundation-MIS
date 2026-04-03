@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Elder Care MIS{% endblock %}
+{% block content %}
+<h4 class="mb-3"><i class="bi bi-speedometer2 me-2"></i>Dashboard</h4>
+
+{# ── Stat Cards ── #}
+<div class="row g-3 mb-3">
+  <div class="col-md-3">
+    <div class="card stat-card blue p-3 fade-in">
+      <div class="d-flex align-items-center">
+        <div class="stat-icon me-3"><i class="bi bi-cash-coin"></i></div>
+        <div><div class="text-muted">Total Donations</div><h3>${{ "%.2f"|format(stats.total_donations) }}</h3></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card green p-3 fade-in fade-in-d1">
+      <div class="d-flex align-items-center">
+        <div class="stat-icon me-3"><i class="bi bi-people"></i></div>
+        <div><div class="text-muted">Donors</div><h3>{{ stats.donor_count }}</h3></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card orange p-3 fade-in fade-in-d2">
+      <div class="d-flex align-items-center">
+        <div class="stat-icon me-3"><i class="bi bi-calendar-event"></i></div>
+        <div><div class="text-muted">Events</div><h3>{{ stats.event_count }}</h3></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card purple p-3 fade-in fade-in-d3">
+      <div class="d-flex align-items-center">
+        <div class="stat-icon me-3"><i class="bi bi-person-badge"></i></div>
+        <div><div class="text-muted">Personnel</div><h3>{{ stats.person_count }}</h3></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# ── Row 1: Monthly Trend (wide) + Donation Type Doughnut (narrow) ── #}
+<div class="row g-3 mb-3">
+  <div class="col-lg-8">
+    <div class="card p-3 h-100">
+      <h6 class="fw-semibold mb-2"><i class="bi bi-bar-chart me-1 text-primary"></i>Monthly Donation Trend</h6>
+      <div class="chart-container" style="position:relative;height:260px;">
+        <canvas id="chartMonthly"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card p-3 h-100">
+      <h6 class="fw-semibold mb-2"><i class="bi bi-pie-chart me-1 text-success"></i>Donation Type</h6>
+      <div class="d-flex align-items-center justify-content-center" style="height:260px;">
+        <canvas id="chartTypes"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# ── Row 2: Gender Doughnut + Age Bar + Location Bar (3 columns) ── #}
+<div class="row g-3 mb-3">
+  <div class="col-lg-4">
+    <div class="card p-3 h-100">
+      <h6 class="fw-semibold mb-2"><i class="bi bi-pie-chart me-1 text-info"></i>Gender Distribution</h6>
+      <div class="d-flex align-items-center justify-content-center" style="height:220px;">
+        <canvas id="chartGender"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card p-3 h-100">
+      <h6 class="fw-semibold mb-2"><i class="bi bi-bar-chart me-1 text-warning"></i>Age Distribution</h6>
+      <div class="chart-container" style="position:relative;height:220px;">
+        <canvas id="chartAge"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card p-3 h-100">
+      <h6 class="fw-semibold mb-2"><i class="bi bi-geo-alt me-1 text-danger"></i>Location Distribution</h6>
+      <div class="chart-container" style="position:relative;height:220px;">
+        <canvas id="chartLocation"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# ── Row 3: Event Fundraising Progress (full width) ── #}
+<div class="row g-3">
+  <div class="col-12">
+    <div class="card p-3">
+      <h6 class="fw-semibold mb-2"><i class="bi bi-trophy me-1 text-purple"></i>Event Fundraising Progress</h6>
+      <div class="chart-container" style="position:relative;height:220px;">
+        <canvas id="chartEvents"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const colors = ['#5a8a6a','#c07a56','#c8a45c','#8a6dab','#d4956f','#7aaa8a','#a88bc5','#ddc07a'];
+const barOpts = {
+  responsive:true, maintainAspectRatio:false,
+  plugins:{legend:{labels:{font:{family:'DM Sans,sans-serif',size:12},color:'#6b6560'}}},
+  scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:11},color:'#9a938c'}},y:{grid:{color:'#e8e2d9'},ticks:{font:{family:'DM Sans',size:11},color:'#9a938c'}}}
+};
+const doughnutOpts = {
+  responsive:true, maintainAspectRatio:false, cutout:'60%',
+  plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans,sans-serif',size:11},color:'#6b6560',padding:12,usePointStyle:true,pointStyleWidth:8}}}
+};
+function fetchChart(url, cb){ fetch(url).then(r=>r.json()).then(cb); }
+
+fetchChart('/api/charts/monthly_donations', d => {
+  new Chart(document.getElementById('chartMonthly'), {
+    type:'bar',
+    data:{labels:d.labels, datasets:[{label:'Donations',data:d.data,backgroundColor:'#5a8a6a',borderRadius:6}]},
+    options:barOpts
+  });
+});
+fetchChart('/api/charts/donation_types', d => {
+  new Chart(document.getElementById('chartTypes'), {
+    type:'doughnut',
+    data:{labels:d.labels, datasets:[{data:d.data,backgroundColor:colors,borderWidth:0}]},
+    options:doughnutOpts
+  });
+});
+fetchChart('/api/charts/gender', d => {
+  new Chart(document.getElementById('chartGender'), {
+    type:'doughnut',
+    data:{labels:d.labels, datasets:[{data:d.data,backgroundColor:colors,borderWidth:0}]},
+    options:doughnutOpts
+  });
+});
+fetchChart('/api/charts/age', d => {
+  new Chart(document.getElementById('chartAge'), {
+    type:'bar',
+    data:{labels:d.labels, datasets:[{label:'Count',data:d.data,backgroundColor:'#5a9e6f',borderRadius:6}]},
+    options:barOpts
+  });
+});
+fetchChart('/api/charts/location', d => {
+  new Chart(document.getElementById('chartLocation'), {
+    type:'bar',
+    data:{labels:d.labels, datasets:[{label:'Count',data:d.data,backgroundColor:'#c8a45c',borderRadius:6}]},
+    options:barOpts
+  });
+});
+fetchChart('/api/charts/event_progress', d => {
+  new Chart(document.getElementById('chartEvents'), {
+    type:'bar',
+    data:{labels:d.labels, datasets:[{label:'Target',data:d.target,backgroundColor:'#e8e2d9',borderRadius:6},{label:'Actual',data:d.actual,backgroundColor:'#5a8a6a',borderRadius:6}]},
+    options:barOpts
+  });
+});
+</script>
+{% endblock %}

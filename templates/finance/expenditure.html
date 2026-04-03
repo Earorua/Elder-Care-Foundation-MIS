@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block title %}Statement of Functional Expenses - Elder Care MIS{% endblock %}
+{% block content %}
+<style>
+@media print {
+  #sidebar, .navbar, .btn, .no-print, canvas { display: none !important; }
+  .main-content { margin: 0 !important; padding: 0 !important; }
+  .card { border: 1px solid #ccc !important; box-shadow: none !important; }
+  body { font-size: 11pt; }
+  .report-header { border: 2px solid #000 !important; }
+}
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4 no-print">
+  <h4 class="mb-0"><i class="bi bi-cash-stack me-2"></i>Statement of Functional Expenses</h4>
+  <div class="d-flex gap-2">
+    <button onclick="window.print()" class="btn btn-outline-primary btn-sm"><i class="bi bi-printer me-1"></i>Print Report</button>
+    <a href="{{ url_for('finance.reports') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back to Overview</a>
+  </div>
+</div>
+
+<!-- Formal Report Header -->
+<div class="card mb-4 report-header">
+  <div class="card-body text-center py-4">
+    <h3 class="fw-bold mb-1">Elder Care Foundation</h3>
+    <h4 class="mb-2">Statement of Functional Expenses</h4>
+    <p class="mb-1 text-muted">For the Period Ended: December 31, {{ fiscal_year }}</p>
+    <p class="mb-1 text-muted">Prepared: {{ report_date }}</p>
+    <p class="mb-0 text-muted">Currency: USD (United States Dollar) &nbsp;|&nbsp; Basis of Accounting: Cash Basis</p>
+  </div>
+</div>
+
+<!-- Functional Expenses Table -->
+<div class="card mb-4">
+  <div class="card-header bg-danger text-white">
+    <h6 class="mb-0">Expenses by Function and Natural Classification</h6>
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Expense Category</th>
+          <th class="text-end">Program Services</th>
+          <th class="text-end">Management &amp; General</th>
+          <th class="text-end">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in payments_by_type %}
+        <tr>
+          <td>{{ r.payment_type }} <small class="text-muted">({{ r.cnt }} payments)</small></td>
+          <td class="text-end">${{ "%.2f"|format(r.total) }}</td>
+          <td class="text-end">$0.00</td>
+          <td class="text-end fw-bold">${{ "%.2f"|format(r.total) }}</td>
+        </tr>
+        {% endfor %}
+        {% if gift_cost_total %}
+        <tr>
+          <td>Gift Procurement (Cost of Goods)</td>
+          <td class="text-end">${{ "%.2f"|format(gift_cost_total) }}</td>
+          <td class="text-end">$0.00</td>
+          <td class="text-end fw-bold">${{ "%.2f"|format(gift_cost_total) }}</td>
+        </tr>
+        {% endif %}
+        {% if delivery_total %}
+        <tr>
+          <td>Delivery &amp; Logistics</td>
+          <td class="text-end">${{ "%.2f"|format(delivery_total) }}</td>
+          <td class="text-end">$0.00</td>
+          <td class="text-end fw-bold">${{ "%.2f"|format(delivery_total) }}</td>
+        </tr>
+        {% endif %}
+      </tbody>
+      <tfoot>
+        <tr class="table-active">
+          <td class="fw-bold fs-6">Total Expenses</td>
+          <td class="text-end fw-bold fs-6 text-danger">${{ "%.2f"|format(grand_total) }}</td>
+          <td class="text-end fw-bold fs-6">$0.00</td>
+          <td class="text-end fw-bold fs-6 text-danger">${{ "%.2f"|format(grand_total) }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+<!-- Charts (no-print) -->
+<div class="row g-3 mb-4 no-print">
+  <div class="col-md-6"><div class="card p-3"><h6>Expense Distribution</h6><canvas id="pieChart" style="max-height:300px"></canvas></div></div>
+  <div class="col-md-6"><div class="card p-3"><h6>Monthly Expense Trend</h6><canvas id="barChart"></canvas></div></div>
+</div>
+
+<!-- Personnel Compensation Detail -->
+{% if salary_detail %}
+<div class="card mb-4">
+  <div class="card-header"><h6 class="mb-0">Schedule B — Personnel Compensation Detail</h6></div>
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead class="table-light"><tr><th>Name</th><th>Payment Type</th><th class="text-end">Total Amount</th></tr></thead>
+      <tbody>
+        {% for r in salary_detail %}
+        <tr><td>{{ r.name }}</td><td>{{ r.payment_type }}</td><td class="text-end">${{ "%.2f"|format(r.total) }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<!-- Notes to Financial Statements -->
+<div class="card mb-4">
+  <div class="card-header"><h6 class="mb-0">Notes to Financial Statements</h6></div>
+  <div class="card-body p-0">
+    <div class="accordion accordion-flush" id="notesAccordion">
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note1">Note 1 — Basis of Accounting</button></h2>
+        <div id="note1" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
+          <div class="accordion-body text-muted">These financial statements have been prepared on the <strong>cash basis of accounting</strong>. Expenses are recognized when cash is disbursed, not when the obligation is incurred.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note2">Note 2 — Functional Expense Allocation</button></h2>
+        <div id="note2" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
+          <div class="accordion-body text-muted">Expenses are classified by function: <strong>Program Services</strong> includes all costs directly related to delivering elder care services (personnel, gifts, delivery). <strong>Management &amp; General</strong> includes administrative overhead. Currently all expenses are allocated to Program Services as the Foundation does not separately track administrative overhead.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note3">Note 3 — Personnel Compensation</button></h2>
+        <div id="note3" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
+          <div class="accordion-body text-muted">Personnel compensation includes all direct cash payments to staff and volunteers, categorized by payment type (salary, stipend, honorarium, etc.). Payroll taxes and benefits, if any, are included in the respective payment amounts.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note4">Note 4 — Significant Accounting Policies</button></h2>
+        <div id="note4" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
+          <div class="accordion-body text-muted">Gift procurement costs represent the total cost of goods purchased for distribution to beneficiaries, calculated as batch quantity multiplied by unit cost at time of purchase. Delivery and logistics costs represent actual fees paid to delivery service providers.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Audit Trail Footer -->
+<div class="card mb-4">
+  <div class="card-header"><h6 class="mb-0">Audit Trail</h6></div>
+  <div class="card-body">
+    <table class="table table-sm mb-0">
+      <tbody>
+        <tr><td style="width:33%">Prepared by: <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
+        <tr><td>Reviewed by: <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
+        <tr><td>Approved by: <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const colors = ['#5a8a6a','#c07a56','#c8a45c','#8a6dab','#5a9e6f','#d4956f','#7aaa8a','#a88bc5'];
+new Chart(document.getElementById('pieChart'), {
+  type: 'doughnut',
+  data: {labels: {{ categories|tojson }}, datasets: [{data: {{ cat_values|tojson }}, backgroundColor: colors}]},
+  options: {plugins:{legend:{position:'bottom'}}}
+});
+new Chart(document.getElementById('barChart'), {
+  type: 'bar',
+  data: {labels: {{ months|tojson }}, datasets: [{label:'Expenses', data: {{ amounts|tojson }}, backgroundColor:'#c07a56'}]}
+});
+</script>
+{% endblock %}

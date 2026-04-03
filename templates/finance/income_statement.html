@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block title %}Statement of Activities - Elder Care MIS{% endblock %}
+{% block content %}
+<style>
+@media print {
+  #sidebar, .navbar, .btn, .no-print, canvas { display: none !important; }
+  .main-content { margin: 0 !important; padding: 0 !important; }
+  .card { border: 1px solid #ccc !important; box-shadow: none !important; }
+  body { font-size: 11pt; }
+  .report-header { border: 2px solid #000 !important; }
+}
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4 no-print">
+  <h4 class="mb-0"><i class="bi bi-file-earmark-bar-graph me-2"></i>Statement of Activities</h4>
+  <div class="d-flex gap-2">
+    <button onclick="window.print()" class="btn btn-outline-primary btn-sm"><i class="bi bi-printer me-1"></i>Print Report</button>
+    <a href="{{ url_for('finance.reports') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back to Overview</a>
+  </div>
+</div>
+
+<!-- Formal Report Header -->
+<div class="card mb-4 report-header">
+  <div class="card-body text-center py-4">
+    <h3 class="fw-bold mb-1">Elder Care Foundation</h3>
+    <h4 class="mb-2">Statement of Activities</h4>
+    <p class="mb-1 text-muted">For the Period Ended: December 31, {{ fiscal_year }}</p>
+    <p class="mb-1 text-muted">Prepared: {{ report_date }}</p>
+    <p class="mb-0 text-muted">Currency: USD (United States Dollar) &nbsp;|&nbsp; Basis of Accounting: Cash Basis</p>
+  </div>
+</div>
+
+<!-- Section I: Revenue -->
+<div class="card mb-4">
+  <div class="card-header bg-success text-white">
+    <h6 class="mb-0">Section I — Revenue</h6>
+  </div>
+  <div class="card-body">
+    <h6 class="text-muted mb-2">A. Donation Revenue</h6>
+    <table class="table table-sm mb-3">
+      <thead class="table-light"><tr><th>Donation Type</th><th class="text-end">Amount</th></tr></thead>
+      <tbody>
+        {% for r in donations_by_type %}
+        <tr><td>{{ r.donation_type }}</td><td class="text-end">${{ "%.2f"|format(r.total) }}</td></tr>
+        {% endfor %}
+      </tbody>
+      <tfoot><tr class="table-active"><td class="fw-bold">Subtotal — Donation Revenue</td><td class="text-end fw-bold">${{ "%.2f"|format(sum_donations) }}</td></tr></tfoot>
+    </table>
+
+    <h6 class="text-muted mb-2">B. Grant Revenue</h6>
+    <table class="table table-sm mb-3">
+      <thead class="table-light"><tr><th>Funding Organization</th><th class="text-end">Amount</th></tr></thead>
+      <tbody>
+        {% for r in grants_by_org %}
+        <tr><td>{{ r.funding_org }}</td><td class="text-end">${{ "%.2f"|format(r.total) }}</td></tr>
+        {% endfor %}
+      </tbody>
+      <tfoot><tr class="table-active"><td class="fw-bold">Subtotal — Grant Revenue</td><td class="text-end fw-bold">${{ "%.2f"|format(sum_grants) }}</td></tr></tfoot>
+    </table>
+
+    <h6 class="text-muted mb-2">C. Other Revenue</h6>
+    <table class="table table-sm mb-3">
+      <thead class="table-light"><tr><th>Income Type</th><th class="text-end">Amount</th></tr></thead>
+      <tbody>
+        {% for r in other_by_type %}
+        <tr><td>{{ r.income_type }}</td><td class="text-end">${{ "%.2f"|format(r.total) }}</td></tr>
+        {% endfor %}
+      </tbody>
+      <tfoot><tr class="table-active"><td class="fw-bold">Subtotal — Other Revenue</td><td class="text-end fw-bold">${{ "%.2f"|format(sum_other) }}</td></tr></tfoot>
+    </table>
+
+    <div class="border-top pt-2 mt-2 d-flex justify-content-between fw-bold fs-6">
+      <span>Total Revenue</span><span class="text-success">${{ "%.2f"|format(total_revenue) }}</span>
+    </div>
+  </div>
+</div>
+
+<!-- Section II: Expenses -->
+<div class="card mb-4">
+  <div class="card-header bg-danger text-white">
+    <h6 class="mb-0">Section II — Expenses</h6>
+  </div>
+  <div class="card-body">
+    <h6 class="text-muted mb-2">A. Personnel Compensation</h6>
+    <table class="table table-sm mb-3">
+      <thead class="table-light"><tr><th>Payment Type</th><th class="text-end">Amount</th></tr></thead>
+      <tbody>
+        {% for r in payments_by_type %}
+        <tr><td>{{ r.payment_type }}</td><td class="text-end">${{ "%.2f"|format(r.total) }}</td></tr>
+        {% endfor %}
+      </tbody>
+      <tfoot><tr class="table-active"><td class="fw-bold">Subtotal — Personnel</td><td class="text-end fw-bold">${{ "%.2f"|format(sum_payments) }}</td></tr></tfoot>
+    </table>
+
+    <h6 class="text-muted mb-2">B. Program Expenses</h6>
+    <table class="table table-sm mb-3">
+      <thead class="table-light"><tr><th>Expense Category</th><th class="text-end">Amount</th></tr></thead>
+      <tbody>
+        <tr><td>Gift Procurement (Cost of Goods)</td><td class="text-end">${{ "%.2f"|format(total_gift_cost) }}</td></tr>
+        <tr><td>Delivery &amp; Logistics</td><td class="text-end">${{ "%.2f"|format(total_delivery) }}</td></tr>
+      </tbody>
+      <tfoot><tr class="table-active"><td class="fw-bold">Subtotal — Program Expenses</td><td class="text-end fw-bold">${{ "%.2f"|format(total_gift_cost + total_delivery) }}</td></tr></tfoot>
+    </table>
+
+    <div class="border-top pt-2 mt-2 d-flex justify-content-between fw-bold fs-6">
+      <span>Total Expenses</span><span class="text-danger">${{ "%.2f"|format(total_expenses) }}</span>
+    </div>
+  </div>
+</div>
+
+<!-- Section III: Change in Net Assets -->
+<div class="card mb-4">
+  <div class="card-header bg-primary text-white">
+    <h6 class="mb-0">Section III — Change in Net Assets</h6>
+  </div>
+  <div class="card-body">
+    <table class="table table-sm mb-0">
+      <tbody>
+        <tr><td>Total Revenue</td><td class="text-end">${{ "%.2f"|format(total_revenue) }}</td></tr>
+        <tr><td>Less: Total Expenses</td><td class="text-end">(${{ "%.2f"|format(total_expenses) }})</td></tr>
+      </tbody>
+      <tfoot>
+        <tr class="table-active">
+          <td class="fw-bold fs-6">Net Change in Net Assets (Net Income)</td>
+          <td class="text-end fw-bold fs-6 {{ 'text-success' if net_income >= 0 else 'text-danger' }}">${{ "%.2f"|format(net_income) }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+<!-- Monthly Trend Chart (no-print) -->
+<div class="card mb-4 no-print">
+  <div class="card-body">
+    <h6>Monthly Revenue vs. Expenses Trend</h6>
+    <canvas id="trendChart"></canvas>
+  </div>
+</div>
+
+<!-- Notes to Financial Statements -->
+<div class="card mb-4">
+  <div class="card-header"><h6 class="mb-0">Notes to Financial Statements</h6></div>
+  <div class="card-body p-0">
+    <div class="accordion accordion-flush" id="notesAccordion">
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note1">Note 1 — Basis of Accounting</button></h2>
+        <div id="note1" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
+          <div class="accordion-body text-muted">These financial statements have been prepared on the <strong>cash basis of accounting</strong>. Revenue is recognized when cash is received; expenses are recognized when cash is disbursed. This basis differs from generally accepted accounting principles (GAAP) which require the accrual basis.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note2">Note 2 — Revenue Recognition</button></h2>
+        <div id="note2" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
+          <div class="accordion-body text-muted">Donations are recognized as revenue in the period the cash is received. Grants are recognized upon receipt of funds from the funding organization. Other income is recognized when the cash payment is received by the Foundation.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note3">Note 3 — Significant Accounting Policies</button></h2>
+        <div id="note3" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
+          <div class="accordion-body text-muted">The Foundation is a nonprofit organization exempt from income taxes. All net assets are classified as unrestricted unless donor-imposed restrictions exist. Personnel compensation includes salaries, wages, and other direct payments to staff and volunteers.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Audit Trail Footer -->
+<div class="card mb-4">
+  <div class="card-header"><h6 class="mb-0">Audit Trail</h6></div>
+  <div class="card-body">
+    <table class="table table-sm mb-0">
+      <tbody>
+        <tr><td style="width:33%">Prepared by: <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
+        <tr><td>Reviewed by: <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
+        <tr><td>Approved by: <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+new Chart(document.getElementById('trendChart'), {
+  type: 'bar',
+  data: {
+    labels: {{ months|tojson }},
+    datasets: [
+      {label: 'Revenue', data: {{ income_data|tojson }}, backgroundColor: '#5a8a6a'},
+      {label: 'Expenses', data: {{ expense_data|tojson }}, backgroundColor: '#c07a56'}
+    ]
+  }
+});
+</script>
+{% endblock %}

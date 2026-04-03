@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% block title %}Statement of Financial Position - Elder Care MIS{% endblock %}
+{% block content %}
+<style>
+@media print {
+  #sidebar, .navbar, .btn, .no-print, canvas { display: none !important; }
+  .main-content { margin: 0 !important; padding: 0 !important; }
+  .card { border: 1px solid #ccc !important; box-shadow: none !important; }
+  body { font-size: 11pt; }
+  .report-header { border: 2px solid #000 !important; }
+}
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4 no-print">
+  <h4 class="mb-0"><i class="bi bi-clipboard-data me-2"></i>Statement of Financial Position</h4>
+  <div class="d-flex gap-2">
+    <button onclick="window.print()" class="btn btn-outline-primary btn-sm"><i class="bi bi-printer me-1"></i>Print Report</button>
+    <a href="{{ url_for('finance.reports') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back to Overview</a>
+  </div>
+</div>
+
+<!-- Formal Report Header -->
+<div class="card mb-4 report-header">
+  <div class="card-body text-center py-4">
+    <h3 class="fw-bold mb-1">Elder Care Foundation</h3>
+    <h4 class="mb-2">Statement of Financial Position</h4>
+    <p class="mb-1 text-muted">As of: December 31, {{ fiscal_year }}</p>
+    <p class="mb-1 text-muted">Prepared: {{ report_date }}</p>
+    <p class="mb-0 text-muted">Currency: USD (United States Dollar) &nbsp;|&nbsp; Basis of Accounting: Cash Basis</p>
+  </div>
+</div>
+
+<!-- Assets -->
+<div class="card mb-4">
+  <div class="card-header bg-primary text-white">
+    <h6 class="mb-0">Assets</h6>
+  </div>
+  <div class="card-body">
+    <h6 class="text-muted mb-2">Current Assets</h6>
+    <table class="table table-sm mb-0">
+      <tbody>
+        <tr>
+          <td>Cash and Cash Equivalents
+            <small class="text-muted d-block">Total Revenue (${{ "%.2f"|format(total_income) }}) less Total Disbursements (${{ "%.2f"|format(total_expenses) }})</small>
+          </td>
+          <td class="text-end fw-bold">${{ "%.2f"|format(cash) }}</td>
+        </tr>
+        <tr>
+          <td>Gift Inventory (at cost)
+            <small class="text-muted d-block">Valued at cost per unit; FIFO method</small>
+          </td>
+          <td class="text-end fw-bold">${{ "%.2f"|format(inventory) }}</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="table-active">
+          <td class="fw-bold">Total Current Assets</td>
+          <td class="text-end fw-bold">${{ "%.2f"|format(total_assets) }}</td>
+        </tr>
+        <tr class="table-active">
+          <td class="fw-bold fs-6">Total Assets</td>
+          <td class="text-end fw-bold fs-6">${{ "%.2f"|format(total_assets) }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+<!-- Liabilities -->
+<div class="card mb-4">
+  <div class="card-header bg-warning text-dark">
+    <h6 class="mb-0">Liabilities</h6>
+  </div>
+  <div class="card-body">
+    <table class="table table-sm mb-0">
+      <tbody>
+        <tr><td>Current Liabilities <small class="text-muted">(No liabilities recorded in current period)</small></td><td class="text-end">$0.00</td></tr>
+      </tbody>
+      <tfoot>
+        <tr class="table-active"><td class="fw-bold fs-6">Total Liabilities</td><td class="text-end fw-bold fs-6">$0.00</td></tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+<!-- Net Assets -->
+<div class="card mb-4">
+  <div class="card-header bg-success text-white">
+    <h6 class="mb-0">Net Assets</h6>
+  </div>
+  <div class="card-body">
+    <table class="table table-sm mb-0">
+      <tbody>
+        <tr><td>Unrestricted Net Assets <small class="text-muted">(Total Assets − Total Liabilities)</small></td><td class="text-end fw-bold">${{ "%.2f"|format(fund_balance) }}</td></tr>
+      </tbody>
+      <tfoot>
+        <tr class="table-active"><td class="fw-bold fs-6">Total Net Assets</td><td class="text-end fw-bold fs-6">${{ "%.2f"|format(fund_balance) }}</td></tr>
+        <tr class="table-primary"><td class="fw-bold fs-6">Total Liabilities and Net Assets</td><td class="text-end fw-bold fs-6">${{ "%.2f"|format(total_assets) }}</td></tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+<!-- Inventory Detail -->
+{% if inventory_detail %}
+<div class="card mb-4">
+  <div class="card-header"><h6 class="mb-0">Schedule A — Gift Inventory Detail</h6></div>
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead class="table-light"><tr><th>Gift Name</th><th class="text-end">Units on Hand</th><th class="text-end">Unit Cost</th><th class="text-end">Total Value</th></tr></thead>
+      <tbody>
+        {% for g in inventory_detail %}
+        <tr><td>{{ g.gift_name }}</td><td class="text-end">{{ g.current_stock }}</td><td class="text-end">${{ "%.2f"|format(g.unit_cost) }}</td><td class="text-end">${{ "%.2f"|format(g.value) }}</td></tr>
+        {% endfor %}
+      </tbody>
+      <tfoot><tr class="table-active"><td colspan="3" class="fw-bold">Total Inventory</td><td class="text-end fw-bold">${{ "%.2f"|format(inventory) }}</td></tr></tfoot>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<!-- Asset Composition Chart (no-print) -->
+<div class="card mb-4 no-print">
+  <div class="card-body">
+    <h6>Asset Composition</h6>
+    <canvas id="assetChart" style="max-height:300px"></canvas>
+  </div>
+</div>
+
+<!-- Notes to Financial Statements -->
+<div class="card mb-4">
+  <div class="card-header"><h6 class="mb-0">Notes to Financial Statements</h6></div>
+  <div class="card-body p-0">
+    <div class="accordion accordion-flush" id="notesAccordion">
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note1">Note 1 — Basis of Accounting</button></h2>
+        <div id="note1" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
+          <div class="accordion-body text-muted">These financial statements have been prepared on the <strong>cash basis of accounting</strong>. Assets and liabilities are recognized when cash transactions occur. This basis differs from GAAP accrual accounting.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note2">Note 2 — Cash and Cash Equivalents</button></h2>
+        <div id="note2" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
+          <div class="accordion-body text-muted">Cash and cash equivalents represent the cumulative net cash position: total cash received from all revenue sources less all cash disbursements made during the Foundation's operating history through the report date.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note3">Note 3 — Inventory Valuation</button></h2>
+        <div id="note3" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
+          <div class="accordion-body text-muted">Gift inventory is valued at cost using the <strong>First-In, First-Out (FIFO)</strong> method. Unit cost is recorded at the time of procurement. Inventory is reviewed periodically for obsolescence or impairment.</div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note4">Note 4 — Liabilities</button></h2>
+        <div id="note4" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
+          <div class="accordion-body text-muted">As of the report date, the Foundation has no recorded liabilities. All obligations are settled on a cash basis at the time of disbursement. Future commitments or contingent liabilities, if any, are not reflected in these statements.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Audit Trail Footer -->
+<div class="card mb-4">
+  <div class="card-header"><h6 class="mb-0">Audit Trail</h6></div>
+  <div class="card-body">
+    <table class="table table-sm mb-0">
+      <tbody>
+        <tr><td style="width:33%">Prepared by: <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
+        <tr><td>Reviewed by: <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
+        <tr><td>Approved by: <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+new Chart(document.getElementById('assetChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Cash & Equivalents', 'Gift Inventory'],
+    datasets: [{data: [{{ cash }}, {{ inventory }}], backgroundColor: ['#5a8a6a','#c8a45c']}]
+  },
+  options: {plugins:{legend:{position:'bottom'}}}
+});
+</script>
+{% endblock %}

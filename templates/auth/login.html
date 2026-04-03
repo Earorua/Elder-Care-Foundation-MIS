@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Login - Elder Care MIS{% endblock %}
+{% block content_noauth %}
+<div class="col-md-4 col-lg-3">
+  <div class="card login-card">
+    <div class="card-body p-4">
+      <div class="text-center mb-4">
+        <div style="width:56px;height:56px;border-radius:1rem;background:linear-gradient(135deg,#3a5a44,#5a8a6a);display:inline-flex;align-items:center;justify-content:center;margin-bottom:.75rem;box-shadow:0 8px 24px rgba(58,90,68,.25);">
+          <i class="bi bi-heart-pulse text-white" style="font-size:1.5rem;"></i>
+        </div>
+        <h3 class="mb-1">Elder Care MIS</h3>
+        <p style="font-size:.82rem;color:#9a938c;font-family:'DM Sans',sans-serif;">Management Information System</p>
+      </div>
+      <form method="POST">
+        <div class="mb-3">
+          <label class="form-label fw-medium">Username</label>
+          <div class="input-group">
+            <span class="input-group-text" style="background:#f5f0e8;border-color:#e8e2d9;border-right:0;"><i class="bi bi-person" style="color:#9a938c;"></i></span>
+            <input type="text" name="username" class="form-control border-start-0" style="border-color:#e8e2d9;" placeholder="Enter username" required autofocus>
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-medium">Password</label>
+          <div class="input-group">
+            <span class="input-group-text" style="background:#f5f0e8;border-color:#e8e2d9;border-right:0;"><i class="bi bi-lock" style="color:#9a938c;"></i></span>
+            <input type="password" name="password" class="form-control border-start-0" style="border-color:#e8e2d9;" placeholder="Enter password" required>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 py-2">
+          <i class="bi bi-box-arrow-in-right me-1"></i>Login
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Financial Reports Overview - Elder Care MIS{% endblock %}
+{% block content %}
+<h4 class="mb-4"><i class="bi bi-graph-up me-2"></i>Financial Reports Overview</h4>
+<div class="row g-3 mb-4">
+  <div class="col-md-4"><div class="card stat-card green p-3"><h6 class="text-muted">Total Revenue</h6><h3>${{ "%.2f"|format(total_income) }}</h3></div></div>
+  <div class="col-md-4"><div class="card stat-card purple p-3"><h6 class="text-muted">Total Expenses</h6><h3>${{ "%.2f"|format(total_expenses) }}</h3></div></div>
+  <div class="col-md-4"><div class="card stat-card blue p-3"><h6 class="text-muted">Net Income</h6><h3>${{ "%.2f"|format(total_income - total_expenses) }}</h3></div></div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3"><div class="card p-3 text-center"><h6 class="text-muted">Donations</h6><h5>${{ "%.2f"|format(total_donations) }}</h5></div></div>
+  <div class="col-md-3"><div class="card p-3 text-center"><h6 class="text-muted">Grants</h6><h5>${{ "%.2f"|format(total_grants) }}</h5></div></div>
+  <div class="col-md-3"><div class="card p-3 text-center"><h6 class="text-muted">Other Income</h6><h5>${{ "%.2f"|format(total_other) }}</h5></div></div>
+  <div class="col-md-3"><div class="card p-3 text-center"><h6 class="text-muted">Personnel Expenses</h6><h5>${{ "%.2f"|format(total_payments) }}</h5></div></div>
+</div>
+<div class="row g-3">
+  <div class="col-md-4">
+    <a href="{{ url_for('finance.income_statement') }}" class="text-decoration-none">
+      <div class="card p-4 text-center h-100 report-link-card">
+        <i class="bi bi-file-earmark-bar-graph display-4" style="color:var(--accent);"></i>
+        <h5 class="mt-3">Statement of Activities</h5>
+        <p class="text-muted mb-0">View revenue detail and trends by category</p>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a href="{{ url_for('finance.balance_sheet') }}" class="text-decoration-none">
+      <div class="card p-4 text-center h-100 report-link-card">
+        <i class="bi bi-clipboard-data display-4" style="color:var(--accent-gold);"></i>
+        <h5 class="mt-3">Statement of Financial Position</h5>
+        <p class="text-muted mb-0">View assets, inventory, and fund balance</p>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a href="{{ url_for('finance.expenditure') }}" class="text-decoration-none">
+      <div class="card p-4 text-center h-100 report-link-card">
+        <i class="bi bi-cash-stack display-4" style="color:var(--terracotta);"></i>
+        <h5 class="mt-3">Statement of Functional Expenses</h5>
+        <p class="text-muted mb-0">View expenses by category and personnel</p>
+      </div>
+    </a>
+  </div>
+</div>
+{% endblock %}

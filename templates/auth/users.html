@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}User Management - Elder Care MIS{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0"><i class="bi bi-people-fill me-2"></i>User Management</h4>
+  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal"><i class="bi bi-plus-lg me-1"></i>Add User</button>
+</div>
+<div class="card p-0">
+<table class="table table-hover mb-0">
+  <thead class="table-light"><tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
+  <tbody>
+  {% for u in users %}
+  <tr>
+    <td>{{ u.user_id }}</td><td>{{ u.user_name }}</td><td>{{ u.email }}</td>
+    <td><span class="badge bg-{{ 'danger' if u.role=='admin' else 'primary' if u.role=='finance' else 'success' if u.role=='event_coordinator' else 'secondary' }}">{{ u.role }}</span></td>
+    <td><span class="badge bg-{{ 'success' if u.is_active else 'secondary' }}">{{ 'Active' if u.is_active else 'Inactive' }}</span></td>
+    <td>
+      <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editModal{{ u.user_id }}"><i class="bi bi-pencil"></i></button>
+      {% if u.user_id != current_user.id %}
+      <form method="post" action="{{ url_for('auth.users_delete', id=u.user_id) }}" class="d-inline" onsubmit="return confirm('Confirm delete?')">
+        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+      </form>
+      {% endif %}
+    </td>
+  </tr>
+  <!-- Edit Modal -->
+  <div class="modal fade" id="editModal{{ u.user_id }}" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+    <form method="post" action="{{ url_for('auth.users_edit', id=u.user_id) }}">
+    <div class="modal-header"><h5 class="modal-title">Edit User</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">
+      <div class="mb-3"><label class="form-label">Username</label><input class="form-control" value="{{ u.user_name }}" disabled></div>
+      <div class="mb-3"><label class="form-label">Email</label><input name="email" class="form-control" value="{{ u.email }}"></div>
+      <div class="mb-3"><label class="form-label">Role</label><select name="role" class="form-select">{% for r in roles %}<option value="{{ r }}" {{ 'selected' if u.role==r }}>{{ r }}</option>{% endfor %}</select></div>
+      <div class="mb-3"><label class="form-label">New Password (leave blank to keep current)</label><input name="password" type="password" class="form-control"></div>
+      <div class="form-check"><input name="is_active" type="checkbox" class="form-check-input" {{ 'checked' if u.is_active }}><label class="form-check-label">Active</label></div>
+    </div>
+    <div class="modal-footer"><button type="submit" class="btn btn-primary">Save</button></div>
+    </form>
+  </div></div></div>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<!-- Add Modal -->
+<div class="modal fade" id="addModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <form method="post" action="{{ url_for('auth.users_add') }}">
+  <div class="modal-header"><h5 class="modal-title">Add User</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <div class="mb-3"><label class="form-label">Username</label><input name="user_name" class="form-control" required></div>
+    <div class="mb-3"><label class="form-label">Password</label><input name="password" type="password" class="form-control" required></div>
+    <div class="mb-3"><label class="form-label">Email</label><input name="email" type="email" class="form-control"></div>
+    <div class="mb-3"><label class="form-label">Role</label><select name="role" class="form-select">{% for r in roles %}<option value="{{ r }}">{{ r }}</option>{% endfor %}</select></div>
+  </div>
+  <div class="modal-footer"><button type="submit" class="btn btn-primary">Add</button></div>
+  </form>
+</div></div></div>
+{% endblock %}
