@@ -6,7 +6,9 @@ Flask-based Management Information System for an elder care foundation. Connects
 ## Tech Stack
 - Flask + Jinja2 + Flask-Login
 - Bootstrap 5 + Bootstrap Icons + Chart.js (all via CDN)
+- Google Fonts: Playfair Display (headings) + Outfit (body)
 - SQLite3 direct connection, no ORM
+- Git version control (local)
 
 ## Database
 - File: `elder_care.db` (bundled in the project directory)
@@ -55,19 +57,30 @@ C:\Users\XF\Desktop\elder_care_gui\
 │   ├── events.py           # Events/donor participation (event_coordinator role)
 │   └── finance.py          # Grants/other income/reports overview + 3 sub-reports (finance role)
 ├── templates/
-│   ├── base.html           # Layout + role-conditional sidebar + watermark footer
-│   ├── auth/login.html
+│   ├── base.html           # Layout: sidebar + sticky topbar (breadcrumb + clock) + watermark footer
+│   ├── auth/login.html     # Split-panel login: left branding + right form
 │   ├── auth/users.html     # User management page (admin only)
-│   ├── dashboard/index.html
+│   ├── dashboard/index.html # Dashboard with animated stat cards + 6 chart cards
 │   ├── donations/          # donations, donors, categories, feedback, receipts
 │   ├── personnel/          # persons, schedules, payments
 │   ├── gifts/              # gifts, batches, distribution, delivery, suppliers
 │   ├── events/             # events, donors_events
 │   └── finance/            # grants, other_income, reports, income_statement, balance_sheet, expenditure
 └── static/
-    ├── css/style.css       # Modern theme styles
+    ├── css/style.css       # "Botanical Warmth" theme — Playfair Display + Outfit, sage/terracotta/gold palette
     └── img/logo.png        # Transparent-background logo (auto-generated from elder_care_logo.png)
 ```
+
+## UI/Design System — "Botanical Warmth"
+- Typography: Playfair Display (headings, serif) + Outfit (body, sans-serif), loaded via Google Fonts
+- Palette: sage green (`#5a8a6a`), terracotta (`#c07a56`), gold (`#c8a45c`), cream bg (`#f6f3ee`), warm card bg (`#fffdf9`)
+- Sidebar: deep forest green gradient, gold accent hover/active states, JS-based active link tracking
+- Topbar: sticky, frosted glass effect, breadcrumb navigation + live clock; each template defines `{% block breadcrumb %}` for page name
+- Login: split-panel layout — left branding panel with floating shape animations, right form panel
+- Tables: custom `table-header` class (replaces Bootstrap `table-dark`), gradient green header with rounded corners
+- Charts: warm palette (`#5a8a6a`, `#c07a56`, `#c8a45c`, `#8a6dab`), Outfit font, semi-transparent bars with rounded corners
+- Animations: `fade-in` + `fade-in-d1..d5` staggered delays, modal bounce easing, content area fade-in
+- CSS variables defined in `:root` in `style.css` for consistent theming
 
 ## How to Run
 ```bash
@@ -81,19 +94,20 @@ python app.py
 1. Built complete Flask project framework (8 blueprints, 20+ template pages)
 2. Dashboard with 4 stat cards + 6 Chart.js charts (doughnut + bar)
 3. Full CRUD for all 19 tables, each page with data table + Bootstrap Modal forms
-4. UI polish: gradient sidebar, modern card styles, Inter font, full-screen gradient login background
-5. Database path set to `elder_care.db`, added birthday/gender/contact_name field support
-6. Populated complete sample data for all 19 tables
-7. RBAC access control: `role_required` decorator + sidebar role-conditional rendering + 4 roles (admin/finance/event_coordinator/viewer)
-8. User management page (/users): admin-only, supports add/edit role/reset password/enable-disable/delete users
-9. 4 seed users auto-created (admin, finance_user, coordinator, viewer)
-10. Financial reports system with GAAS-compliant naming: reports overview (/reports) + 3 sub-reports
+4. Database path set to `elder_care.db`, added birthday/gender/contact_name field support
+5. Populated complete sample data for all 19 tables
+6. RBAC access control: `role_required` decorator + sidebar role-conditional rendering + 4 roles (admin/finance/event_coordinator/viewer)
+7. User management page (/users): admin-only, supports add/edit role/reset password/enable-disable/delete users
+8. 4 seed users auto-created (admin, finance_user, coordinator, viewer)
+9. Financial reports system with GAAS-compliant naming: reports overview (/reports) + 3 sub-reports
     - Statement of Activities (/reports/income-statement): revenue by donation type/funding org/income type + expense detail + net income + monthly trend chart
     - Statement of Financial Position (/reports/balance-sheet): cash + gift inventory value + inventory detail + asset composition doughnut chart
     - Statement of Functional Expenses (/reports/expenditure): category summary cards + distribution pie chart + monthly trend chart + personnel compensation detail
-11. Written complete user manual (USER_MANUAL.md)
-12. Database file bundled in project directory, path changed from `BASE_DIR/../` to `BASE_DIR/`, project is self-contained
-13. Full English localization: all flash messages, UI labels, form elements, and page titles translated from Chinese to English
-14. Custom logo: sidebar brand uses transparent-background logo (`static/img/logo.png`, generated from `elder_care_logo.png` with white background removed); logo watermark (opacity 0.08) displayed at the bottom of every authenticated page
-15. Dashboard chart layout optimization: reorganized from uniform 2×3 grid to compact 3-row layout (8:4 + 4:4:4 + 12), fixed chart heights (260/220px), `maintainAspectRatio:false`, doughnut legends moved to bottom — eliminates whitespace waste
-16. Sidebar brand styling: title gradient updated to 3-color blue→purple→pink (`#60a5fa→#a78bfa→#f0abfc`), font enlarged to 1.35rem/800 weight, logo enlarged to 44×44px
+10. Written complete user manual (USER_MANUAL.md)
+11. Database file bundled in project directory, path changed from `BASE_DIR/../` to `BASE_DIR/`, project is self-contained
+12. Full English localization: all flash messages, UI labels, form elements, and page titles translated from Chinese to English
+13. Custom logo: sidebar brand uses transparent-background logo (`static/img/logo.png`); logo watermark displayed at the bottom of every authenticated page
+14. Dashboard chart layout optimization: 3-row layout (8:4 + 4:4:4 + 12), fixed chart heights, `maintainAspectRatio:false`
+15. Visual theme v1 "Warm Institutional Elegance": DM Serif Display + DM Sans, sage/terracotta/cream palette, centered sidebar brand
+16. Visual theme v2 "Botanical Warmth": Playfair Display + Outfit fonts, split-panel login page with animated floating shapes, sticky topbar with breadcrumb navigation + live clock, sidebar active state tracking via JS, stat cards with gradient top-border accents, chart cards with colored icon badges, enhanced modal bounce animations, staggered fade-in animations, breadcrumb blocks on all 24 templates, responsive mobile support
+17. Git version control initialized with local repository
