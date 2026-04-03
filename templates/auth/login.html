@@ -1,33 +1,59 @@
 {% extends "base.html" %}
 {% block title %}Login - Elder Care MIS{% endblock %}
 {% block content_noauth %}
-<div class="col-md-4 col-lg-3">
+<!-- Left: Branding Panel -->
+<div class="login-left">
+  <div class="floating-shape"></div>
+  <div class="floating-shape"></div>
+  <div class="floating-shape"></div>
+  <div class="login-left-content">
+    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" style="width:72px;height:72px;object-fit:contain;filter:brightness(0) invert(1) sepia(1) saturate(.2) hue-rotate(15deg);opacity:.7;margin-bottom:1.5rem;">
+    <h2>Elder Care Foundation</h2>
+    <p>Management Information System for tracking donations, personnel, events, and financial reporting.</p>
+    <div style="margin-top:2rem;display:flex;gap:1.5rem;justify-content:center;">
+      <div style="text-align:center;">
+        <div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:rgba(200,164,92,.8);">6</div>
+        <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.35);font-family:'Outfit',sans-serif;">Modules</div>
+      </div>
+      <div style="width:1px;background:rgba(255,255,255,.08);"></div>
+      <div style="text-align:center;">
+        <div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:rgba(200,164,92,.8);">19</div>
+        <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.35);font-family:'Outfit',sans-serif;">Tables</div>
+      </div>
+      <div style="width:1px;background:rgba(255,255,255,.08);"></div>
+      <div style="text-align:center;">
+        <div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:rgba(200,164,92,.8);">4</div>
+        <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.35);font-family:'Outfit',sans-serif;">Roles</div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Right: Login Form -->
+<div class="login-right">
   <div class="card login-card">
-    <div class="card-body p-4">
-      <div class="text-center mb-4">
-        <div style="width:56px;height:56px;border-radius:1rem;background:linear-gradient(135deg,#3a5a44,#5a8a6a);display:inline-flex;align-items:center;justify-content:center;margin-bottom:.75rem;box-shadow:0 8px 24px rgba(58,90,68,.25);">
-          <i class="bi bi-heart-pulse text-white" style="font-size:1.5rem;"></i>
-        </div>
-        <h3 class="mb-1">Elder Care MIS</h3>
-        <p style="font-size:.82rem;color:#9a938c;font-family:'DM Sans',sans-serif;">Management Information System</p>
+    <div class="card-body">
+      <div class="mb-4">
+        <p style="font-size:.78rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);font-family:'Outfit',sans-serif;margin-bottom:.5rem;font-weight:500;">Welcome back</p>
+        <h3 class="mb-1">Sign In</h3>
+        <p style="font-size:.85rem;color:var(--text-muted);font-family:'Outfit',sans-serif;">Enter your credentials to continue</p>
       </div>
       <form method="POST">
         <div class="mb-3">
-          <label class="form-label fw-medium">Username</label>
+          <label class="form-label">Username</label>
           <div class="input-group">
-            <span class="input-group-text" style="background:#f5f0e8;border-color:#e8e2d9;border-right:0;"><i class="bi bi-person" style="color:#9a938c;"></i></span>
-            <input type="text" name="username" class="form-control border-start-0" style="border-color:#e8e2d9;" placeholder="Enter username" required autofocus>
+            <span class="input-group-text"><i class="bi bi-person" style="color:var(--text-muted);"></i></span>
+            <input type="text" name="username" class="form-control" placeholder="Enter username" required autofocus>
           </div>
         </div>
         <div class="mb-4">
-          <label class="form-label fw-medium">Password</label>
+          <label class="form-label">Password</label>
           <div class="input-group">
-            <span class="input-group-text" style="background:#f5f0e8;border-color:#e8e2d9;border-right:0;"><i class="bi bi-lock" style="color:#9a938c;"></i></span>
-            <input type="password" name="password" class="form-control border-start-0" style="border-color:#e8e2d9;" placeholder="Enter password" required>
+            <span class="input-group-text"><i class="bi bi-lock" style="color:var(--text-muted);"></i></span>
+            <input type="password" name="password" class="form-control" placeholder="Enter password" required>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary w-100 py-2">
-          <i class="bi bi-box-arrow-in-right me-1"></i>Login
+        <button type="submit" class="btn btn-primary w-100 py-2" style="font-size:.9rem;">
+          <i class="bi bi-arrow-right me-1"></i>Sign In
         </button>
       </form>
     </div>

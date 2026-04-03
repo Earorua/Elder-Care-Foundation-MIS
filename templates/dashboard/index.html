@@ -1,7 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Dashboard - Elder Care MIS{% endblock %}
+{% block breadcrumb %}Dashboard{% endblock %}
 {% block content %}
-<h4 class="mb-3"><i class="bi bi-speedometer2 me-2"></i>Dashboard</h4>
+<div class="d-flex justify-content-between align-items-end mb-3">
+  <div>
+    <h4 class="mb-1">Dashboard</h4>
+    <p style="font-size:.85rem;color:var(--text-muted);margin:0;font-family:'Outfit',sans-serif;">Overview of foundation activity and key metrics</p>
+  </div>
+</div>
 
 {# ── Stat Cards ── #}
 <div class="row g-3 mb-3">
@@ -39,62 +45,69 @@
   </div>
 </div>
 
-{# ── Row 1: Monthly Trend (wide) + Donation Type Doughnut (narrow) ── #}
+{# ── Row 1: Monthly Trend + Donation Type ── #}
 <div class="row g-3 mb-3">
   <div class="col-lg-8">
-    <div class="card p-3 h-100">
-      <h6 class="fw-semibold mb-2"><i class="bi bi-bar-chart me-1 text-primary"></i>Monthly Donation Trend</h6>
-      <div class="chart-container" style="position:relative;height:260px;">
-        <canvas id="chartMonthly"></canvas>
+    <div class="card p-3 h-100 fade-in fade-in-d2">
+      <div class="chart-card-title">
+        <span class="chart-icon" style="background:linear-gradient(135deg,#5a8a6a,#7aaa8a);"><i class="bi bi-bar-chart"></i></span>
+        <h6>Monthly Donation Trend</h6>
       </div>
+      <div style="position:relative;height:260px;"><canvas id="chartMonthly"></canvas></div>
     </div>
   </div>
   <div class="col-lg-4">
-    <div class="card p-3 h-100">
-      <h6 class="fw-semibold mb-2"><i class="bi bi-pie-chart me-1 text-success"></i>Donation Type</h6>
-      <div class="d-flex align-items-center justify-content-center" style="height:260px;">
-        <canvas id="chartTypes"></canvas>
+    <div class="card p-3 h-100 fade-in fade-in-d3">
+      <div class="chart-card-title">
+        <span class="chart-icon" style="background:linear-gradient(135deg,#c8a45c,#ddc07a);"><i class="bi bi-pie-chart"></i></span>
+        <h6>Donation Type</h6>
       </div>
+      <div class="d-flex align-items-center justify-content-center" style="height:260px;"><canvas id="chartTypes"></canvas></div>
     </div>
   </div>
 </div>
+<!-- APPEND_DASH -->
 
-{# ── Row 2: Gender Doughnut + Age Bar + Location Bar (3 columns) ── #}
+{# ── Row 2: Gender + Age + Location ── #}
 <div class="row g-3 mb-3">
   <div class="col-lg-4">
-    <div class="card p-3 h-100">
-      <h6 class="fw-semibold mb-2"><i class="bi bi-pie-chart me-1 text-info"></i>Gender Distribution</h6>
-      <div class="d-flex align-items-center justify-content-center" style="height:220px;">
-        <canvas id="chartGender"></canvas>
+    <div class="card p-3 h-100 fade-in fade-in-d3">
+      <div class="chart-card-title">
+        <span class="chart-icon" style="background:linear-gradient(135deg,#8a6dab,#a88bc5);"><i class="bi bi-pie-chart"></i></span>
+        <h6>Gender Distribution</h6>
       </div>
+      <div class="d-flex align-items-center justify-content-center" style="height:220px;"><canvas id="chartGender"></canvas></div>
     </div>
   </div>
   <div class="col-lg-4">
-    <div class="card p-3 h-100">
-      <h6 class="fw-semibold mb-2"><i class="bi bi-bar-chart me-1 text-warning"></i>Age Distribution</h6>
-      <div class="chart-container" style="position:relative;height:220px;">
-        <canvas id="chartAge"></canvas>
+    <div class="card p-3 h-100 fade-in fade-in-d4">
+      <div class="chart-card-title">
+        <span class="chart-icon" style="background:linear-gradient(135deg,#c07a56,#d4956f);"><i class="bi bi-bar-chart"></i></span>
+        <h6>Age Distribution</h6>
       </div>
+      <div style="position:relative;height:220px;"><canvas id="chartAge"></canvas></div>
     </div>
   </div>
   <div class="col-lg-4">
-    <div class="card p-3 h-100">
-      <h6 class="fw-semibold mb-2"><i class="bi bi-geo-alt me-1 text-danger"></i>Location Distribution</h6>
-      <div class="chart-container" style="position:relative;height:220px;">
-        <canvas id="chartLocation"></canvas>
+    <div class="card p-3 h-100 fade-in fade-in-d5">
+      <div class="chart-card-title">
+        <span class="chart-icon" style="background:linear-gradient(135deg,#5a9e6f,#7abe8f);"><i class="bi bi-geo-alt"></i></span>
+        <h6>Location Distribution</h6>
       </div>
+      <div style="position:relative;height:220px;"><canvas id="chartLocation"></canvas></div>
     </div>
   </div>
 </div>
 
-{# ── Row 3: Event Fundraising Progress (full width) ── #}
+{# ── Row 3: Event Fundraising ── #}
 <div class="row g-3">
   <div class="col-12">
-    <div class="card p-3">
-      <h6 class="fw-semibold mb-2"><i class="bi bi-trophy me-1 text-purple"></i>Event Fundraising Progress</h6>
-      <div class="chart-container" style="position:relative;height:220px;">
-        <canvas id="chartEvents"></canvas>
+    <div class="card p-3 fade-in fade-in-d5">
+      <div class="chart-card-title">
+        <span class="chart-icon" style="background:linear-gradient(135deg,#c8a45c,#b89a4c);"><i class="bi bi-trophy"></i></span>
+        <h6>Event Fundraising Progress</h6>
       </div>
+      <div style="position:relative;height:220px;"><canvas id="chartEvents"></canvas></div>
     </div>
   </div>
 </div>
@@ -102,56 +115,63 @@
 {% block scripts %}
 <script>
 const colors = ['#5a8a6a','#c07a56','#c8a45c','#8a6dab','#d4956f','#7aaa8a','#a88bc5','#ddc07a'];
+const fontFamily = 'Outfit, sans-serif';
 const barOpts = {
   responsive:true, maintainAspectRatio:false,
-  plugins:{legend:{labels:{font:{family:'DM Sans,sans-serif',size:12},color:'#6b6560'}}},
-  scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:11},color:'#9a938c'}},y:{grid:{color:'#e8e2d9'},ticks:{font:{family:'DM Sans',size:11},color:'#9a938c'}}}
+  plugins:{legend:{labels:{font:{family:fontFamily,size:12},color:'#6b6560',usePointStyle:true,pointStyleWidth:8,padding:16}}},
+  scales:{
+    x:{grid:{display:false},ticks:{font:{family:fontFamily,size:11},color:'#9a938c'},border:{display:false}},
+    y:{grid:{color:'rgba(232,226,217,.5)',drawBorder:false},ticks:{font:{family:fontFamily,size:11},color:'#9a938c'},border:{display:false}}
+  }
 };
 const doughnutOpts = {
-  responsive:true, maintainAspectRatio:false, cutout:'60%',
-  plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans,sans-serif',size:11},color:'#6b6560',padding:12,usePointStyle:true,pointStyleWidth:8}}}
+  responsive:true, maintainAspectRatio:false, cutout:'62%',
+  plugins:{legend:{position:'bottom',labels:{font:{family:fontFamily,size:11},color:'#6b6560',padding:14,usePointStyle:true,pointStyleWidth:8}}}
 };
 function fetchChart(url, cb){ fetch(url).then(r=>r.json()).then(cb); }
 
 fetchChart('/api/charts/monthly_donations', d => {
   new Chart(document.getElementById('chartMonthly'), {
     type:'bar',
-    data:{labels:d.labels, datasets:[{label:'Donations',data:d.data,backgroundColor:'#5a8a6a',borderRadius:6}]},
+    data:{labels:d.labels, datasets:[{label:'Donations',data:d.data,backgroundColor:'rgba(90,138,106,.75)',hoverBackgroundColor:'#5a8a6a',borderRadius:8,borderSkipped:false}]},
     options:barOpts
   });
 });
 fetchChart('/api/charts/donation_types', d => {
   new Chart(document.getElementById('chartTypes'), {
     type:'doughnut',
-    data:{labels:d.labels, datasets:[{data:d.data,backgroundColor:colors,borderWidth:0}]},
+    data:{labels:d.labels, datasets:[{data:d.data,backgroundColor:colors,borderWidth:2,borderColor:'#fffdf9',hoverBorderColor:'#fffdf9'}]},
     options:doughnutOpts
   });
 });
 fetchChart('/api/charts/gender', d => {
   new Chart(document.getElementById('chartGender'), {
     type:'doughnut',
-    data:{labels:d.labels, datasets:[{data:d.data,backgroundColor:colors,borderWidth:0}]},
+    data:{labels:d.labels, datasets:[{data:d.data,backgroundColor:['#5a8a6a','#c07a56','#c8a45c','#8a6dab'],borderWidth:2,borderColor:'#fffdf9'}]},
     options:doughnutOpts
   });
 });
 fetchChart('/api/charts/age', d => {
   new Chart(document.getElementById('chartAge'), {
     type:'bar',
-    data:{labels:d.labels, datasets:[{label:'Count',data:d.data,backgroundColor:'#5a9e6f',borderRadius:6}]},
+    data:{labels:d.labels, datasets:[{label:'Count',data:d.data,backgroundColor:'rgba(192,122,86,.7)',hoverBackgroundColor:'#c07a56',borderRadius:8,borderSkipped:false}]},
     options:barOpts
   });
 });
 fetchChart('/api/charts/location', d => {
   new Chart(document.getElementById('chartLocation'), {
     type:'bar',
-    data:{labels:d.labels, datasets:[{label:'Count',data:d.data,backgroundColor:'#c8a45c',borderRadius:6}]},
+    data:{labels:d.labels, datasets:[{label:'Count',data:d.data,backgroundColor:'rgba(200,164,92,.7)',hoverBackgroundColor:'#c8a45c',borderRadius:8,borderSkipped:false}]},
     options:barOpts
   });
 });
 fetchChart('/api/charts/event_progress', d => {
   new Chart(document.getElementById('chartEvents'), {
     type:'bar',
-    data:{labels:d.labels, datasets:[{label:'Target',data:d.target,backgroundColor:'#e8e2d9',borderRadius:6},{label:'Actual',data:d.actual,backgroundColor:'#5a8a6a',borderRadius:6}]},
+    data:{labels:d.labels, datasets:[
+      {label:'Target',data:d.target,backgroundColor:'rgba(232,226,217,.6)',hoverBackgroundColor:'#e8e2d9',borderRadius:8,borderSkipped:false},
+      {label:'Actual',data:d.actual,backgroundColor:'rgba(90,138,106,.75)',hoverBackgroundColor:'#5a8a6a',borderRadius:8,borderSkipped:false}
+    ]},
     options:barOpts
   });
 });
