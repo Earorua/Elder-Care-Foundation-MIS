@@ -1,45 +1,83 @@
 {% extends "base.html" %}
 {% block title %}Dashboard - Elder Care MIS{% endblock %}
 {% block breadcrumb %}Dashboard{% endblock %}
+{% block head %}
+<script src="{{ url_for('static', filename='js/us-states.js') }}"></script>
+{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-end mb-3">
+<!-- Welcome Header -->
+<div class="welcome-header fade-in">
   <div>
-    <h4 class="mb-1">Dashboard</h4>
-    <p style="font-size:.85rem;color:var(--text-muted);margin:0;font-family:'Outfit',sans-serif;">Overview of foundation activity and key metrics</p>
+    <h4 id="welcomeMsg">Dashboard</h4>
+    <p class="welcome-greeting">Overview of foundation activity and key metrics</p>
+  </div>
+  <div>
+    <span class="chart-timestamp" id="dataTimestamp"></span>
   </div>
 </div>
 
 {# ── Stat Cards ── #}
 <div class="row g-3 mb-3">
-  <div class="col-md-3">
-    <div class="card stat-card blue p-3 fade-in">
-      <div class="d-flex align-items-center">
+  <div class="col-6 col-xl-3">
+    <div class="card stat-card blue p-3 fade-in h-100">
+      <div class="d-flex align-items-center h-100">
         <div class="stat-icon me-3"><i class="bi bi-cash-coin"></i></div>
-        <div><div class="text-muted">Total Donations</div><h3>${{ "%.2f"|format(stats.total_donations) }}</h3></div>
+        <div>
+          <div class="text-muted">Total Donations</div>
+          <h3>${{ "%.2f"|format(stats.total_donations) }}</h3>
+          <div class="stat-trend" style="color:var(--accent);"><i class="bi bi-graph-up-arrow"></i> All-time cumulative</div>
+        </div>
       </div>
     </div>
   </div>
-  <div class="col-md-3">
-    <div class="card stat-card green p-3 fade-in fade-in-d1">
-      <div class="d-flex align-items-center">
+  <div class="col-6 col-xl-3">
+    <div class="card stat-card green p-3 fade-in fade-in-d1 h-100">
+      <div class="d-flex align-items-center h-100">
         <div class="stat-icon me-3"><i class="bi bi-people"></i></div>
-        <div><div class="text-muted">Donors</div><h3>{{ stats.donor_count }}</h3></div>
+        <div>
+          <div class="text-muted">Donors</div>
+          <h3>{{ stats.donor_count }}</h3>
+          <div class="stat-trend" style="color:#5a9e6f;"><i class="bi bi-person-plus"></i> Registered donors</div>
+        </div>
       </div>
     </div>
   </div>
-  <div class="col-md-3">
-    <div class="card stat-card orange p-3 fade-in fade-in-d2">
-      <div class="d-flex align-items-center">
+  <div class="col-6 col-xl-3">
+    <div class="card stat-card orange p-3 fade-in fade-in-d2 h-100">
+      <div class="d-flex align-items-center h-100">
         <div class="stat-icon me-3"><i class="bi bi-calendar-event"></i></div>
-        <div><div class="text-muted">Events</div><h3>{{ stats.event_count }}</h3></div>
+        <div>
+          <div class="text-muted">Events</div>
+          <h3>{{ stats.event_count }}</h3>
+          <div class="stat-trend" style="color:var(--terracotta);"><i class="bi bi-calendar-check"></i> Total events</div>
+        </div>
       </div>
     </div>
   </div>
-  <div class="col-md-3">
-    <div class="card stat-card purple p-3 fade-in fade-in-d3">
-      <div class="d-flex align-items-center">
-        <div class="stat-icon me-3"><i class="bi bi-person-badge"></i></div>
-        <div><div class="text-muted">Personnel</div><h3>{{ stats.person_count }}</h3></div>
+  <div class="col-6 col-xl-3">
+    <div class="card stat-card purple p-3 fade-in fade-in-d3 h-100">
+      <div class="d-flex align-items-center h-100">
+        <div class="stat-icon me-2"><i class="bi bi-person-badge"></i></div>
+        <div class="me-auto">
+          <div class="text-muted">Personnel</div>
+          <h3 class="mb-0">{{ stats.person_count }}</h3>
+        </div>
+        <div class="d-flex flex-column gap-1 ms-2">
+          <div class="d-flex align-items-center gap-1" style="background:rgba(90,138,106,.08);border-radius:.4rem;padding:.2rem .5rem;">
+            <div style="width:22px;height:22px;border-radius:.3rem;background:linear-gradient(135deg,#5a8a6a,#7aaa8a);display:flex;align-items:center;justify-content:center;">
+              <i class="bi bi-briefcase-fill" style="color:#fff;font-size:.6rem;"></i>
+            </div>
+            <div style="font-size:.85rem;font-weight:700;font-family:'Playfair Display',serif;color:var(--text-primary);line-height:1;">{{ stats.employee_count }}</div>
+            <div style="font-size:.58rem;font-weight:500;color:#5a8a6a;font-family:'Outfit',sans-serif;">Emp</div>
+          </div>
+          <div class="d-flex align-items-center gap-1" style="background:rgba(200,164,92,.08);border-radius:.4rem;padding:.2rem .5rem;">
+            <div style="width:22px;height:22px;border-radius:.3rem;background:linear-gradient(135deg,#c8a45c,#ddc07a);display:flex;align-items:center;justify-content:center;">
+              <i class="bi bi-heart-fill" style="color:#fff;font-size:.6rem;"></i>
+            </div>
+            <div style="font-size:.85rem;font-weight:700;font-family:'Playfair Display',serif;color:var(--text-primary);line-height:1;">{{ stats.volunteer_count }}</div>
+            <div style="font-size:.58rem;font-weight:500;color:#c8a45c;font-family:'Outfit',sans-serif;">Vol</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -66,11 +104,10 @@
     </div>
   </div>
 </div>
-<!-- APPEND_DASH -->
 
-{# ── Row 2: Gender + Age + Location ── #}
+{# ── Row 2: Gender + Age ── #}
 <div class="row g-3 mb-3">
-  <div class="col-lg-4">
+  <div class="col-lg-6">
     <div class="card p-3 h-100 fade-in fade-in-d3">
       <div class="chart-card-title">
         <span class="chart-icon" style="background:linear-gradient(135deg,#8a6dab,#a88bc5);"><i class="bi bi-pie-chart"></i></span>
@@ -79,7 +116,7 @@
       <div class="d-flex align-items-center justify-content-center" style="height:220px;"><canvas id="chartGender"></canvas></div>
     </div>
   </div>
-  <div class="col-lg-4">
+  <div class="col-lg-6">
     <div class="card p-3 h-100 fade-in fade-in-d4">
       <div class="chart-card-title">
         <span class="chart-icon" style="background:linear-gradient(135deg,#c07a56,#d4956f);"><i class="bi bi-bar-chart"></i></span>
@@ -88,92 +125,394 @@
       <div style="position:relative;height:220px;"><canvas id="chartAge"></canvas></div>
     </div>
   </div>
-  <div class="col-lg-4">
-    <div class="card p-3 h-100 fade-in fade-in-d5">
+</div>
+
+{# ── Row 2b: US Map (full width) ── #}
+<div class="row g-3 mb-3">
+  <div class="col-12">
+    <div class="card p-3 fade-in fade-in-d5">
       <div class="chart-card-title">
         <span class="chart-icon" style="background:linear-gradient(135deg,#5a9e6f,#7abe8f);"><i class="bi bi-geo-alt"></i></span>
-        <h6>Location Distribution</h6>
+        <h6>Donor Map — U.S. States</h6>
       </div>
-      <div style="position:relative;height:220px;"><canvas id="chartLocation"></canvas></div>
+      <div class="us-map-container" style="position:relative;height:360px;overflow:hidden;">
+        <div id="mapTooltip" class="map-tooltip" style="display:none;"></div>
+        <svg id="usMapSvg" viewBox="-40 0 600 300" preserveAspectRatio="xMidYMid meet"
+             style="width:100%;height:100%;">
+        </svg>
+        <div class="map-legend" id="mapLegend"></div>
+      </div>
     </div>
   </div>
 </div>
 
-{# ── Row 3: Event Fundraising ── #}
-<div class="row g-3">
-  <div class="col-12">
-    <div class="card p-3 fade-in fade-in-d5">
+{# ── Row 3: Gift Distribution + Event Fundraising ── #}
+<div class="row g-3 mb-3">
+  <div class="col-lg-6">
+    <div class="card p-3 h-100 fade-in fade-in-d3">
+      <div class="chart-card-title">
+        <span class="chart-icon" style="background:linear-gradient(135deg,#c07a56,#d4956f);"><i class="bi bi-gift"></i></span>
+        <h6>Gift Distribution Overview</h6>
+      </div>
+      <div style="position:relative;height:260px;"><canvas id="chartGiftDist"></canvas></div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card p-3 h-100 fade-in fade-in-d4">
       <div class="chart-card-title">
         <span class="chart-icon" style="background:linear-gradient(135deg,#c8a45c,#b89a4c);"><i class="bi bi-trophy"></i></span>
         <h6>Event Fundraising Progress</h6>
       </div>
-      <div style="position:relative;height:220px;"><canvas id="chartEvents"></canvas></div>
+      <div style="position:relative;height:260px;"><canvas id="chartEvents"></canvas></div>
     </div>
   </div>
 </div>
+
+{# ── Row 4: Financial Reports Quick Access ── #}
+{% if current_user.has_role('finance') %}
+<div class="section-divider fade-in fade-in-d3"><i class="bi bi-graph-up me-1"></i> Financial Reports Quick Access</div>
+<div class="row g-3 mb-3">
+  <div class="col-md-4">
+    <div class="card stat-card green p-3 fade-in fade-in-d3">
+      <div class="d-flex align-items-center">
+        <div class="stat-icon me-3" style="background:linear-gradient(135deg,#5a9e6f,#7abe8f);"><i class="bi bi-arrow-up-circle"></i></div>
+        <div>
+          <div class="text-muted">Total Revenue</div>
+          <h4>${{ "%.2f"|format(finance.total_revenue) }}</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card stat-card purple p-3 fade-in fade-in-d4">
+      <div class="d-flex align-items-center">
+        <div class="stat-icon me-3" style="background:linear-gradient(135deg,#8a6dab,#a88bc5);"><i class="bi bi-arrow-down-circle"></i></div>
+        <div>
+          <div class="text-muted">Total Expenses</div>
+          <h4>${{ "%.2f"|format(finance.total_expenses) }}</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card stat-card blue p-3 fade-in fade-in-d5">
+      <div class="d-flex align-items-center">
+        <div class="stat-icon me-3" style="background:linear-gradient(135deg,#5a8a6a,#7aaa8a);"><i class="bi bi-piggy-bank"></i></div>
+        <div>
+          <div class="text-muted">Net Income</div>
+          <h4 class="{{ 'text-success' if finance.net_income >= 0 else 'text-danger' }}">${{ "%.2f"|format(finance.net_income) }}</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row g-3 mb-3">
+  <div class="col-md-4">
+    <a href="{{ url_for('finance.income_statement') }}" class="text-decoration-none">
+      <div class="card p-3 text-center h-100 report-link-card fade-in fade-in-d3">
+        <div style="width:48px;height:48px;border-radius:.75rem;background:linear-gradient(135deg,rgba(90,138,106,.1),rgba(90,138,106,.05));display:flex;align-items:center;justify-content:center;margin:0 auto .5rem;">
+          <i class="bi bi-file-earmark-bar-graph" style="font-size:1.25rem;color:var(--accent);"></i>
+        </div>
+        <h6 style="font-size:.9rem;margin-bottom:.25rem;">Statement of Activities</h6>
+        <p class="text-muted mb-0" style="font-size:.75rem;">Revenue detail & trends</p>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a href="{{ url_for('finance.balance_sheet') }}" class="text-decoration-none">
+      <div class="card p-3 text-center h-100 report-link-card fade-in fade-in-d4">
+        <div style="width:48px;height:48px;border-radius:.75rem;background:linear-gradient(135deg,rgba(200,164,92,.1),rgba(200,164,92,.05));display:flex;align-items:center;justify-content:center;margin:0 auto .5rem;">
+          <i class="bi bi-clipboard-data" style="font-size:1.25rem;color:var(--accent-gold);"></i>
+        </div>
+        <h6 style="font-size:.9rem;margin-bottom:.25rem;">Financial Position</h6>
+        <p class="text-muted mb-0" style="font-size:.75rem;">Assets & fund balance</p>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a href="{{ url_for('finance.expenditure') }}" class="text-decoration-none">
+      <div class="card p-3 text-center h-100 report-link-card fade-in fade-in-d5">
+        <div style="width:48px;height:48px;border-radius:.75rem;background:linear-gradient(135deg,rgba(192,122,86,.1),rgba(192,122,86,.05));display:flex;align-items:center;justify-content:center;margin:0 auto .5rem;">
+          <i class="bi bi-cash-stack" style="font-size:1.25rem;color:var(--terracotta);"></i>
+        </div>
+        <h6 style="font-size:.9rem;margin-bottom:.25rem;">Functional Expenses</h6>
+        <p class="text-muted mb-0" style="font-size:.75rem;">Expenses by category</p>
+      </div>
+    </a>
+  </div>
+</div>
+{% endif %}
+
+{# ── Row 5: Schedule Monitor ── #}
+{% if current_user.has_role('event_coordinator') or current_user.has_role('admin') %}
+<div class="section-divider fade-in fade-in-d4"><i class="bi bi-calendar-week me-1"></i> Schedule Monitor</div>
+<div class="row g-3 mb-3">
+  <div class="col-md-6">
+    <div class="card stat-card orange p-3 fade-in fade-in-d4">
+      <div class="d-flex align-items-center">
+        <div class="stat-icon me-3" style="background:linear-gradient(135deg,#c8a45c,#ddc07a);"><i class="bi bi-calendar-check"></i></div>
+        <div>
+          <div class="text-muted">Upcoming Events</div>
+          <h3>{{ schedule_stats.upcoming_events }}</h3>
+          <div class="stat-trend" style="color:var(--accent-gold);"><i class="bi bi-flag"></i> Planned or active</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card stat-card purple p-3 fade-in fade-in-d5">
+      <div class="d-flex align-items-center">
+        <div class="stat-icon me-3" style="background:linear-gradient(135deg,#8a6dab,#a88bc5);"><i class="bi bi-clock-history"></i></div>
+        <div>
+          <div class="text-muted">Scheduled Shifts</div>
+          <h3>{{ schedule_stats.upcoming_schedules }}</h3>
+          <div class="stat-trend" style="color:var(--plum);"><i class="bi bi-list-check"></i> Awaiting start</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row g-3">
+  <div class="col-12">
+    <a href="{{ url_for('personnel.schedule_board') }}" class="text-decoration-none">
+      <div class="card p-4 text-center report-link-card fade-in fade-in-d5" style="border-left:4px solid var(--accent-gold);">
+        <div class="d-flex align-items-center justify-content-center">
+          <i class="bi bi-kanban me-2" style="font-size:1.5rem;color:var(--accent-gold);"></i>
+          <div class="text-start">
+            <h6 style="margin:0;font-size:1rem;">Open Schedule Board</h6>
+            <p class="text-muted mb-0" style="font-size:.8rem;">Select an event to view detailed shift assignments and personnel timeline</p>
+          </div>
+          <i class="bi bi-arrow-right ms-auto" style="font-size:1.25rem;color:var(--text-muted);"></i>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+{% endif %}
+
 {% endblock %}
 {% block scripts %}
 <script>
+// Welcome message
+(function() {
+  const h = new Date().getHours();
+  let greeting = 'Good evening';
+  if (h < 12) greeting = 'Good morning';
+  else if (h < 18) greeting = 'Good afternoon';
+  const el = document.getElementById('welcomeMsg');
+  if (el) el.textContent = greeting + ', {{ current_user.user_name }}';
+})();
+// Data timestamp
+(function() {
+  var ts = document.getElementById('dataTimestamp');
+  if (ts) ts.textContent = 'Data updated ' + new Date().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
+})();
+
 const colors = ['#5a8a6a','#c07a56','#c8a45c','#8a6dab','#d4956f','#7aaa8a','#a88bc5','#ddc07a'];
 const fontFamily = 'Outfit, sans-serif';
-const barOpts = {
-  responsive:true, maintainAspectRatio:false,
-  plugins:{legend:{labels:{font:{family:fontFamily,size:12},color:'#6b6560',usePointStyle:true,pointStyleWidth:8,padding:16}}},
-  scales:{
-    x:{grid:{display:false},ticks:{font:{family:fontFamily,size:11},color:'#9a938c'},border:{display:false}},
-    y:{grid:{color:'rgba(232,226,217,.5)',drawBorder:false},ticks:{font:{family:fontFamily,size:11},color:'#9a938c'},border:{display:false}}
-  }
+const tooltipStyle = {backgroundColor:'#2a2a2a',titleFont:{family:fontFamily,size:12},bodyFont:{family:fontFamily,size:12},padding:10,cornerRadius:8,displayColors:true};
+
+// Helper: build bar options with custom Y-axis unit
+function makeBarOpts(yPrefix, ySuffix, tooltipPrefix, tooltipSuffix) {
+  return {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{labels:{font:{family:fontFamily,size:12},color:'#6b6560',usePointStyle:true,pointStyleWidth:8,padding:16}},
+      tooltip:{...tooltipStyle, callbacks:{
+        label:function(ctx){
+          const v = ctx.parsed.y != null ? ctx.parsed.y : ctx.parsed.x;
+          return ctx.dataset.label+': '+(tooltipPrefix||'')+v.toLocaleString()+(tooltipSuffix||'');
+        }
+      }}
+    },
+    scales:{
+      x:{grid:{display:false},ticks:{font:{family:fontFamily,size:11},color:'#9a938c'},border:{display:false}},
+      y:{grid:{color:'rgba(232,226,217,.5)',drawBorder:false},border:{display:false},
+         ticks:{font:{family:fontFamily,size:11},color:'#9a938c',
+                callback:function(v){return (yPrefix||'')+v.toLocaleString()+(ySuffix||'');}}}
+    }
+  };
+}
+
+const doughnutOpts = function(unit) {
+  return {
+    responsive:true, maintainAspectRatio:false, cutout:'62%',
+    plugins:{
+      legend:{position:'bottom',labels:{font:{family:fontFamily,size:11},color:'#6b6560',padding:14,usePointStyle:true,pointStyleWidth:8}},
+      tooltip:{...tooltipStyle, callbacks:{
+        label:function(ctx){return ' '+ctx.label+': '+ctx.parsed.toLocaleString()+' '+(unit||'');}
+      }}
+    }
+  };
 };
-const doughnutOpts = {
-  responsive:true, maintainAspectRatio:false, cutout:'62%',
-  plugins:{legend:{position:'bottom',labels:{font:{family:fontFamily,size:11},color:'#6b6560',padding:14,usePointStyle:true,pointStyleWidth:8}}}
-};
+
 function fetchChart(url, cb){ fetch(url).then(r=>r.json()).then(cb); }
 
+// ── Monthly Donation Trend (currency) ──
 fetchChart('/api/charts/monthly_donations', d => {
   new Chart(document.getElementById('chartMonthly'), {
     type:'bar',
-    data:{labels:d.labels, datasets:[{label:'Donations',data:d.data,backgroundColor:'rgba(90,138,106,.75)',hoverBackgroundColor:'#5a8a6a',borderRadius:8,borderSkipped:false}]},
-    options:barOpts
+    data:{labels:d.labels, datasets:[{label:'Donations ($)',data:d.data,backgroundColor:'rgba(90,138,106,.75)',hoverBackgroundColor:'#5a8a6a',borderRadius:8,borderSkipped:false}]},
+    options:makeBarOpts('$','', '$','')
   });
 });
+
+// ── Donation Type (doughnut, count) ──
 fetchChart('/api/charts/donation_types', d => {
   new Chart(document.getElementById('chartTypes'), {
     type:'doughnut',
     data:{labels:d.labels, datasets:[{data:d.data,backgroundColor:colors,borderWidth:2,borderColor:'#fffdf9',hoverBorderColor:'#fffdf9'}]},
-    options:doughnutOpts
+    options:doughnutOpts('donations')
   });
 });
+
+// ── Gender Distribution (doughnut, count) ──
 fetchChart('/api/charts/gender', d => {
   new Chart(document.getElementById('chartGender'), {
     type:'doughnut',
     data:{labels:d.labels, datasets:[{data:d.data,backgroundColor:['#5a8a6a','#c07a56','#c8a45c','#8a6dab'],borderWidth:2,borderColor:'#fffdf9'}]},
-    options:doughnutOpts
+    options:doughnutOpts('donors')
   });
 });
+
+// ── Age Distribution (people count, integer only) ──
 fetchChart('/api/charts/age', d => {
+  const opts = makeBarOpts('',' people', '',' people');
+  opts.scales.y.ticks.stepSize = 1;
   new Chart(document.getElementById('chartAge'), {
     type:'bar',
-    data:{labels:d.labels, datasets:[{label:'Count',data:d.data,backgroundColor:'rgba(192,122,86,.7)',hoverBackgroundColor:'#c07a56',borderRadius:8,borderSkipped:false}]},
-    options:barOpts
+    data:{labels:d.labels, datasets:[{label:'Donors',data:d.data,backgroundColor:'rgba(192,122,86,.7)',hoverBackgroundColor:'#c07a56',borderRadius:8,borderSkipped:false}]},
+    options:opts
   });
 });
-fetchChart('/api/charts/location', d => {
-  new Chart(document.getElementById('chartLocation'), {
-    type:'bar',
-    data:{labels:d.labels, datasets:[{label:'Count',data:d.data,backgroundColor:'rgba(200,164,92,.7)',hoverBackgroundColor:'#c8a45c',borderRadius:8,borderSkipped:false}]},
-    options:barOpts
-  });
-});
+
+// ── Event Fundraising Progress (currency) ──
 fetchChart('/api/charts/event_progress', d => {
   new Chart(document.getElementById('chartEvents'), {
     type:'bar',
     data:{labels:d.labels, datasets:[
-      {label:'Target',data:d.target,backgroundColor:'rgba(232,226,217,.6)',hoverBackgroundColor:'#e8e2d9',borderRadius:8,borderSkipped:false},
-      {label:'Actual',data:d.actual,backgroundColor:'rgba(90,138,106,.75)',hoverBackgroundColor:'#5a8a6a',borderRadius:8,borderSkipped:false}
+      {label:'Target ($)',data:d.target,backgroundColor:'rgba(232,226,217,.6)',hoverBackgroundColor:'#e8e2d9',borderRadius:8,borderSkipped:false},
+      {label:'Actual ($)',data:d.actual,backgroundColor:'rgba(90,138,106,.75)',hoverBackgroundColor:'#5a8a6a',borderRadius:8,borderSkipped:false}
     ]},
-    options:barOpts
+    options:makeBarOpts('$','', '$','')
   });
 });
+
+// ── Gift Distribution (items count, horizontal bar) ──
+fetchChart('/api/charts/gift_distribution', d => {
+  const giftBarOpts = makeBarOpts('',' items', '',' items');
+  // Swap axes for horizontal bar
+  giftBarOpts.indexAxis = 'y';
+  const tmp = giftBarOpts.scales.x;
+  giftBarOpts.scales.x = {...giftBarOpts.scales.y, grid:{color:'rgba(232,226,217,.5)',drawBorder:false}};
+  giftBarOpts.scales.x.ticks.callback = function(v){return v.toLocaleString()+' items';};
+  giftBarOpts.scales.y = {...tmp, grid:{display:false}};
+  giftBarOpts.scales.y.ticks.callback = function(v){return v;};
+
+  new Chart(document.getElementById('chartGiftDist'), {
+    type:'bar',
+    data:{
+      labels:d.labels,
+      datasets:[
+        {label:'Free Distribution',data:d.free,backgroundColor:'rgba(90,138,106,.75)',hoverBackgroundColor:'#5a8a6a',borderRadius:8,borderSkipped:false},
+        {label:'Donor Gifts',data:d.donated,backgroundColor:'rgba(200,164,92,.7)',hoverBackgroundColor:'#c8a45c',borderRadius:8,borderSkipped:false}
+      ]
+    },
+    options:giftBarOpts
+  });
+});
+
+// ── US Map Visualization ──
+(function() {
+  const statePaths = (typeof US_STATE_PATHS !== 'undefined') ? US_STATE_PATHS : {};
+  const svg = document.getElementById('usMapSvg');
+  const tooltip = document.getElementById('mapTooltip');
+  if (!svg || !Object.keys(statePaths).length) return;
+
+  fetch('/api/charts/location_map')
+    .then(r => r.json())
+    .then(data => {
+      const stateData = data.state_data;
+      const stateNames = data.state_names;
+      const maxVal = Math.max(1, ...Object.values(stateData));
+
+      // Draw states
+      Object.entries(statePaths).forEach(([code, pathD]) => {
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', pathD);
+        path.setAttribute('data-state', code);
+        const count = stateData[code] || 0;
+        const intensity = count > 0 ? 0.25 + (count / maxVal) * 0.75 : 0.06;
+        path.setAttribute('fill', count > 0
+          ? `rgba(90,138,106,${intensity})`
+          : 'rgba(232,226,217,.45)');
+        path.setAttribute('stroke', '#fffdf9');
+        path.setAttribute('stroke-width', '1');
+        path.setAttribute('stroke-linejoin', 'round');
+        path.style.cursor = 'pointer';
+        path.style.transition = 'fill .2s ease';
+
+        path.addEventListener('mouseenter', function(e) {
+          this.setAttribute('fill', count > 0
+            ? `rgba(90,138,106,${Math.min(intensity+0.25,1)})`
+            : 'rgba(200,164,92,.25)');
+          this.setAttribute('stroke', count > 0 ? '#3a6a4a' : '#c8a45c');
+          this.setAttribute('stroke-width', '1.5');
+          tooltip.innerHTML = '<strong>' + (stateNames[code]||code) + '</strong><br>' +
+                              '<i class="bi bi-people-fill"></i> ' + count + ' donor' + (count!==1?'s':'');
+          tooltip.style.display = 'block';
+        });
+        path.addEventListener('mousemove', function(e) {
+          const rect = svg.closest('.us-map-container').getBoundingClientRect();
+          let left = e.clientX - rect.left + 12;
+          let top = e.clientY - rect.top - 36;
+          if (left + 120 > rect.width) left = e.clientX - rect.left - 120;
+          if (top < 0) top = e.clientY - rect.top + 12;
+          tooltip.style.left = left + 'px';
+          tooltip.style.top = top + 'px';
+        });
+        path.addEventListener('mouseleave', function() {
+          this.setAttribute('fill', count > 0
+            ? `rgba(90,138,106,${intensity})`
+            : 'rgba(232,226,217,.45)');
+          this.setAttribute('stroke', '#fffdf9');
+          this.setAttribute('stroke-width', '1');
+          tooltip.style.display = 'none';
+        });
+        svg.appendChild(path);
+      });
+
+      // Add labels for states with donors (on top of all paths)
+      Object.entries(statePaths).forEach(([code]) => {
+        const count = stateData[code] || 0;
+        if (count > 0) {
+          const el = svg.querySelector('[data-state="'+code+'"]');
+          if (!el) return;
+          const bbox = el.getBBox();
+          const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          text.setAttribute('x', bbox.x + bbox.width/2);
+          text.setAttribute('y', bbox.y + bbox.height/2 + 4);
+          text.setAttribute('text-anchor', 'middle');
+          text.setAttribute('font-size', bbox.width < 30 ? '7' : '9');
+          text.setAttribute('font-family', 'Outfit, sans-serif');
+          text.setAttribute('font-weight', '700');
+          const intensity = 0.25 + (count / maxVal) * 0.75;
+          text.setAttribute('fill', intensity > 0.55 ? '#fff' : '#2a2a2a');
+          text.setAttribute('pointer-events', 'none');
+          text.textContent = count;
+          svg.appendChild(text);
+        }
+      });
+
+      // Legend
+      const legend = document.getElementById('mapLegend');
+      if (legend) {
+        const total = Object.values(stateData).reduce((a,b)=>a+b,0);
+        const statesWithDonors = Object.keys(stateData).length;
+        legend.innerHTML = '<span style="font-size:.7rem;color:var(--text-muted);">'+total+' donors in '+statesWithDonors+' state'+(statesWithDonors!==1?'s':'')+'</span>';
+      }
+    });
+})();
+
 </script>
 {% endblock %}

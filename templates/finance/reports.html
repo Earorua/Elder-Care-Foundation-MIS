@@ -2,48 +2,116 @@
 {% block title %}Financial Reports Overview - Elder Care MIS{% endblock %}
 {% block breadcrumb %}Financial Reports{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-end mb-3">
+<div class="page-header">
   <div>
     <h4 class="mb-1"><i class="bi bi-graph-up me-2"></i>Financial Reports</h4>
-    <p style="font-size:.85rem;color:var(--text-muted);margin:0;font-family:'Outfit',sans-serif;">GAAS-compliant financial statements and analysis</p>
+    <p class="page-subtitle">GAAS-compliant financial statements and analysis</p>
   </div>
 </div>
+
+<!-- Summary Stats -->
 <div class="row g-3 mb-4">
-  <div class="col-md-4"><div class="card stat-card green p-3"><h6 class="text-muted">Total Revenue</h6><h3>${{ "%.2f"|format(total_income) }}</h3></div></div>
-  <div class="col-md-4"><div class="card stat-card purple p-3"><h6 class="text-muted">Total Expenses</h6><h3>${{ "%.2f"|format(total_expenses) }}</h3></div></div>
-  <div class="col-md-4"><div class="card stat-card blue p-3"><h6 class="text-muted">Net Income</h6><h3>${{ "%.2f"|format(total_income - total_expenses) }}</h3></div></div>
+  <div class="col-md-4">
+    <div class="card stat-card green p-3 fade-in">
+      <div class="d-flex align-items-center">
+        <div class="stat-icon me-3" style="background:linear-gradient(135deg,#5a9e6f,#7abe8f);"><i class="bi bi-arrow-up-circle"></i></div>
+        <div>
+          <div class="text-muted">Total Revenue</div>
+          <h3>${{ "%.2f"|format(total_income) }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card stat-card purple p-3 fade-in fade-in-d1">
+      <div class="d-flex align-items-center">
+        <div class="stat-icon me-3" style="background:linear-gradient(135deg,#8a6dab,#a88bc5);"><i class="bi bi-arrow-down-circle"></i></div>
+        <div>
+          <div class="text-muted">Total Expenses</div>
+          <h3>${{ "%.2f"|format(total_expenses) }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card stat-card blue p-3 fade-in fade-in-d2">
+      <div class="d-flex align-items-center">
+        <div class="stat-icon me-3" style="background:linear-gradient(135deg,#5a8a6a,#7aaa8a);"><i class="bi bi-piggy-bank"></i></div>
+        <div>
+          <div class="text-muted">Net Income</div>
+          <h3 class="{{ 'text-success' if (total_income - total_expenses) >= 0 else 'text-danger' }}">${{ "%.2f"|format(total_income - total_expenses) }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<!-- Revenue Breakdown -->
+<div class="section-divider fade-in fade-in-d2"><i class="bi bi-pie-chart me-1"></i> Revenue Breakdown</div>
 <div class="row g-3 mb-4">
-  <div class="col-md-3"><div class="card p-3 text-center"><h6 class="text-muted">Donations</h6><h5>${{ "%.2f"|format(total_donations) }}</h5></div></div>
-  <div class="col-md-3"><div class="card p-3 text-center"><h6 class="text-muted">Grants</h6><h5>${{ "%.2f"|format(total_grants) }}</h5></div></div>
-  <div class="col-md-3"><div class="card p-3 text-center"><h6 class="text-muted">Other Income</h6><h5>${{ "%.2f"|format(total_other) }}</h5></div></div>
-  <div class="col-md-3"><div class="card p-3 text-center"><h6 class="text-muted">Personnel Expenses</h6><h5>${{ "%.2f"|format(total_payments) }}</h5></div></div>
+  <div class="col-md-3">
+    <div class="card p-3 text-center fade-in fade-in-d2">
+      <div style="font-size:1.5rem;color:var(--accent);margin-bottom:.35rem;"><i class="bi bi-cash-coin"></i></div>
+      <h6 class="text-muted" style="font-size:.7rem;">Donations</h6>
+      <h5 style="font-family:'Playfair Display',serif;margin:0;">${{ "%.2f"|format(total_donations) }}</h5>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card p-3 text-center fade-in fade-in-d3">
+      <div style="font-size:1.5rem;color:var(--accent-gold);margin-bottom:.35rem;"><i class="bi bi-bank"></i></div>
+      <h6 class="text-muted" style="font-size:.7rem;">Grants</h6>
+      <h5 style="font-family:'Playfair Display',serif;margin:0;">${{ "%.2f"|format(total_grants) }}</h5>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card p-3 text-center fade-in fade-in-d4">
+      <div style="font-size:1.5rem;color:var(--plum);margin-bottom:.35rem;"><i class="bi bi-currency-dollar"></i></div>
+      <h6 class="text-muted" style="font-size:.7rem;">Other Income</h6>
+      <h5 style="font-family:'Playfair Display',serif;margin:0;">${{ "%.2f"|format(total_other) }}</h5>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card p-3 text-center fade-in fade-in-d5">
+      <div style="font-size:1.5rem;color:var(--terracotta);margin-bottom:.35rem;"><i class="bi bi-wallet2"></i></div>
+      <h6 class="text-muted" style="font-size:.7rem;">Personnel Expenses</h6>
+      <h5 style="font-family:'Playfair Display',serif;margin:0;">${{ "%.2f"|format(total_payments) }}</h5>
+    </div>
+  </div>
 </div>
+
+<!-- Report Links -->
+<div class="section-divider fade-in fade-in-d3"><i class="bi bi-file-earmark-text me-1"></i> Financial Statements</div>
 <div class="row g-3">
   <div class="col-md-4">
     <a href="{{ url_for('finance.income_statement') }}" class="text-decoration-none">
-      <div class="card p-4 text-center h-100 report-link-card">
-        <i class="bi bi-file-earmark-bar-graph display-4" style="color:var(--accent);"></i>
-        <h5 class="mt-3">Statement of Activities</h5>
-        <p class="text-muted mb-0">View revenue detail and trends by category</p>
+      <div class="card p-4 text-center h-100 report-link-card fade-in fade-in-d3">
+        <div style="width:56px;height:56px;border-radius:.75rem;background:linear-gradient(135deg,rgba(90,138,106,.1),rgba(90,138,106,.05));display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;">
+          <i class="bi bi-file-earmark-bar-graph" style="font-size:1.5rem;color:var(--accent);"></i>
+        </div>
+        <h5 style="font-size:1rem;">Statement of Activities</h5>
+        <p class="text-muted mb-0" style="font-size:.82rem;">View revenue detail and trends by category</p>
       </div>
     </a>
   </div>
   <div class="col-md-4">
     <a href="{{ url_for('finance.balance_sheet') }}" class="text-decoration-none">
-      <div class="card p-4 text-center h-100 report-link-card">
-        <i class="bi bi-clipboard-data display-4" style="color:var(--accent-gold);"></i>
-        <h5 class="mt-3">Statement of Financial Position</h5>
-        <p class="text-muted mb-0">View assets, inventory, and fund balance</p>
+      <div class="card p-4 text-center h-100 report-link-card fade-in fade-in-d4">
+        <div style="width:56px;height:56px;border-radius:.75rem;background:linear-gradient(135deg,rgba(200,164,92,.1),rgba(200,164,92,.05));display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;">
+          <i class="bi bi-clipboard-data" style="font-size:1.5rem;color:var(--accent-gold);"></i>
+        </div>
+        <h5 style="font-size:1rem;">Statement of Financial Position</h5>
+        <p class="text-muted mb-0" style="font-size:.82rem;">View assets, inventory, and fund balance</p>
       </div>
     </a>
   </div>
   <div class="col-md-4">
     <a href="{{ url_for('finance.expenditure') }}" class="text-decoration-none">
-      <div class="card p-4 text-center h-100 report-link-card">
-        <i class="bi bi-cash-stack display-4" style="color:var(--terracotta);"></i>
-        <h5 class="mt-3">Statement of Functional Expenses</h5>
-        <p class="text-muted mb-0">View expenses by category and personnel</p>
+      <div class="card p-4 text-center h-100 report-link-card fade-in fade-in-d5">
+        <div style="width:56px;height:56px;border-radius:.75rem;background:linear-gradient(135deg,rgba(192,122,86,.1),rgba(192,122,86,.05));display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;">
+          <i class="bi bi-cash-stack" style="font-size:1.5rem;color:var(--terracotta);"></i>
+        </div>
+        <h5 style="font-size:1rem;">Statement of Functional Expenses</h5>
+        <p class="text-muted mb-0" style="font-size:.82rem;">View expenses by category and personnel</p>
       </div>
     </a>
   </div>

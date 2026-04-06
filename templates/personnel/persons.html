@@ -3,11 +3,23 @@
 {% block breadcrumb %}Personnel{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h4 class="mb-0">Personnel Management</h4>
+<div class="page-header">
+  <div>
+    <h4 class="mb-1"><i class="bi bi-people me-2"></i>Personnel Management <span class="record-count"><i class="bi bi-database"></i>{{ persons|length }} records</span></h4>
+    <p class="page-subtitle">Manage personnel records, roles, and contact information</p>
+  </div>
   <button class="btn btn-primary" onclick="openAdd()"><i class="bi bi-plus-lg me-1"></i>Add Person</button>
 </div>
 
+<div class="table-info-bar">
+<div class="table-search mb-3">
+  <div class="input-group" style="max-width:320px;">
+    <span class="input-group-text"><i class="bi bi-search"></i></span>
+    <input type="text" class="form-control" placeholder="Search personnel..." id="tableSearch">
+  </div>
+</div>
+</div>
+{% if persons %}
 <div class="table-responsive">
   <table class="table table-striped table-hover align-middle">
     <thead class="table-header">
@@ -31,16 +43,21 @@
         <td>{{ p['gender'] }}</td>
         <td>{{ p['status'] }}</td>
         <td class="text-nowrap">
-          <button class="btn btn-sm btn-warning" onclick="openEdit({{ p['person_id'] }}, '{{ p['first_name'] }}', '{{ p['last_name'] }}', '{{ p['email'] }}', '{{ p['phone'] }}', '{{ p['person_type'] }}', '{{ p['role_name'] }}', '{{ p['hire_date'] }}', '{{ p['status'] }}', '{{ p['birthday'] }}', '{{ p['gender'] }}')"><i class="bi bi-pencil"></i></button>
-          <form method="post" action="{{ url_for('personnel.persons_delete', id=p['person_id']) }}" class="d-inline" onsubmit="return confirm('Confirm delete?')">
-            <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
-          </form>
+          <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" title="Edit" onclick="openEdit({{ p['person_id'] }}, '{{ p['first_name'] }}', '{{ p['last_name'] }}', '{{ p['email'] }}', '{{ p['phone'] }}', '{{ p['person_type'] }}', '{{ p['role_name'] }}', '{{ p['hire_date'] }}', '{{ p['status'] }}', '{{ p['birthday'] }}', '{{ p['gender'] }}')"><i class="bi bi-pencil"></i></button>
+          <button class="btn btn-sm btn-danger" aria-label="Delete" data-bs-toggle="tooltip" title="Delete" onclick="confirmDelete('{{ url_for('personnel.persons_delete', id=p['person_id']) }}', '{{ p['first_name'] }} {{ p['last_name'] }}')"><i class="bi bi-trash"></i></button>
         </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+{% else %}
+<div class="empty-state">
+  <i class="bi bi-inbox"></i>
+  <h6>No records found</h6>
+  <p>Click "Add" to create your first entry.</p>
+</div>
+{% endif %}
 
 <!-- Modal -->
 <div class="modal fade" id="personModal" tabindex="-1">
@@ -52,18 +69,18 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          <div class="mb-2"><label class="form-label">First Name</label><input type="text" class="form-control" name="first_name" id="first_name" required></div>
-          <div class="mb-2"><label class="form-label">Last Name</label><input type="text" class="form-control" name="last_name" id="last_name" required></div>
-          <div class="mb-2"><label class="form-label">Email</label><input type="email" class="form-control" name="email" id="email"></div>
-          <div class="mb-2"><label class="form-label">Phone</label><input type="text" class="form-control" name="phone" id="phone"></div>
-          <div class="mb-2"><label class="form-label">Type</label><input type="text" class="form-control" name="person_type" id="person_type"></div>
-          <div class="mb-2"><label class="form-label">Role</label><input type="text" class="form-control" name="role_name" id="role_name"></div>
-          <div class="mb-2"><label class="form-label">Hire Date</label><input type="date" class="form-control" name="hire_date" id="hire_date"></div>
-          <div class="mb-2"><label class="form-label">Birthday</label><input type="date" class="form-control" name="birthday" id="birthday"></div>
-          <div class="mb-2"><label class="form-label">Gender</label>
+          <div class="mb-3"><label class="form-label">First Name</label><input type="text" class="form-control" name="first_name" id="first_name" required></div>
+          <div class="mb-3"><label class="form-label">Last Name</label><input type="text" class="form-control" name="last_name" id="last_name" required></div>
+          <div class="mb-3"><label class="form-label">Email</label><input type="email" class="form-control" name="email" id="email"></div>
+          <div class="mb-3"><label class="form-label">Phone</label><input type="text" class="form-control" name="phone" id="phone"></div>
+          <div class="mb-3"><label class="form-label">Type</label><input type="text" class="form-control" name="person_type" id="person_type"></div>
+          <div class="mb-3"><label class="form-label">Role</label><input type="text" class="form-control" name="role_name" id="role_name"></div>
+          <div class="mb-3"><label class="form-label">Hire Date</label><input type="date" class="form-control" name="hire_date" id="hire_date"></div>
+          <div class="mb-3"><label class="form-label">Birthday</label><input type="date" class="form-control" name="birthday" id="birthday"></div>
+          <div class="mb-3"><label class="form-label">Gender</label>
             <select class="form-select" name="gender" id="gender"><option value="">Select...</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select>
           </div>
-          <div class="mb-2"><label class="form-label">Status</label><input type="text" class="form-control" name="status" id="status" value="active"></div>
+          <div class="mb-3"><label class="form-label">Status</label><input type="text" class="form-control" name="status" id="status" value="active"></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

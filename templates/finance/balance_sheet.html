@@ -12,8 +12,11 @@
 }
 </style>
 
-<div class="d-flex justify-content-between align-items-center mb-4 no-print">
-  <h4 class="mb-0"><i class="bi bi-clipboard-data me-2"></i>Statement of Financial Position</h4>
+<div class="page-header no-print">
+  <div>
+    <h4 class="mb-1"><i class="bi bi-clipboard-data me-2"></i>Statement of Financial Position</h4>
+    <p class="page-subtitle">Assets, liabilities, and fund balance overview</p>
+  </div>
   <div class="d-flex gap-2">
     <button onclick="window.print()" class="btn btn-outline-primary btn-sm"><i class="bi bi-printer me-1"></i>Print Report</button>
     <a href="{{ url_for('finance.reports') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back to Overview</a>
@@ -177,13 +180,32 @@
 {% endblock %}
 {% block scripts %}
 <script>
+const fontFamily = 'Outfit, sans-serif';
 new Chart(document.getElementById('assetChart'), {
   type: 'doughnut',
   data: {
     labels: ['Cash & Equivalents', 'Gift Inventory'],
-    datasets: [{data: [{{ cash }}, {{ inventory }}], backgroundColor: ['#5a8a6a','#c8a45c']}]
+    datasets: [{data: [{{ cash }}, {{ inventory }}], backgroundColor: ['#5a8a6a','#c8a45c'], borderWidth: 2, borderColor: '#fffdf9', hoverBorderColor: '#fffdf9', hoverOffset: 8}]
   },
-  options: {plugins:{legend:{position:'bottom'}}}
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    cutout: '62%',
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { font: {family: fontFamily, size: 12}, color: '#6b6560', padding: 16, usePointStyle: true, pointStyleWidth: 8 }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(42,58,48,.95)',
+        titleFont: { family: fontFamily, size: 12, weight: '600' },
+        bodyFont: { family: fontFamily, size: 11 },
+        padding: 12,
+        cornerRadius: 8,
+        callbacks: { label: function(ctx) { return ctx.label + ': $' + ctx.parsed.toLocaleString('en-US', {minimumFractionDigits: 2}); } }
+      }
+    }
+  }
 });
 </script>
 {% endblock %}

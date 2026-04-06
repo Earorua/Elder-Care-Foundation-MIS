@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% block title %}Schedule Board - Elder Care MIS{% endblock %}
+{% block breadcrumb %}Schedule Board{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4 class="mb-1"><i class="bi bi-kanban me-2"></i>Schedule Board</h4>
+    <p class="page-subtitle">Select an event to view shift assignments in Kanban layout</p>
+  </div>
+</div>
+
+<!-- Event Selector -->
+<div class="card p-3 mb-3 fade-in">
+  <div class="row align-items-center">
+    <div class="col-md-6">
+      <label class="form-label" style="font-weight:600;font-size:.85rem;">Select Event</label>
+      <select class="form-select" id="eventSelect">
+        <option value="">— Choose an event —</option>
+        {% for e in events %}
+        <option value="{{ e.event_id }}"
+          data-status="{{ e.status }}"
+          data-date="{{ e.start_date }}">
+          {{ e.event_name }} ({{ e.start_date }}) — {{ e.status }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-6 text-end" id="eventMeta" style="display:none;">
+      <div class="d-inline-flex align-items-center gap-3 mt-2">
+        <span class="badge" id="eventStatusBadge"></span>
+        <span class="text-muted" style="font-size:.8rem;" id="eventDateLabel"></span>
+        <span class="text-muted" style="font-size:.8rem;" id="shiftCount"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Empty state -->
+<div id="emptyState" class="empty-state fade-in">
+  <i class="bi bi-calendar2-week"></i>
+  <h6>No event selected</h6>
+  <p>Choose an event above to view its schedule board.</p>
+</div>
+
+<!-- Loading -->
+<div id="loadingState" style="display:none;text-align:center;padding:3rem;">
+  <div class="spinner-border text-muted" role="status"><span class="visually-hidden">Loading...</span></div>
+  <p class="text-muted mt-2">Loading shifts…</p>
+</div>
+
+<!-- Kanban Board -->
+<div id="kanbanBoard" class="kanban-board" style="display:none;">
+  <div class="kanban-column scheduled">
+    <div class="kanban-column-header">
+      <span class="kanban-dot" style="background:#c8a45c;"></span>
+      <h6>Scheduled</h6>
+      <span class="kanban-count" id="countScheduled">0</span>
+    </div>
+    <div class="kanban-cards" id="colScheduled"></div>
+  </div>
+  <div class="kanban-column in-progress">
+    <div class="kanban-column-header">
+      <span class="kanban-dot" style="background:#5a8a6a;"></span>
+      <h6>In Progress</h6>
+      <span class="kanban-count" id="countInProgress">0</span>
+    </div>
+    <div class="kanban-cards" id="colInProgress"></div>
+  </div>
+  <div class="kanban-column completed">
+    <div class="kanban-column-header">
+      <span class="kanban-dot" style="background:#8a6dab;"></span>
+      <h6>Completed</h6>
+      <span class="kanban-count" id="countCompleted">0</span>
+    </div>
+    <div class="kanban-cards" id="colCompleted"></div>
+  </div>
+  <div class="kanban-column absent">
+    <div class="kanban-column-header">
+      <span class="kanban-dot" style="background:#c07a56;"></span>
+      <h6>Absent / Cancelled</h6>
+      <span class="kanban-count" id="countAbsent">0</span>
+    </div>
+    <div class="kanban-cards" id="colAbsent"></div>
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+const sel = document.getElementById('eventSelect');
+const board = document.getElementById('kanbanBoard');
+const empty = document.getElementById('emptyState');
+const loading = document.getElementById('loadingState');
+const meta = document.getElementById('eventMeta');
+
+function renderCard(item) {
+  const name = (item.first_name || '') + ' ' + (item.last_name || '');
+  const role = item.role_name || 'Staff';
+  const ot = item.overtime ? '<span class="kanban-tag ot">OT +' + item.overtime + 'h</span>' : '';
+  return `
+    <div class="kanban-card fade-in">
+      <div class="kanban-card-header">
+        <span class="kanban-person"><i class="bi bi-person-circle"></i> ${name}</span>
+        <span class="kanban-role">${role}</span>
+      </div>
+      <div class="kanban-card-body">
+        <div class="kanban-detail"><i class="bi bi-calendar3"></i> ${item.shift_date || '—'}</div>
+        <div class="kanban-detail"><i class="bi bi-clock"></i> ${item.start_time || '?'} – ${item.end_time || '?'}</div>
+        <div class="kanban-detail"><i class="bi bi-tag"></i> ${item.schedule_type || '—'}</div>
+      </div>
+      <div class="kanban-card-footer">
+        ${ot}
+        ${item.notes ? '<span class="kanban-tag note" title="'+item.notes+'"><i class="bi bi-chat-left-text"></i> Note</span>' : ''}
+      </div>
+    </div>`;
+}
+
+function loadBoard(eventId) {
+  if (!eventId) {
+    board.style.display = 'none';
+    empty.style.display = '';
+    meta.style.display = 'none';
+    return;
+  }
+  empty.style.display = 'none';
+  board.style.display = 'none';
+  loading.style.display = '';
+
+  const opt = sel.options[sel.selectedIndex];
+  const statusMap = {
+    'active': ['Active', 'background:#5a8a6a;color:#fff;'],
+    'planned': ['Planned', 'background:#c8a45c;color:#fff;'],
+    'completed': ['Completed', 'background:#8a6dab;color:#fff;'],
+    'cancelled': ['Cancelled', 'background:#c07a56;color:#fff;'],
+  };
+  const st = opt.dataset.status || '';
+  const [label, style] = statusMap[st] || [st, 'background:#9a938c;color:#fff;'];
+  document.getElementById('eventStatusBadge').textContent = label;
+  document.getElementById('eventStatusBadge').style.cssText = style + 'padding:.25rem .6rem;border-radius:.5rem;font-size:.75rem;';
+  document.getElementById('eventDateLabel').innerHTML = '<i class="bi bi-calendar3 me-1"></i>' + (opt.dataset.date || '');
+
+  fetch('/api/schedule-board/' + eventId)
+    .then(r => r.json())
+    .then(data => {
+      loading.style.display = 'none';
+      board.style.display = '';
+      meta.style.display = '';
+
+      ['Scheduled','InProgress','Completed','Absent'].forEach(key => {
+        const col = document.getElementById('col' + key);
+        const dataKey = key === 'InProgress' ? 'in_progress' : key.toLowerCase();
+        const items = data[dataKey] || [];
+        col.innerHTML = items.length
+          ? items.map(renderCard).join('')
+          : '<div class="kanban-empty"><i class="bi bi-inbox"></i><br>No shifts</div>';
+        document.getElementById('count' + key).textContent = items.length;
+      });
+
+      const total = (data.scheduled||[]).length + (data.in_progress||[]).length +
+                    (data.completed||[]).length + (data.absent||[]).length;
+      document.getElementById('shiftCount').innerHTML =
+        '<i class="bi bi-people me-1"></i>' + total + ' shift' + (total !== 1 ? 's' : '');
+    })
+    .catch(() => {
+      loading.style.display = 'none';
+      empty.style.display = '';
+      empty.querySelector('h6').textContent = 'Failed to load data';
+    });
+}
+
+sel.addEventListener('change', function() { loadBoard(this.value); });
+</script>
+{% endblock %}

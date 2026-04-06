@@ -78,8 +78,11 @@ def donations_delete(id):
 @login_required
 @role_required('finance')
 def donors_list():
+    from blueprints.dashboard import US_STATES
     rows = query_db('SELECT * FROM donors ORDER BY last_name')
-    return render_template('donations/donors.html', donors=rows)
+    sorted_states = sorted(US_STATES.items(), key=lambda x: x[1])
+    return render_template('donations/donors.html', donors=rows,
+                           us_states=sorted_states, us_states_map=US_STATES)
 
 
 @donations_bp.route('/donors/add', methods=['POST'])

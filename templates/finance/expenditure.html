@@ -12,8 +12,11 @@
 }
 </style>
 
-<div class="d-flex justify-content-between align-items-center mb-4 no-print">
-  <h4 class="mb-0"><i class="bi bi-cash-stack me-2"></i>Statement of Functional Expenses</h4>
+<div class="page-header no-print">
+  <div>
+    <h4 class="mb-1"><i class="bi bi-cash-stack me-2"></i>Statement of Functional Expenses</h4>
+    <p class="page-subtitle">Expense analysis by function and natural classification</p>
+  </div>
   <div class="d-flex gap-2">
     <button onclick="window.print()" class="btn btn-outline-primary btn-sm"><i class="bi bi-printer me-1"></i>Print Report</button>
     <a href="{{ url_for('finance.reports') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back to Overview</a>
@@ -157,14 +160,49 @@
 {% block scripts %}
 <script>
 const colors = ['#5a8a6a','#c07a56','#c8a45c','#8a6dab','#5a9e6f','#d4956f','#7aaa8a','#a88bc5'];
+const fontFamily = 'Outfit, sans-serif';
+const tooltipConfig = {
+  backgroundColor: 'rgba(42,58,48,.95)',
+  titleFont: { family: fontFamily, size: 12, weight: '600' },
+  bodyFont: { family: fontFamily, size: 11 },
+  padding: 12,
+  cornerRadius: 8,
+  callbacks: { label: function(ctx) { return ctx.label + ': $' + (ctx.parsed || ctx.parsed.y || 0).toLocaleString('en-US', {minimumFractionDigits: 2}); } }
+};
 new Chart(document.getElementById('pieChart'), {
   type: 'doughnut',
-  data: {labels: {{ categories|tojson }}, datasets: [{data: {{ cat_values|tojson }}, backgroundColor: colors}]},
-  options: {plugins:{legend:{position:'bottom'}}}
+  data: {labels: {{ categories|tojson }}, datasets: [{data: {{ cat_values|tojson }}, backgroundColor: colors, borderWidth: 2, borderColor: '#fffdf9', hoverBorderColor: '#fffdf9', hoverOffset: 8}]},
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    cutout: '62%',
+    plugins: {
+      legend: { position: 'bottom', labels: { font: {family: fontFamily, size: 11}, color: '#6b6560', padding: 14, usePointStyle: true, pointStyleWidth: 8 } },
+      tooltip: tooltipConfig
+    }
+  }
 });
 new Chart(document.getElementById('barChart'), {
   type: 'bar',
-  data: {labels: {{ months|tojson }}, datasets: [{label:'Expenses', data: {{ amounts|tojson }}, backgroundColor:'#c07a56'}]}
+  data: {labels: {{ months|tojson }}, datasets: [{label:'Expenses', data: {{ amounts|tojson }}, backgroundColor: 'rgba(192,122,86,.7)', hoverBackgroundColor: '#c07a56', borderRadius: 6, borderSkipped: false}]},
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { labels: { font: {family: fontFamily, size: 12}, color: '#6b6560', usePointStyle: true, pointStyleWidth: 8, padding: 16 } },
+      tooltip: {
+        backgroundColor: 'rgba(42,58,48,.95)',
+        titleFont: { family: fontFamily, size: 12, weight: '600' },
+        bodyFont: { family: fontFamily, size: 11 },
+        padding: 12,
+        cornerRadius: 8,
+        callbacks: { label: function(ctx) { return 'Expenses: $' + ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2}); } }
+      }
+    },
+    scales: {
+      x: { grid: {display: false}, ticks: {font: {family: fontFamily, size: 11}, color: '#9a938c'}, border: {display: false} },
+      y: { grid: {color: 'rgba(232,226,217,.5)', drawBorder: false}, ticks: {font: {family: fontFamily, size: 11}, color: '#9a938c', callback: function(v) { return '$' + v.toLocaleString(); }}, border: {display: false} }
+    }
+  }
 });
 </script>
 {% endblock %}

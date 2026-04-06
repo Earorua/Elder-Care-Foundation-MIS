@@ -74,13 +74,21 @@ C:\Users\XF\Desktop\elder_care_gui\
 ## UI/Design System — "Botanical Warmth"
 - Typography: Playfair Display (headings, serif) + Outfit (body, sans-serif), loaded via Google Fonts
 - Palette: sage green (`#5a8a6a`), terracotta (`#c07a56`), gold (`#c8a45c`), cream bg (`#f6f3ee`), warm card bg (`#fffdf9`)
-- Sidebar: deep forest green gradient, gold accent hover/active states, JS-based active link tracking
-- Topbar: sticky, frosted glass effect, breadcrumb navigation + live clock; each template defines `{% block breadcrumb %}` for page name
-- Login: split-panel layout — left branding panel with floating shape animations, right form panel
-- Tables: custom `table-header` class (replaces Bootstrap `table-dark`), gradient green header with rounded corners
-- Charts: warm palette (`#5a8a6a`, `#c07a56`, `#c8a45c`, `#8a6dab`), Outfit font, semi-transparent bars with rounded corners
-- Animations: `fade-in` + `fade-in-d1..d5` staggered delays, modal bounce easing, content area fade-in
-- CSS variables defined in `:root` in `style.css` for consistent theming
+- Sidebar: deep forest green gradient, gold accent hover/active states, JS-based active link tracking, ripple effect on click, special logout link styling (red tint hover)
+- Topbar: sticky, frosted glass morphism (blur 20px + saturate 1.8), breadcrumb navigation + live clock + user avatar; each template defines `{% block breadcrumb %}` for page name
+- Login: split-panel layout — left branding panel with floating shape animations + leaf particle effects + system stats (6 Modules / 19 Tables / 4 Roles), right form panel with password visibility toggle + remember me checkbox + security footer
+- Tables: custom `table-header` class (replaces Bootstrap `table-dark`), gradient green header with rounded corners, row hover gradient animation with indent effect, `table-info-bar` wrapper for search + metadata
+- Charts: warm palette (`#5a8a6a`, `#c07a56`, `#c8a45c`, `#8a6dab`), Outfit font, semi-transparent bars with rounded corners, custom dark tooltips with currency formatting
+- Animations: `fade-in` + `fade-in-d1..d5` staggered delays, modal bounce easing, content area fade-in, stat card pulse, alert slide-in
+- Cards: warm border transitions on hover, stat cards with gradient top-border + radial glow effect on hover, report-link-cards with top border slide-in animation
+- Badges: gradient backgrounds for all variants (success/primary/danger/warning/info), record-count pill badges on all CRUD page headers
+- Modals: backdrop blur, gradient header, centered delete confirmation with icon illustration
+- Empty states: dashed border, gradient icon, centered layout with descriptive text
+- Forms: enhanced focus rings (double shadow), custom validation colors
+- Print: optimized styles for financial reports (hide nav/charts, proper font sizing)
+- Responsive: sidebar overlay on mobile, topbar hamburger toggle, content area padding adjustments, stat card resizing
+- Accessibility: skip-link, focus-visible outlines, reduced-motion media query support
+- CSS variables defined in `:root` in `style.css` for consistent theming (~1500 lines)
 
 ## How to Run
 ```bash
@@ -111,3 +119,22 @@ python app.py
 15. Visual theme v1 "Warm Institutional Elegance": DM Serif Display + DM Sans, sage/terracotta/cream palette, centered sidebar brand
 16. Visual theme v2 "Botanical Warmth": Playfair Display + Outfit fonts, split-panel login page with animated floating shapes, sticky topbar with breadcrumb navigation + live clock, sidebar active state tracking via JS, stat cards with gradient top-border accents, chart cards with colored icon badges, enhanced modal bounce animations, staggered fade-in animations, breadcrumb blocks on all 24 templates, responsive mobile support
 17. Git version control initialized with local repository
+18. Visual theme v3 "Botanical Warmth — Refined": comprehensive UI polish pass
+    - CSS (~460 new lines): glass morphism topbar, table row hover micro-interactions (gradient + indent), gradient badges, stat card radial glow, record-count pill badges, enhanced empty states (dashed border + gradient icons), status indicator dots, modal backdrop blur, enhanced form focus rings, custom dark tooltips, section dividers, sidebar logout special styling, action button gradient polish, print style improvements, chart card title border-bottom
+    - Dashboard: time-of-day welcome greeting ("Good morning/afternoon/evening, username"), stat trend indicators below each metric, single data-updated timestamp in page header
+    - Login page: password visibility toggle (eye icon), remember me checkbox, floating leaf particle animations on branding panel, system stats display (6 Modules / 19 Tables / 4 Roles), security footer ("Protected by role-based access control")
+    - All 18 CRUD pages: record count badges in page headers, unified `table-info-bar` wrapper, context-specific search placeholders
+    - Financial reports overview: stat cards with icons + staggered fade-in, section dividers, icon container boxes for report link cards
+    - All 3 financial report charts: custom tooltip configs (dark bg, currency formatting, Outfit font), rounded bars, warm palette, axis label callbacks
+    - Delete confirmation modal: centered layout with icon circle illustration + separated warning text
+19. Dashboard & module enhancements (v4)
+    - Dashboard Financial Quick Access: finance summary stat cards (Total Revenue / Total Expenses / Net Income) + 3 report-link cards (Statement of Activities, Financial Position, Functional Expenses) visible to finance role
+    - US Map Donor Visualization: replaced location bar chart with inline SVG US state map; states colored by donor density (sage green gradient); hover tooltips showing state name + donor count; legend showing total donors/states
+    - Donor Location Dropdown: replaced free-text location input with US state dropdown (`<select>`) in donors add/edit form; migrated existing city-name data to state codes (NY, CA, TX, etc.); table displays full state name with code
+    - Gift Distribution Chart: new horizontal bar chart on Dashboard showing distribution by gift type, split by Free Distribution vs Donor Gifts; data from `gift_distribution` table aggregated by `is_free` flag
+    - New Gift Types Seeded: Picture Book (Education, $10, stock 120) and Postcard (Stationery, $2.50, stock 500) auto-seeded on startup
+    - Schedule Monitor on Dashboard: stat cards showing upcoming events count + scheduled shifts count; link to Schedule Board page; visible to event_coordinator/admin roles
+    - Schedule Board (`/schedule-board`): new Kanban-style page with event selector dropdown; selecting an event loads shifts via AJAX API and displays them in 4 columns (Scheduled / In Progress / Completed / Absent); each card shows person name, role, date, time range, overtime, notes
+    - Sidebar: added Schedule Board link under Personnel section
+    - CSS: Kanban board styles (~150 lines), US map tooltip styles, responsive grid for Kanban (4-col → 2-col → 1-col)
+    - Backend: 3 new API endpoints (`/api/charts/location_map`, `/api/charts/gift_distribution`, `/api/schedule-board/<event_id>`); US_STATES dict in dashboard.py; schedule board routes in personnel.py

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required
 from db import query_db, execute_db
 from blueprints.auth import role_required
@@ -236,3 +236,48 @@ def payments_delete(id):
     execute_db('DELETE FROM payments WHERE payment_id=?', [id])
     flash('Payment record deleted', 'success')
     return redirect(url_for('personnel.payments_list'))
+
+
+# ---------------------------------------------------------------------------
+# Schedule Board  (event-based Kanban-style view)
+# ---------------------------------------------------------------------------
+
+@personnel_bp.route('/schedule-board')
+@login_required
+@role_required('event_coordinator')
+def schedule_board():
+    events = query_db(
+        "SELECT * FROM events ORDER BY "
+        "CASE status WHEN 'active' THEN 0 WHEN 'planned' THEN 1 ELSE 2 END, start_date DESC"
+    )
+    return render_template('personnel/schedule_board.html', events=events)
+
+
+@personnel_bp.route('/api/schedule-board/<int:event_id>')
+@login_required
+def schedule_board_data(event_id):
+    """Return shifts for a given event, grouped by status."""
+    rows = query_db(
+        'SELECT s.schedule_id, s.shift_date, s.start_time, s.end_time, '
+        's.schedule_type, s.status, s.notes, s.overtime, '
+        'p.first_name, p.last_name, p.role_name '
+        'FROM schedules s '
+        'LEFT JOIN persons p ON s.person_id = p.person_id '
+        'WHERE s.event_id = ? '
+        'ORDER BY s.shift_date, s.start_time',
+        [event_id]
+    )
+    scheduled, in_progress, completed, absent = [], [], [], []
+    for r in rows:
+        item = dict(r)
+        st = (item.get('status') or '').lower()
+        if st == 'completed':
+            completed.append(item)
+        elif st == 'in_progress':
+            in_progress.append(item)
+        elif st == 'absent':
+            absent.append(item)
+        else:
+            scheduled.append(item)
+    return jsonify(scheduled=scheduled, in_progress=in_progress,
+                   completed=completed, absent=absent)

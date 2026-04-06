@@ -3,11 +3,23 @@
 {% block breadcrumb %}Schedules{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h4 class="mb-0">Schedule Management</h4>
+<div class="page-header">
+  <div>
+    <h4 class="mb-1"><i class="bi bi-calendar-week me-2"></i>Schedule Management <span class="record-count"><i class="bi bi-database"></i>{{ schedules|length }} records</span></h4>
+    <p class="page-subtitle">View and manage staff scheduling</p>
+  </div>
   <button class="btn btn-primary" onclick="openAdd()"><i class="bi bi-plus-lg me-1"></i>Add Schedule</button>
 </div>
 
+<div class="table-info-bar">
+<div class="table-search mb-3">
+  <div class="input-group" style="max-width:320px;">
+    <span class="input-group-text"><i class="bi bi-search"></i></span>
+    <input type="text" class="form-control" placeholder="Search schedules..." id="tableSearch">
+  </div>
+</div>
+</div>
+{% if schedules %}
 <div class="table-responsive">
   <table class="table table-striped table-hover align-middle">
     <thead class="table-header">
@@ -32,16 +44,21 @@
         <td>{{ s['status'] }}</td>
         <td>{{ s['notes'] or '' }}</td>
         <td class="text-nowrap">
-          <button class="btn btn-sm btn-warning" onclick="openEdit({{ s['schedule_id'] }}, {{ s['person_id'] }}, '{{ s['event_id'] or '' }}', '{{ s['availibile_time'] or '' }}', '{{ s['shift_date'] }}', '{{ s['start_time'] }}', '{{ s['end_time'] }}', {{ s['is_absent'] or 0 }}, '{{ s['overtime'] or 0 }}', '{{ s['schedule_type'] }}', '{{ s['status'] }}', '{{ s['notes'] or '' }}')"><i class="bi bi-pencil"></i></button>
-          <form method="post" action="{{ url_for('personnel.schedules_delete', id=s['schedule_id']) }}" class="d-inline" onsubmit="return confirm('Confirm delete?')">
-            <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
-          </form>
+          <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" title="Edit" onclick="openEdit({{ s['schedule_id'] }}, {{ s['person_id'] }}, '{{ s['event_id'] or '' }}', '{{ s['availibile_time'] or '' }}', '{{ s['shift_date'] }}', '{{ s['start_time'] }}', '{{ s['end_time'] }}', {{ s['is_absent'] or 0 }}, '{{ s['overtime'] or 0 }}', '{{ s['schedule_type'] }}', '{{ s['status'] }}', '{{ s['notes'] or '' }}')"><i class="bi bi-pencil"></i></button>
+          <button class="btn btn-sm btn-danger" aria-label="Delete" data-bs-toggle="tooltip" title="Delete" onclick="confirmDelete('{{ url_for('personnel.schedules_delete', id=s['schedule_id']) }}', '{{ s['first_name'] }} {{ s['last_name'] }} - {{ s['shift_date'] }}')"><i class="bi bi-trash"></i></button>
         </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+{% else %}
+<div class="empty-state">
+  <i class="bi bi-inbox"></i>
+  <h6>No records found</h6>
+  <p>Click "Add" to create your first entry.</p>
+</div>
+{% endif %}
 
 <!-- Modal -->
 <div class="modal fade" id="scheduleModal" tabindex="-1">
@@ -54,7 +71,7 @@
         </div>
         <div class="modal-body">
           <div class="row">
-            <div class="col-md-6 mb-2">
+            <div class="col-md-6 mb-3">
               <label class="form-label">Person</label>
               <select class="form-select" name="person_id" id="person_id" required>
                 <option value="">-- Select Person --</option>
@@ -63,29 +80,29 @@
                 {% endfor %}
               </select>
             </div>
-            <div class="col-md-6 mb-2"><label class="form-label">Event ID</label><input type="number" class="form-control" name="event_id" id="event_id"></div>
+            <div class="col-md-6 mb-3"><label class="form-label">Event ID</label><input type="number" class="form-control" name="event_id" id="event_id"></div>
           </div>
           <div class="row">
-            <div class="col-md-6 mb-2"><label class="form-label">Available Time</label><input type="text" class="form-control" name="availibile_time" id="availibile_time"></div>
-            <div class="col-md-6 mb-2"><label class="form-label">Shift Date</label><input type="date" class="form-control" name="shift_date" id="shift_date" required></div>
+            <div class="col-md-6 mb-3"><label class="form-label">Available Time</label><input type="text" class="form-control" name="availibile_time" id="availibile_time"></div>
+            <div class="col-md-6 mb-3"><label class="form-label">Shift Date</label><input type="date" class="form-control" name="shift_date" id="shift_date" required></div>
           </div>
           <div class="row">
-            <div class="col-md-6 mb-2"><label class="form-label">Start Time</label><input type="time" class="form-control" name="start_time" id="start_time" required></div>
-            <div class="col-md-6 mb-2"><label class="form-label">End Time</label><input type="time" class="form-control" name="end_time" id="end_time" required></div>
+            <div class="col-md-6 mb-3"><label class="form-label">Start Time</label><input type="time" class="form-control" name="start_time" id="start_time" required></div>
+            <div class="col-md-6 mb-3"><label class="form-label">End Time</label><input type="time" class="form-control" name="end_time" id="end_time" required></div>
           </div>
           <div class="row">
-            <div class="col-md-4 mb-2">
+            <div class="col-md-4 mb-3">
               <div class="form-check mt-4">
                 <input class="form-check-input" type="checkbox" name="is_absent" id="is_absent" value="1">
                 <label class="form-check-label" for="is_absent">Absent</label>
               </div>
             </div>
-            <div class="col-md-4 mb-2"><label class="form-label">Overtime (hrs)</label><input type="number" step="0.5" class="form-control" name="overtime" id="overtime" value="0"></div>
-            <div class="col-md-4 mb-2"><label class="form-label">Type</label><input type="text" class="form-control" name="schedule_type" id="schedule_type" required></div>
+            <div class="col-md-4 mb-3"><label class="form-label">Overtime (hrs)</label><input type="number" step="0.5" class="form-control" name="overtime" id="overtime" value="0"></div>
+            <div class="col-md-4 mb-3"><label class="form-label">Type</label><input type="text" class="form-control" name="schedule_type" id="schedule_type" required></div>
           </div>
           <div class="row">
-            <div class="col-md-6 mb-2"><label class="form-label">Status</label><input type="text" class="form-control" name="status" id="status" value="active"></div>
-            <div class="col-md-6 mb-2"><label class="form-label">Notes</label><input type="text" class="form-control" name="notes" id="notes"></div>
+            <div class="col-md-6 mb-3"><label class="form-label">Status</label><input type="text" class="form-control" name="status" id="status" value="active"></div>
+            <div class="col-md-6 mb-3"><label class="form-label">Notes</label><input type="text" class="form-control" name="notes" id="notes"></div>
           </div>
         </div>
         <div class="modal-footer">

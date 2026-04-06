@@ -88,6 +88,22 @@ def _seed_admin():
             )
     db.commit()
 
+    # Seed new gift types if they don't exist
+    seed_gifts = [
+        ('Picture Book', 'Education', 10.0, 'Illustrated picture book for elderly readers', 120, 20, 1),
+        ('Postcard', 'Stationery', 2.5, 'Decorative postcard set for correspondence', 500, 50, 1),
+    ]
+    for gname, gtype, cost, desc, stock, min_stock, active in seed_gifts:
+        exists = query_db('SELECT gift_id FROM gifts WHERE gift_name = ?', [gname], one=True)
+        if not exists:
+            db.execute(
+                'INSERT INTO gifts (gift_name, gift_type, unit_cost, description, '
+                'current_stock, min_stock_level, is_active, created_date) '
+                'VALUES (?, ?, ?, ?, ?, ?, ?, date("now"))',
+                [gname, gtype, cost, desc, stock, min_stock, active]
+            )
+    db.commit()
+
 
 if __name__ == '__main__':
     app = create_app()

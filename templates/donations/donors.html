@@ -2,10 +2,22 @@
 {% block title %}Donors - Elder Care MIS{% endblock %}
 {% block breadcrumb %}Donors{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h4 class="mb-0"><i class="bi bi-people me-2"></i>Donors</h4>
+<div class="page-header">
+  <div>
+    <h4 class="mb-1"><i class="bi bi-people me-2"></i>Donors<span class="record-count"><i class="bi bi-database"></i>{{ donors|length }} records</span></h4>
+    <p class="page-subtitle">View and manage donor information</p>
+  </div>
   <button class="btn btn-primary" onclick="openAddModal()"><i class="bi bi-plus-lg me-1"></i>Add Donor</button>
 </div>
+<div class="table-info-bar">
+  <div class="table-search">
+    <div class="input-group" style="max-width:320px;">
+      <span class="input-group-text"><i class="bi bi-search"></i></span>
+      <input type="text" class="form-control" placeholder="Search donors..." id="tableSearch">
+    </div>
+  </div>
+</div>
+{% if donors %}
 <div class="table-responsive">
   <table class="table table-striped table-hover">
     <thead class="table-header">
@@ -23,19 +35,24 @@
         <td>{{ d.email }}</td>
         <td>{{ d.age }}</td>
         <td>{{ d.gender }}</td>
-        <td>{{ d.location }}</td>
+        <td>{% for code, name in us_states %}{% if code == d.location %}{{ name }} ({{ code }}){% endif %}{% endfor %}{% if not d.location %}{% endif %}</td>
         <td>{{ d.created_date }}</td>
         <td>
-          <button class="btn btn-sm btn-warning" onclick="openEditModal({{ d.donor_id }}, '{{ d.first_name }}', '{{ d.last_name }}', '{{ d.email }}', {{ d.age }}, '{{ d.gender }}', '{{ d.location }}')"><i class="bi bi-pencil"></i></button>
-          <form method="post" action="{{ url_for('donations.donors_delete', id=d.donor_id) }}" class="d-inline" onsubmit="return confirm('Confirm delete?')">
-            <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
-          </form>
+          <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" title="Edit" onclick="openEditModal({{ d.donor_id }}, '{{ d.first_name }}', '{{ d.last_name }}', '{{ d.email }}', {{ d.age }}, '{{ d.gender }}', '{{ d.location }}')"><i class="bi bi-pencil"></i></button>
+          <button class="btn btn-sm btn-danger" aria-label="Delete" data-bs-toggle="tooltip" title="Delete" onclick="confirmDelete('{{ url_for('donations.donors_delete', id=d.donor_id) }}', '{{ d.first_name }} {{ d.last_name }}')"><i class="bi bi-trash"></i></button>
         </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+{% else %}
+<div class="empty-state">
+  <i class="bi bi-inbox"></i>
+  <h6>No donor records found</h6>
+  <p>Click "Add Donor" to create your first entry.</p>
+</div>
+{% endif %}
 
 <div class="modal fade" id="formModal" tabindex="-1">
   <div class="modal-dialog">
@@ -72,8 +89,13 @@
             </select>
           </div>
           <div class="mb-3">
-            <label class="form-label">Location</label>
-            <input type="text" class="form-control" name="location" id="location">
+            <label class="form-label">Location (U.S. State)</label>
+            <select class="form-select" name="location" id="location">
+              <option value="">Select state...</option>
+              {% for code, name in us_states %}
+              <option value="{{ code }}">{{ name }} ({{ code }})</option>
+              {% endfor %}
+            </select>
           </div>
         </div>
         <div class="modal-footer">
