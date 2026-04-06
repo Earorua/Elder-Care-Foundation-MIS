@@ -15,7 +15,7 @@ def donations_list():
     rows = query_db(
         'SELECT d.*, dn.first_name, dn.last_name '
         'FROM donations d LEFT JOIN donors dn ON d.donor_id = dn.donor_id '
-        'ORDER BY d.donation_date DESC'
+        'ORDER BY d.donation_id ASC'
     )
     donors = query_db('SELECT donor_id, first_name, last_name FROM donors ORDER BY last_name')
     return render_template('donations/donations.html', donations=rows, donors=donors)
@@ -79,7 +79,7 @@ def donations_delete(id):
 @role_required('finance')
 def donors_list():
     from blueprints.dashboard import US_STATES
-    rows = query_db('SELECT * FROM donors ORDER BY last_name')
+    rows = query_db('SELECT * FROM donors ORDER BY donor_id ASC')
     sorted_states = sorted(US_STATES.items(), key=lambda x: x[1])
     return render_template('donations/donors.html', donors=rows,
                            us_states=sorted_states, us_states_map=US_STATES)
@@ -139,7 +139,7 @@ def donors_delete(id):
 @login_required
 @role_required('finance')
 def categories_list():
-    rows = query_db('SELECT * FROM donation_categories ORDER BY category_name')
+    rows = query_db('SELECT * FROM donation_categories ORDER BY category_id ASC')
     return render_template('donations/categories.html', categories=rows)
 
 
@@ -200,7 +200,7 @@ def feedback_list():
     rows = query_db(
         'SELECT f.*, d.donation_type, d.amount FROM donor_feedback f '
         'LEFT JOIN donations d ON f.donation_id = d.donation_id '
-        'ORDER BY f.feedback_date DESC'
+        'ORDER BY f.feedback_id ASC'
     )
     donations = query_db('SELECT donation_id, donation_type, amount FROM donations ORDER BY donation_date DESC')
     return render_template('donations/feedback.html', feedbacks=rows, donations=donations)
@@ -263,7 +263,7 @@ def receipts_list():
     rows = query_db(
         'SELECT r.*, d.donation_type, d.amount as donation_amount FROM tax_receipts r '
         'LEFT JOIN donations d ON r.donation_id = d.donation_id '
-        'ORDER BY r.receipt_date DESC'
+        'ORDER BY r.receipt_id ASC'
     )
     donations = query_db('SELECT donation_id, donation_type, amount FROM donations ORDER BY donation_date DESC')
     return render_template('donations/receipts.html', receipts=rows, donations=donations)

@@ -13,7 +13,7 @@ finance_bp = Blueprint('finance', __name__)
 @login_required
 @role_required('finance')
 def grants_list():
-    rows = query_db('SELECT rowid as _rowid, * FROM grants ORDER BY rowid DESC')
+    rows = query_db('SELECT rowid as _rowid, * FROM grants ORDER BY rowid ASC')
     return render_template('finance/grants.html', grants=rows)
 
 
@@ -71,7 +71,7 @@ def grants_delete(id):
 @login_required
 @role_required('finance')
 def other_income_list():
-    rows = query_db('SELECT * FROM other_income ORDER BY other_income_id DESC')
+    rows = query_db('SELECT * FROM other_income ORDER BY other_income_id ASC')
     return render_template('finance/other_income.html', incomes=rows)
 
 

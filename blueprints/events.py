@@ -12,7 +12,7 @@ events_bp = Blueprint('events', __name__)
 @login_required
 @role_required('event_coordinator')
 def events_list():
-    rows = query_db('SELECT * FROM events ORDER BY event_id DESC')
+    rows = query_db('SELECT * FROM events ORDER BY event_id ASC')
     return render_template('events/events.html', events=rows)
 
 
@@ -87,7 +87,7 @@ def donors_events_list():
         'FROM donors_events de '
         'LEFT JOIN donors d ON de.donor_id = d.donor_id '
         'LEFT JOIN events e ON de.event_id = e.event_id '
-        'ORDER BY de.donors_events_id DESC'
+        'ORDER BY de.donors_events_id ASC'
     )
     donors = query_db('SELECT donor_id, first_name || " " || last_name as donor_name FROM donors ORDER BY last_name')
     events = query_db('SELECT event_id, event_name FROM events ORDER BY event_name')

@@ -13,7 +13,7 @@ personnel_bp = Blueprint('personnel', __name__)
 @login_required
 @role_required('event_coordinator')
 def persons_list():
-    persons = query_db('SELECT * FROM persons ORDER BY person_id DESC')
+    persons = query_db('SELECT * FROM persons ORDER BY person_id ASC')
     return render_template('personnel/persons.html', persons=persons)
 
 
@@ -98,7 +98,7 @@ def schedules_list():
     rows = query_db(
         'SELECT s.*, p.first_name, p.last_name '
         'FROM schedules s LEFT JOIN persons p ON s.person_id = p.person_id '
-        'ORDER BY s.schedule_id DESC'
+        'ORDER BY s.schedule_id ASC'
     )
     schedules = _clean_schedules(rows)
     persons = query_db('SELECT person_id, first_name, last_name FROM persons ORDER BY last_name')
@@ -179,7 +179,7 @@ def payments_list():
     payments = query_db(
         'SELECT pay.*, p.first_name, p.last_name '
         'FROM payments pay LEFT JOIN persons p ON pay.person_id = p.person_id '
-        'ORDER BY pay.payment_id DESC'
+        'ORDER BY pay.payment_id ASC'
     )
     persons = query_db('SELECT person_id, first_name, last_name FROM persons ORDER BY last_name')
     return render_template('personnel/payments.html', payments=payments, persons=persons)

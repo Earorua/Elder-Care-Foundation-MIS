@@ -12,7 +12,7 @@ gifts_bp = Blueprint('gifts', __name__)
 @login_required
 @role_required('event_coordinator')
 def gifts_list():
-    rows = query_db('SELECT * FROM gifts ORDER BY gift_id DESC')
+    rows = query_db('SELECT * FROM gifts ORDER BY gift_id ASC')
     return render_template('gifts/gifts.html', rows=rows)
 
 
@@ -68,7 +68,7 @@ def batches_list():
         'FROM gift_batch b '
         'LEFT JOIN gifts g ON b.gift_id = g.gift_id '
         'LEFT JOIN suppliers s ON b.supplier_id = s.supplier_id '
-        'ORDER BY b.batch_id DESC'
+        'ORDER BY b.batch_id ASC'
     )
     gifts = query_db('SELECT gift_id, gift_name FROM gifts ORDER BY gift_name')
     suppliers = query_db('SELECT supplier_id, supplier_name FROM suppliers ORDER BY supplier_name')
@@ -126,7 +126,7 @@ def distribution_list():
         'FROM gift_distribution d '
         'LEFT JOIN gift_batch b ON d.batch_id = b.batch_id '
         'LEFT JOIN delivery dl ON d.delivery_id = dl.delivery_id '
-        'ORDER BY d.distribution_id DESC'
+        'ORDER BY d.distribution_id ASC'
     )
     batches = query_db('SELECT batch_id, batch_type, batch_date FROM gift_batch ORDER BY batch_id DESC')
     deliveries = query_db('SELECT delivery_id, delivery_company, delivery_date FROM delivery ORDER BY delivery_id DESC')
@@ -194,7 +194,7 @@ def distribution_delete(id):
 @login_required
 @role_required('event_coordinator')
 def delivery_list():
-    rows = query_db('SELECT * FROM delivery ORDER BY delivery_id DESC')
+    rows = query_db('SELECT * FROM delivery ORDER BY delivery_id ASC')
     return render_template('gifts/delivery.html', rows=rows)
 
 
@@ -241,7 +241,7 @@ def delivery_delete(id):
 @login_required
 @role_required('event_coordinator')
 def suppliers_list():
-    rows = query_db('SELECT * FROM suppliers ORDER BY supplier_id DESC')
+    rows = query_db('SELECT * FROM suppliers ORDER BY supplier_id ASC')
     return render_template('gifts/suppliers.html', rows=rows)
 
 
