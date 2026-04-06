@@ -606,6 +606,7 @@ a:hover { color: var(--accent-hover); }
 .content-area {
   padding: 1.5rem 1.25rem 2rem;
   min-height: calc(100vh - 56px);
+  width: 100%;
 }
 .content-area > h4:first-child {
   font-family: 'Playfair Display', Georgia, serif;
