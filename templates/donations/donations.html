@@ -1,19 +1,19 @@
 {% extends "base.html" %}
 {% block title %}Donation Records - Elder Care MIS{% endblock %}
-{% block breadcrumb %}Donation Records{% endblock %}
+{% block breadcrumb %}<span data-i18n="Donation Records">Donation Records</span>{% endblock %}
 {% block content %}
 <div class="page-header">
   <div>
-    <h4 class="mb-1"><i class="bi bi-cash-coin me-2"></i>Donation Records<span class="record-count"><i class="bi bi-database"></i>{{ donations|length }} records</span></h4>
-    <p class="page-subtitle">Manage donation records across all categories</p>
+    <h4 class="mb-1"><i class="bi bi-cash-coin me-2"></i><span data-i18n="Donation Records">Donation Records</span><span class="record-count"><i class="bi bi-database"></i>{{ donations|length }} <span data-i18n="records">records</span></span></h4>
+    <p class="page-subtitle" data-i18n="Manage donation records across all categories">Manage donation records across all categories</p>
   </div>
-  <button class="btn btn-primary" onclick="openAddModal()"><i class="bi bi-plus-lg me-1"></i>Add Donation</button>
+  <button class="btn btn-primary" onclick="openAddModal()"><i class="bi bi-plus-lg me-1"></i><span data-i18n="Add Donation">Add Donation</span></button>
 </div>
 <div class="table-info-bar">
   <div class="table-search">
     <div class="input-group" style="max-width:320px;">
       <span class="input-group-text"><i class="bi bi-search"></i></span>
-      <input type="text" class="form-control" placeholder="Search donations..." id="tableSearch">
+      <input type="text" class="form-control" data-i18n-placeholder="Search donations..." placeholder="Search donations..." id="tableSearch">
     </div>
   </div>
 </div>
@@ -22,8 +22,8 @@
   <table class="table table-striped table-hover">
     <thead class="table-header">
       <tr>
-        <th>Donation ID</th><th>Donor</th><th>Type</th><th>Amount</th><th>Date</th>
-        <th>Tax Deductible</th><th>Gift</th><th>Description</th><th>Actions</th>
+        <th data-i18n="Donation ID">Donation ID</th><th data-i18n="Donor">Donor</th><th data-i18n="Type">Type</th><th data-i18n="Amount">Amount</th><th data-i18n="Date">Date</th>
+        <th data-i18n="Tax Deductible">Tax Deductible</th><th data-i18n="Gift">Gift</th><th data-i18n="Description">Description</th><th data-i18n="Actions">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -38,8 +38,8 @@
         <td>{{ d.gift_given }}</td>
         <td>{{ d.description }}</td>
         <td>
-          <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" title="Edit" onclick="openEditModal({{ d.donation_id }}, {{ d.donor_id }}, '{{ d.donation_type }}', {{ d.amount }}, '{{ d.donation_date }}', {{ d.is_tax_deductible }}, '{{ d.gift_given }}', '{{ d.description }}')"><i class="bi bi-pencil"></i></button>
-          <button class="btn btn-sm btn-danger" aria-label="Delete" data-bs-toggle="tooltip" title="Delete" onclick="confirmDelete('{{ url_for('donations.donations_delete', id=d.donation_id) }}', 'Donation #{{ d.donation_id }}')"><i class="bi bi-trash"></i></button>
+          <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" data-i18n-title="Edit" title="Edit" onclick="openEditModal({{ d.donation_id }}, {{ d.donor_id }}, '{{ d.donation_type }}', {{ d.amount }}, '{{ d.donation_date }}', {{ d.is_tax_deductible }}, '{{ d.gift_given }}', '{{ d.description }}')"><i class="bi bi-pencil"></i></button>
+          <button class="btn btn-sm btn-danger" aria-label="Delete" data-bs-toggle="tooltip" data-i18n-title="Delete" title="Delete" onclick="confirmDelete('{{ url_for('donations.donations_delete', id=d.donation_id) }}', 'Donation #{{ d.donation_id }}')"><i class="bi bi-trash"></i></button>
         </td>
       </tr>
       {% endfor %}
@@ -49,8 +49,8 @@
 {% else %}
 <div class="empty-state">
   <i class="bi bi-inbox"></i>
-  <h6>No donation records found</h6>
-  <p>Click "Add Donation" to create your first entry.</p>
+  <h6 data-i18n="No donation records found">No donation records found</h6>
+  <p data-i18n="Click &quot;Add Donation&quot; to create your first entry.">Click "Add Donation" to create your first entry.</p>
 </div>
 {% endif %}
 
@@ -60,22 +60,22 @@
     <div class="modal-content">
       <form id="mainForm" method="post">
         <div class="modal-header">
-          <h5 class="modal-title" id="modalTitle">Add Donation</h5>
+          <h5 class="modal-title" id="modalTitle" data-i18n="Add Donation">Add Donation</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
           <input type="hidden" id="editId" name="edit_id">
           <div class="mb-3">
-            <label class="form-label">Donor</label>
+            <label class="form-label" data-i18n="Donor">Donor</label>
             <select class="form-select" name="donor_id" id="donor_id" required>
-              <option value="">Select...</option>
+              <option value="" data-i18n="Select...">Select...</option>
               {% for dn in donors %}
               <option value="{{ dn.donor_id }}">{{ dn.last_name }}{{ dn.first_name }}</option>
               {% endfor %}
             </select>
           </div>
           <div class="mb-3">
-            <label class="form-label">Donation Type</label>
+            <label class="form-label" data-i18n="Donation Type">Donation Type</label>
             <select class="form-select" name="donation_type" id="donation_type" required>
               <option value="Cash">Cash</option>
               <option value="Check">Check</option>
@@ -85,34 +85,34 @@
             </select>
           </div>
           <div class="mb-3">
-            <label class="form-label">Amount</label>
+            <label class="form-label" data-i18n="Amount">Amount</label>
             <input type="number" step="0.01" class="form-control" name="amount" id="amount" required>
           </div>
           <div class="mb-3">
-            <label class="form-label">Donation Date</label>
+            <label class="form-label" data-i18n="Donation Date">Donation Date</label>
             <input type="date" class="form-control" name="donation_date" id="donation_date" required>
           </div>
           <div class="mb-3 form-check">
             <input type="checkbox" class="form-check-input" name="is_tax_deductible" id="is_tax_deductible" value="1">
-            <label class="form-check-label">Tax Deductible</label>
+            <label class="form-check-label" data-i18n="Tax Deductible">Tax Deductible</label>
           </div>
           <div class="mb-3">
-            <label class="form-label">Gift</label>
+            <label class="form-label" data-i18n="Gift">Gift</label>
             <select class="form-select" name="gift_given" id="gift_given">
-              <option value="">-- None --</option>
+              <option value="" data-i18n="-- None --">-- None --</option>
               {% for g in gifts %}
               <option value="{{ g.gift_name }}">{{ g.gift_name }}</option>
               {% endfor %}
             </select>
           </div>
           <div class="mb-3">
-            <label class="form-label">Description</label>
+            <label class="form-label" data-i18n="Description">Description</label>
             <textarea class="form-control" name="description" id="description" rows="2"></textarea>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="Cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary" data-i18n="Save">Save</button>
         </div>
       </form>
     </div>
@@ -124,13 +124,13 @@
 const modal = new bootstrap.Modal(document.getElementById('formModal'));
 function openAddModal() {
   document.getElementById('mainForm').action = "{{ url_for('donations.donations_add') }}";
-  document.getElementById('modalTitle').textContent = 'Add Donation';
+  document.getElementById('modalTitle').textContent = I18n.t('Add Donation');
   document.getElementById('mainForm').reset();
   modal.show();
 }
 function openEditModal(id, donorId, type, amount, date, taxDeduct, gift, desc) {
   document.getElementById('mainForm').action = '/donations/edit/' + id;
-  document.getElementById('modalTitle').textContent = 'Edit Donation';
+  document.getElementById('modalTitle').textContent = I18n.t('Edit Donation');
   document.getElementById('donor_id').value = donorId;
   document.getElementById('donation_type').value = type;
   document.getElementById('amount').value = amount;

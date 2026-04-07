@@ -1806,3 +1806,33 @@ td .btn-danger:hover {
 #dailyAttendance .accordion-button::after {
   filter: sepia(1) hue-rotate(340deg) saturate(.6);
 }
+/* ── Language Toggle Button ───────────────────── */
+.lang-toggle-btn {
+  font-family: 'Outfit', sans-serif;
+  font-size: .75rem;
+  font-weight: 600;
+  padding: .25rem .65rem;
+  border-radius: 1rem;
+  border: 1.5px solid rgba(90,138,106,.35);
+  background: rgba(90,138,106,.08);
+  color: var(--accent);
+  cursor: pointer;
+  transition: all .2s ease;
+  white-space: nowrap;
+  letter-spacing: .02em;
+}
+.lang-toggle-btn:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+
+/* ── Login Page Language Toggle ───────────────── */
+.login-lang-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1.5rem;
+  z-index: 9999;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}

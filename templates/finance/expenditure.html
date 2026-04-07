@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Statement of Functional Expenses - Elder Care MIS{% endblock %}
-{% block breadcrumb %}Functional Expenses{% endblock %}
+{% block breadcrumb %}<span data-i18n="Functional Expenses">Functional Expenses</span>{% endblock %}
 {% block content %}
 <style>
 @media print {
@@ -14,39 +14,37 @@
 
 <div class="page-header no-print">
   <div>
-    <h4 class="mb-1"><i class="bi bi-cash-stack me-2"></i>Statement of Functional Expenses</h4>
-    <p class="page-subtitle">Expense analysis by function and natural classification</p>
+    <h4 class="mb-1"><i class="bi bi-cash-stack me-2"></i><span data-i18n="Statement of Functional Expenses">Statement of Functional Expenses</span></h4>
+    <p class="page-subtitle" data-i18n="Expense breakdown by category and personnel">Expense analysis by function and natural classification</p>
   </div>
   <div class="d-flex gap-2">
-    <button onclick="window.print()" class="btn btn-outline-primary btn-sm"><i class="bi bi-printer me-1"></i>Print Report</button>
-    <a href="{{ url_for('finance.reports') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back to Overview</a>
+    <button onclick="window.print()" class="btn btn-outline-primary btn-sm"><i class="bi bi-printer me-1"></i><span data-i18n="Print Report">Print Report</span></button>
+    <a href="{{ url_for('finance.reports') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i><span data-i18n="Back to Overview">Back to Overview</span></a>
   </div>
 </div>
 
-<!-- Formal Report Header -->
 <div class="card mb-4 report-header">
   <div class="card-body text-center py-4">
-    <h3 class="fw-bold mb-1">Elder Care Foundation</h3>
-    <h4 class="mb-2">Statement of Functional Expenses</h4>
-    <p class="mb-1 text-muted">For the Period Ended: December 31, {{ fiscal_year }}</p>
-    <p class="mb-1 text-muted">Prepared: {{ report_date }}</p>
-    <p class="mb-0 text-muted">Currency: USD (United States Dollar) &nbsp;|&nbsp; Basis of Accounting: Cash Basis</p>
+    <h3 class="fw-bold mb-1" data-i18n="Elder Care Foundation">Elder Care Foundation</h3>
+    <h4 class="mb-2" data-i18n="Statement of Functional Expenses">Statement of Functional Expenses</h4>
+    <p class="mb-1 text-muted"><span data-i18n="For the Period Ended:">For the Period Ended:</span> December 31, {{ fiscal_year }}</p>
+    <p class="mb-1 text-muted"><span data-i18n="Prepared:">Prepared:</span> {{ report_date }}</p>
+    <p class="mb-0 text-muted"><span data-i18n="Currency: USD (United States Dollar)">Currency: USD (United States Dollar)</span> &nbsp;|&nbsp; <span data-i18n="Basis of Accounting: Cash Basis">Basis of Accounting: Cash Basis</span></p>
   </div>
 </div>
 
-<!-- Functional Expenses Table -->
 <div class="card mb-4">
   <div class="card-header bg-danger text-white">
-    <h6 class="mb-0">Expenses by Function and Natural Classification</h6>
+    <h6 class="mb-0" data-i18n="Expenses by Function and Natural Classification">Expenses by Function and Natural Classification</h6>
   </div>
   <div class="card-body p-0">
     <table class="table table-hover mb-0">
       <thead class="table-light">
         <tr>
-          <th>Expense Category</th>
-          <th class="text-end">Program Services</th>
-          <th class="text-end">Management &amp; General</th>
-          <th class="text-end">Total</th>
+          <th data-i18n="Expense Category">Expense Category</th>
+          <th class="text-end" data-i18n="Program Services">Program Services</th>
+          <th class="text-end" data-i18n="Management & General">Management &amp; General</th>
+          <th class="text-end" data-i18n="Total Expenses">Total</th>
         </tr>
       </thead>
       <tbody>
@@ -60,7 +58,7 @@
         {% endfor %}
         {% if gift_cost_total %}
         <tr>
-          <td>Gift Procurement (Cost of Goods)</td>
+          <td data-i18n="Gift Procurement (Cost of Goods)">Gift Procurement (Cost of Goods)</td>
           <td class="text-end">${{ "%.2f"|format(gift_cost_total) }}</td>
           <td class="text-end">$0.00</td>
           <td class="text-end fw-bold">${{ "%.2f"|format(gift_cost_total) }}</td>
@@ -68,7 +66,7 @@
         {% endif %}
         {% if delivery_total %}
         <tr>
-          <td>Delivery &amp; Logistics</td>
+          <td data-i18n="Delivery & Logistics">Delivery &amp; Logistics</td>
           <td class="text-end">${{ "%.2f"|format(delivery_total) }}</td>
           <td class="text-end">$0.00</td>
           <td class="text-end fw-bold">${{ "%.2f"|format(delivery_total) }}</td>
@@ -77,7 +75,7 @@
       </tbody>
       <tfoot>
         <tr class="table-active">
-          <td class="fw-bold fs-6">Total Expenses</td>
+          <td class="fw-bold fs-6" data-i18n="Total Expenses">Total Expenses</td>
           <td class="text-end fw-bold fs-6 text-danger">${{ "%.2f"|format(grand_total) }}</td>
           <td class="text-end fw-bold fs-6">$0.00</td>
           <td class="text-end fw-bold fs-6 text-danger">${{ "%.2f"|format(grand_total) }}</td>
@@ -87,19 +85,17 @@
   </div>
 </div>
 
-<!-- Charts (no-print) -->
 <div class="row g-3 mb-4 no-print">
-  <div class="col-md-6"><div class="card p-3"><h6>Expense Distribution</h6><canvas id="pieChart" style="max-height:300px"></canvas></div></div>
-  <div class="col-md-6"><div class="card p-3"><h6>Monthly Expense Trend</h6><canvas id="barChart"></canvas></div></div>
+  <div class="col-md-6"><div class="card p-3"><h6 data-i18n="Expense Distribution">Expense Distribution</h6><canvas id="pieChart" style="max-height:300px"></canvas></div></div>
+  <div class="col-md-6"><div class="card p-3"><h6 data-i18n="Monthly Expense Trend">Monthly Expense Trend</h6><canvas id="barChart"></canvas></div></div>
 </div>
 
-<!-- Personnel Compensation Detail -->
 {% if salary_detail %}
 <div class="card mb-4">
-  <div class="card-header"><h6 class="mb-0">Schedule B — Personnel Compensation Detail</h6></div>
+  <div class="card-header"><h6 class="mb-0" data-i18n="Personnel Compensation Detail">Schedule B — Personnel Compensation Detail</h6></div>
   <div class="card-body p-0">
     <table class="table table-hover mb-0">
-      <thead class="table-light"><tr><th>Name</th><th>Payment Type</th><th class="text-end">Total Amount</th></tr></thead>
+      <thead class="table-light"><tr><th data-i18n="Name">Name</th><th data-i18n="Payment Type">Payment Type</th><th class="text-end" data-i18n="Amount">Total Amount</th></tr></thead>
       <tbody>
         {% for r in salary_detail %}
         <tr><td>{{ r.name }}</td><td>{{ r.payment_type }}</td><td class="text-end">${{ "%.2f"|format(r.total) }}</td></tr>
@@ -110,48 +106,46 @@
 </div>
 {% endif %}
 
-<!-- Notes to Financial Statements -->
 <div class="card mb-4">
-  <div class="card-header"><h6 class="mb-0">Notes to Financial Statements</h6></div>
+  <div class="card-header"><h6 class="mb-0" data-i18n="Notes to Financial Statements">Notes to Financial Statements</h6></div>
   <div class="card-body p-0">
     <div class="accordion accordion-flush" id="notesAccordion">
       <div class="accordion-item">
-        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note1">Note 1 — Basis of Accounting</button></h2>
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note1" data-i18n="Note 1 — Basis of Accounting">Note 1 — Basis of Accounting</button></h2>
         <div id="note1" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
-          <div class="accordion-body text-muted">These financial statements have been prepared on the <strong>cash basis of accounting</strong>. Expenses are recognized when cash is disbursed, not when the obligation is incurred.</div>
+          <div class="accordion-body text-muted">These financial statements have been prepared on the <strong>cash basis of accounting</strong>. Expenses are recognized when cash is disbursed.</div>
         </div>
       </div>
       <div class="accordion-item">
-        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note2">Note 2 — Functional Expense Allocation</button></h2>
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note2" data-i18n="Note 2 — Functional Expense Allocation">Note 2 — Functional Expense Allocation</button></h2>
         <div id="note2" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
-          <div class="accordion-body text-muted">Expenses are classified by function: <strong>Program Services</strong> includes all costs directly related to delivering elder care services (personnel, gifts, delivery). <strong>Management &amp; General</strong> includes administrative overhead. Currently all expenses are allocated to Program Services as the Foundation does not separately track administrative overhead.</div>
+          <div class="accordion-body text-muted">Expenses are classified by function: <strong>Program Services</strong> includes all costs directly related to delivering elder care services. Currently all expenses are allocated to Program Services.</div>
         </div>
       </div>
       <div class="accordion-item">
-        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note3">Note 3 — Personnel Compensation</button></h2>
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note3" data-i18n="Note 3 — Personnel Compensation">Note 3 — Personnel Compensation</button></h2>
         <div id="note3" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
-          <div class="accordion-body text-muted">Personnel compensation includes all direct cash payments to staff and volunteers, categorized by payment type (salary, stipend, honorarium, etc.). Payroll taxes and benefits, if any, are included in the respective payment amounts.</div>
+          <div class="accordion-body text-muted">Personnel compensation includes all direct cash payments to staff and volunteers, categorized by payment type.</div>
         </div>
       </div>
       <div class="accordion-item">
-        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note4">Note 4 — Significant Accounting Policies</button></h2>
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note4" data-i18n="Note 4 — Significant Accounting Policies">Note 4 — Significant Accounting Policies</button></h2>
         <div id="note4" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
-          <div class="accordion-body text-muted">Gift procurement costs represent the total cost of goods purchased for distribution to beneficiaries, calculated as batch quantity multiplied by unit cost at time of purchase. Delivery and logistics costs represent actual fees paid to delivery service providers.</div>
+          <div class="accordion-body text-muted">Gift procurement costs represent the total cost of goods purchased for distribution. Delivery and logistics costs represent actual fees paid to delivery service providers.</div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Audit Trail Footer -->
 <div class="card mb-4">
-  <div class="card-header"><h6 class="mb-0">Audit Trail</h6></div>
+  <div class="card-header"><h6 class="mb-0" data-i18n="Audit Trail">Audit Trail</h6></div>
   <div class="card-body">
     <table class="table table-sm mb-0">
       <tbody>
-        <tr><td style="width:33%">Prepared by: <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
-        <tr><td>Reviewed by: <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
-        <tr><td>Approved by: <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
+        <tr><td style="width:33%"><span data-i18n="Prepared by:">Prepared by:</span> <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
+        <tr><td><span data-i18n="Reviewed by:">Reviewed by:</span> <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
+        <tr><td><span data-i18n="Approved by:">Approved by:</span> <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
       </tbody>
     </table>
   </div>
@@ -165,43 +159,21 @@ const tooltipConfig = {
   backgroundColor: 'rgba(42,58,48,.95)',
   titleFont: { family: fontFamily, size: 12, weight: '600' },
   bodyFont: { family: fontFamily, size: 11 },
-  padding: 12,
-  cornerRadius: 8,
-  callbacks: { label: function(ctx) { return ctx.label + ': $' + (ctx.parsed || ctx.parsed.y || 0).toLocaleString('en-US', {minimumFractionDigits: 2}); } }
+  padding: 12, cornerRadius: 8,
+  callbacks: { label: function(ctx) { return ctx.label + ': $' + (ctx.parsed || 0).toLocaleString('en-US', {minimumFractionDigits: 2}); } }
 };
 new Chart(document.getElementById('pieChart'), {
   type: 'doughnut',
   data: {labels: {{ categories|tojson }}, datasets: [{data: {{ cat_values|tojson }}, backgroundColor: colors, borderWidth: 2, borderColor: '#fffdf9', hoverBorderColor: '#fffdf9', hoverOffset: 8}]},
-  options: {
-    responsive: true,
-    maintainAspectRatio: true,
-    cutout: '62%',
-    plugins: {
-      legend: { position: 'bottom', labels: { font: {family: fontFamily, size: 11}, color: '#6b6560', padding: 14, usePointStyle: true, pointStyleWidth: 8 } },
-      tooltip: tooltipConfig
-    }
-  }
+  options: { responsive: true, maintainAspectRatio: true, cutout: '62%', plugins: { legend: { position: 'bottom', labels: { font: {family: fontFamily, size: 11}, color: '#6b6560', padding: 14, usePointStyle: true, pointStyleWidth: 8 } }, tooltip: tooltipConfig } }
 });
 new Chart(document.getElementById('barChart'), {
   type: 'bar',
-  data: {labels: {{ months|tojson }}, datasets: [{label:'Expenses', data: {{ amounts|tojson }}, backgroundColor: 'rgba(192,122,86,.7)', hoverBackgroundColor: '#c07a56', borderRadius: 6, borderSkipped: false}]},
+  data: {labels: {{ months|tojson }}, datasets: [{label:I18n.t('Expenses'), data: {{ amounts|tojson }}, backgroundColor: 'rgba(192,122,86,.7)', hoverBackgroundColor: '#c07a56', borderRadius: 6, borderSkipped: false}]},
   options: {
     responsive: true,
-    plugins: {
-      legend: { labels: { font: {family: fontFamily, size: 12}, color: '#6b6560', usePointStyle: true, pointStyleWidth: 8, padding: 16 } },
-      tooltip: {
-        backgroundColor: 'rgba(42,58,48,.95)',
-        titleFont: { family: fontFamily, size: 12, weight: '600' },
-        bodyFont: { family: fontFamily, size: 11 },
-        padding: 12,
-        cornerRadius: 8,
-        callbacks: { label: function(ctx) { return 'Expenses: $' + ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2}); } }
-      }
-    },
-    scales: {
-      x: { grid: {display: false}, ticks: {font: {family: fontFamily, size: 11}, color: '#9a938c'}, border: {display: false} },
-      y: { grid: {color: 'rgba(232,226,217,.5)', drawBorder: false}, ticks: {font: {family: fontFamily, size: 11}, color: '#9a938c', callback: function(v) { return '$' + v.toLocaleString(); }}, border: {display: false} }
-    }
+    plugins: { legend: { labels: { font: {family: fontFamily, size: 12}, color: '#6b6560', usePointStyle: true, pointStyleWidth: 8, padding: 16 } }, tooltip: { backgroundColor: 'rgba(42,58,48,.95)', titleFont: { family: fontFamily, size: 12, weight: '600' }, bodyFont: { family: fontFamily, size: 11 }, padding: 12, cornerRadius: 8, callbacks: { label: function(ctx) { return I18n.t('Expenses') + ': $' + ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2}); } } } },
+    scales: { x: { grid: {display: false}, ticks: {font: {family: fontFamily, size: 11}, color: '#9a938c'}, border: {display: false} }, y: { grid: {color: 'rgba(232,226,217,.5)', drawBorder: false}, ticks: {font: {family: fontFamily, size: 11}, color: '#9a938c', callback: function(v) { return '$' + v.toLocaleString(); }}, border: {display: false} } }
   }
 });
 </script>

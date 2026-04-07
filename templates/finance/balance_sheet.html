@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Statement of Financial Position - Elder Care MIS{% endblock %}
-{% block breadcrumb %}Financial Position{% endblock %}
+{% block breadcrumb %}<span data-i18n="Financial Position">Financial Position</span>{% endblock %}
 {% block content %}
 <style>
 @media print {
@@ -14,43 +14,43 @@
 
 <div class="page-header no-print">
   <div>
-    <h4 class="mb-1"><i class="bi bi-clipboard-data me-2"></i>Statement of Financial Position</h4>
-    <p class="page-subtitle">Assets, liabilities, and fund balance overview</p>
+    <h4 class="mb-1"><i class="bi bi-clipboard-data me-2"></i><span data-i18n="Statement of Financial Position">Statement of Financial Position</span></h4>
+    <p class="page-subtitle" data-i18n="Asset composition and fund balance">Assets, liabilities, and fund balance overview</p>
   </div>
   <div class="d-flex gap-2">
-    <button onclick="window.print()" class="btn btn-outline-primary btn-sm"><i class="bi bi-printer me-1"></i>Print Report</button>
-    <a href="{{ url_for('finance.reports') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back to Overview</a>
+    <button onclick="window.print()" class="btn btn-outline-primary btn-sm"><i class="bi bi-printer me-1"></i><span data-i18n="Print Report">Print Report</span></button>
+    <a href="{{ url_for('finance.reports') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i><span data-i18n="Back to Overview">Back to Overview</span></a>
   </div>
 </div>
 
 <!-- Formal Report Header -->
 <div class="card mb-4 report-header">
   <div class="card-body text-center py-4">
-    <h3 class="fw-bold mb-1">Elder Care Foundation</h3>
-    <h4 class="mb-2">Statement of Financial Position</h4>
+    <h3 class="fw-bold mb-1" data-i18n="Elder Care Foundation">Elder Care Foundation</h3>
+    <h4 class="mb-2" data-i18n="Statement of Financial Position">Statement of Financial Position</h4>
     <p class="mb-1 text-muted">As of: December 31, {{ fiscal_year }}</p>
-    <p class="mb-1 text-muted">Prepared: {{ report_date }}</p>
-    <p class="mb-0 text-muted">Currency: USD (United States Dollar) &nbsp;|&nbsp; Basis of Accounting: Cash Basis</p>
+    <p class="mb-1 text-muted"><span data-i18n="Prepared:">Prepared:</span> {{ report_date }}</p>
+    <p class="mb-0 text-muted"><span data-i18n="Currency: USD (United States Dollar)">Currency: USD (United States Dollar)</span> &nbsp;|&nbsp; <span data-i18n="Basis of Accounting: Cash Basis">Basis of Accounting: Cash Basis</span></p>
   </div>
 </div>
 
 <!-- Assets -->
 <div class="card mb-4">
   <div class="card-header bg-primary text-white">
-    <h6 class="mb-0">Assets</h6>
+    <h6 class="mb-0" data-i18n="Section I — Assets">Assets</h6>
   </div>
   <div class="card-body">
-    <h6 class="text-muted mb-2">Current Assets</h6>
+    <h6 class="text-muted mb-2" data-i18n="A. Current Assets">Current Assets</h6>
     <table class="table table-sm mb-0">
       <tbody>
         <tr>
-          <td>Cash and Cash Equivalents
+          <td><span data-i18n="Cash & Cash Equivalents">Cash and Cash Equivalents</span>
             <small class="text-muted d-block">Total Revenue (${{ "%.2f"|format(total_income) }}) less Total Disbursements (${{ "%.2f"|format(total_expenses) }})</small>
           </td>
           <td class="text-end fw-bold">${{ "%.2f"|format(cash) }}</td>
         </tr>
         <tr>
-          <td>Gift Inventory (at cost)
+          <td><span data-i18n="Gift Inventory (at cost)">Gift Inventory (at cost)</span>
             <small class="text-muted d-block">Valued at cost per unit; FIFO method</small>
           </td>
           <td class="text-end fw-bold">${{ "%.2f"|format(inventory) }}</td>
@@ -58,11 +58,11 @@
       </tbody>
       <tfoot>
         <tr class="table-active">
-          <td class="fw-bold">Total Current Assets</td>
+          <td class="fw-bold" data-i18n="Total Cash Inflows">Total Current Assets</td>
           <td class="text-end fw-bold">${{ "%.2f"|format(total_assets) }}</td>
         </tr>
         <tr class="table-active">
-          <td class="fw-bold fs-6">Total Assets</td>
+          <td class="fw-bold fs-6" data-i18n="Total Assets">Total Assets</td>
           <td class="text-end fw-bold fs-6">${{ "%.2f"|format(total_assets) }}</td>
         </tr>
       </tfoot>
@@ -73,15 +73,15 @@
 <!-- Liabilities -->
 <div class="card mb-4">
   <div class="card-header bg-warning text-dark">
-    <h6 class="mb-0">Liabilities</h6>
+    <h6 class="mb-0" data-i18n="Section II — Liabilities">Liabilities</h6>
   </div>
   <div class="card-body">
     <table class="table table-sm mb-0">
       <tbody>
-        <tr><td>Current Liabilities <small class="text-muted">(No liabilities recorded in current period)</small></td><td class="text-end">$0.00</td></tr>
+        <tr><td><span data-i18n="A. Current Liabilities">Current Liabilities</span> <small class="text-muted">(No liabilities recorded in current period)</small></td><td class="text-end">$0.00</td></tr>
       </tbody>
       <tfoot>
-        <tr class="table-active"><td class="fw-bold fs-6">Total Liabilities</td><td class="text-end fw-bold fs-6">$0.00</td></tr>
+        <tr class="table-active"><td class="fw-bold fs-6" data-i18n="Total Liabilities">Total Liabilities</td><td class="text-end fw-bold fs-6">$0.00</td></tr>
       </tfoot>
     </table>
   </div>
@@ -90,16 +90,16 @@
 <!-- Net Assets -->
 <div class="card mb-4">
   <div class="card-header bg-success text-white">
-    <h6 class="mb-0">Net Assets</h6>
+    <h6 class="mb-0" data-i18n="Section III — Net Assets">Net Assets</h6>
   </div>
   <div class="card-body">
     <table class="table table-sm mb-0">
       <tbody>
-        <tr><td>Unrestricted Net Assets <small class="text-muted">(Total Assets − Total Liabilities)</small></td><td class="text-end fw-bold">${{ "%.2f"|format(fund_balance) }}</td></tr>
+        <tr><td><span data-i18n="Unrestricted Net Assets">Unrestricted Net Assets</span> <small class="text-muted">(Total Assets − Total Liabilities)</small></td><td class="text-end fw-bold">${{ "%.2f"|format(fund_balance) }}</td></tr>
       </tbody>
       <tfoot>
-        <tr class="table-active"><td class="fw-bold fs-6">Total Net Assets</td><td class="text-end fw-bold fs-6">${{ "%.2f"|format(fund_balance) }}</td></tr>
-        <tr class="table-primary"><td class="fw-bold fs-6">Total Liabilities and Net Assets</td><td class="text-end fw-bold fs-6">${{ "%.2f"|format(total_assets) }}</td></tr>
+        <tr class="table-active"><td class="fw-bold fs-6" data-i18n="Total Net Assets">Total Net Assets</td><td class="text-end fw-bold fs-6">${{ "%.2f"|format(fund_balance) }}</td></tr>
+        <tr class="table-primary"><td class="fw-bold fs-6" data-i18n="Total Liabilities and Net Assets">Total Liabilities and Net Assets</td><td class="text-end fw-bold fs-6">${{ "%.2f"|format(total_assets) }}</td></tr>
       </tfoot>
     </table>
   </div>
@@ -108,16 +108,16 @@
 <!-- Inventory Detail -->
 {% if inventory_detail %}
 <div class="card mb-4">
-  <div class="card-header"><h6 class="mb-0">Schedule A — Gift Inventory Detail</h6></div>
+  <div class="card-header"><h6 class="mb-0" data-i18n="Gift Inventory Detail">Schedule A — Gift Inventory Detail</h6></div>
   <div class="card-body p-0">
     <table class="table table-hover mb-0">
-      <thead class="table-light"><tr><th>Gift Name</th><th class="text-end">Units on Hand</th><th class="text-end">Unit Cost</th><th class="text-end">Total Value</th></tr></thead>
+      <thead class="table-light"><tr><th data-i18n="Gift Name">Gift Name</th><th class="text-end">Units on Hand</th><th class="text-end" data-i18n="Unit Cost">Unit Cost</th><th class="text-end" data-i18n="Inventory Value">Total Value</th></tr></thead>
       <tbody>
         {% for g in inventory_detail %}
         <tr><td>{{ g.gift_name }}</td><td class="text-end">{{ g.current_stock }}</td><td class="text-end">${{ "%.2f"|format(g.unit_cost) }}</td><td class="text-end">${{ "%.2f"|format(g.value) }}</td></tr>
         {% endfor %}
       </tbody>
-      <tfoot><tr class="table-active"><td colspan="3" class="fw-bold">Total Inventory</td><td class="text-end fw-bold">${{ "%.2f"|format(inventory) }}</td></tr></tfoot>
+      <tfoot><tr class="table-active"><td colspan="3" class="fw-bold" data-i18n="Total Assets">Total Inventory</td><td class="text-end fw-bold">${{ "%.2f"|format(inventory) }}</td></tr></tfoot>
     </table>
   </div>
 </div>
@@ -126,20 +126,20 @@
 <!-- Asset Composition Chart (no-print) -->
 <div class="card mb-4 no-print">
   <div class="card-body">
-    <h6>Asset Composition</h6>
+    <h6 data-i18n="Asset Composition">Asset Composition</h6>
     <canvas id="assetChart" style="max-height:300px"></canvas>
   </div>
 </div>
 
 <!-- Notes to Financial Statements -->
 <div class="card mb-4">
-  <div class="card-header"><h6 class="mb-0">Notes to Financial Statements</h6></div>
+  <div class="card-header"><h6 class="mb-0" data-i18n="Notes to Financial Statements">Notes to Financial Statements</h6></div>
   <div class="card-body p-0">
     <div class="accordion accordion-flush" id="notesAccordion">
       <div class="accordion-item">
-        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note1">Note 1 — Basis of Accounting</button></h2>
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note1" data-i18n="Note 1 — Basis of Accounting">Note 1 — Basis of Accounting</button></h2>
         <div id="note1" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
-          <div class="accordion-body text-muted">These financial statements have been prepared on the <strong>cash basis of accounting</strong>. Assets and liabilities are recognized when cash transactions occur. This basis differs from GAAP accrual accounting.</div>
+          <div class="accordion-body text-muted">These financial statements have been prepared on the <strong>cash basis of accounting</strong>. Assets and liabilities are recognized when cash transactions occur.</div>
         </div>
       </div>
       <div class="accordion-item">
@@ -151,13 +151,13 @@
       <div class="accordion-item">
         <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note3">Note 3 — Inventory Valuation</button></h2>
         <div id="note3" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
-          <div class="accordion-body text-muted">Gift inventory is valued at cost using the <strong>First-In, First-Out (FIFO)</strong> method. Unit cost is recorded at the time of procurement. Inventory is reviewed periodically for obsolescence or impairment.</div>
+          <div class="accordion-body text-muted">Gift inventory is valued at cost using the <strong>First-In, First-Out (FIFO)</strong> method. Unit cost is recorded at the time of procurement.</div>
         </div>
       </div>
       <div class="accordion-item">
         <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note4">Note 4 — Liabilities</button></h2>
         <div id="note4" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
-          <div class="accordion-body text-muted">As of the report date, the Foundation has no recorded liabilities. All obligations are settled on a cash basis at the time of disbursement. Future commitments or contingent liabilities, if any, are not reflected in these statements.</div>
+          <div class="accordion-body text-muted">As of the report date, the Foundation has no recorded liabilities. All obligations are settled on a cash basis at the time of disbursement.</div>
         </div>
       </div>
     </div>
@@ -166,13 +166,13 @@
 
 <!-- Audit Trail Footer -->
 <div class="card mb-4">
-  <div class="card-header"><h6 class="mb-0">Audit Trail</h6></div>
+  <div class="card-header"><h6 class="mb-0" data-i18n="Audit Trail">Audit Trail</h6></div>
   <div class="card-body">
     <table class="table table-sm mb-0">
       <tbody>
-        <tr><td style="width:33%">Prepared by: <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
-        <tr><td>Reviewed by: <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
-        <tr><td>Approved by: <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
+        <tr><td style="width:33%"><span data-i18n="Prepared by:">Prepared by:</span> <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
+        <tr><td><span data-i18n="Reviewed by:">Reviewed by:</span> <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
+        <tr><td><span data-i18n="Approved by:">Approved by:</span> <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
       </tbody>
     </table>
   </div>
@@ -184,24 +184,14 @@ const fontFamily = 'Outfit, sans-serif';
 new Chart(document.getElementById('assetChart'), {
   type: 'doughnut',
   data: {
-    labels: ['Cash & Equivalents', 'Gift Inventory'],
+    labels: [I18n.t('Cash & Equivalents'), I18n.t('Gift Inventory')],
     datasets: [{data: [{{ cash }}, {{ inventory }}], backgroundColor: ['#5a8a6a','#c8a45c'], borderWidth: 2, borderColor: '#fffdf9', hoverBorderColor: '#fffdf9', hoverOffset: 8}]
   },
   options: {
-    responsive: true,
-    maintainAspectRatio: true,
-    cutout: '62%',
+    responsive: true, maintainAspectRatio: true, cutout: '62%',
     plugins: {
-      legend: {
-        position: 'bottom',
-        labels: { font: {family: fontFamily, size: 12}, color: '#6b6560', padding: 16, usePointStyle: true, pointStyleWidth: 8 }
-      },
-      tooltip: {
-        backgroundColor: 'rgba(42,58,48,.95)',
-        titleFont: { family: fontFamily, size: 12, weight: '600' },
-        bodyFont: { family: fontFamily, size: 11 },
-        padding: 12,
-        cornerRadius: 8,
+      legend: { position: 'bottom', labels: { font: {family: fontFamily, size: 12}, color: '#6b6560', padding: 16, usePointStyle: true, pointStyleWidth: 8 } },
+      tooltip: { backgroundColor: 'rgba(42,58,48,.95)', titleFont: { family: fontFamily, size: 12, weight: '600' }, bodyFont: { family: fontFamily, size: 11 }, padding: 12, cornerRadius: 8,
         callbacks: { label: function(ctx) { return ctx.label + ': $' + ctx.parsed.toLocaleString('en-US', {minimumFractionDigits: 2}); } }
       }
     }

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Statement of Activities - Elder Care MIS{% endblock %}
-{% block breadcrumb %}Statement of Activities{% endblock %}
+{% block breadcrumb %}<span data-i18n="Statement of Activities">Statement of Activities</span>{% endblock %}
 {% block content %}
 <style>
 @media print {
@@ -14,67 +14,67 @@
 
 <div class="page-header no-print">
   <div>
-    <h4 class="mb-1"><i class="bi bi-file-earmark-bar-graph me-2"></i>Statement of Activities</h4>
-    <p class="page-subtitle">Revenue detail, expense breakdown, and monthly trends</p>
+    <h4 class="mb-1"><i class="bi bi-file-earmark-bar-graph me-2"></i><span data-i18n="Statement of Activities">Statement of Activities</span></h4>
+    <p class="page-subtitle" data-i18n="Revenue detail, expense breakdown, and monthly trends">Revenue detail, expense breakdown, and monthly trends</p>
   </div>
   <div class="d-flex gap-2">
-    <button onclick="window.print()" class="btn btn-outline-primary btn-sm"><i class="bi bi-printer me-1"></i>Print Report</button>
-    <a href="{{ url_for('finance.reports') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back to Overview</a>
+    <button onclick="window.print()" class="btn btn-outline-primary btn-sm"><i class="bi bi-printer me-1"></i><span data-i18n="Print Report">Print Report</span></button>
+    <a href="{{ url_for('finance.reports') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i><span data-i18n="Back to Overview">Back to Overview</span></a>
   </div>
 </div>
 
 <!-- Formal Report Header -->
 <div class="card mb-4 report-header">
   <div class="card-body text-center py-4">
-    <h3 class="fw-bold mb-1">Elder Care Foundation</h3>
-    <h4 class="mb-2">Statement of Activities</h4>
-    <p class="mb-1 text-muted">For the Period Ended: December 31, {{ fiscal_year }}</p>
-    <p class="mb-1 text-muted">Prepared: {{ report_date }}</p>
-    <p class="mb-0 text-muted">Currency: USD (United States Dollar) &nbsp;|&nbsp; Basis of Accounting: Cash Basis</p>
+    <h3 class="fw-bold mb-1" data-i18n="Elder Care Foundation">Elder Care Foundation</h3>
+    <h4 class="mb-2" data-i18n="Statement of Activities">Statement of Activities</h4>
+    <p class="mb-1 text-muted"><span data-i18n="For the Period Ended:">For the Period Ended:</span> December 31, {{ fiscal_year }}</p>
+    <p class="mb-1 text-muted"><span data-i18n="Prepared:">Prepared:</span> {{ report_date }}</p>
+    <p class="mb-0 text-muted"><span data-i18n="Currency: USD (United States Dollar)">Currency: USD (United States Dollar)</span> &nbsp;|&nbsp; <span data-i18n="Basis of Accounting: Cash Basis">Basis of Accounting: Cash Basis</span></p>
   </div>
 </div>
 
 <!-- Section I: Revenue -->
 <div class="card mb-4">
   <div class="card-header bg-success text-white">
-    <h6 class="mb-0">Section I — Revenue</h6>
+    <h6 class="mb-0" data-i18n="Section I — Revenue">Section I — Revenue</h6>
   </div>
   <div class="card-body">
-    <h6 class="text-muted mb-2">A. Donation Revenue</h6>
+    <h6 class="text-muted mb-2" data-i18n="A. Donation Revenue">A. Donation Revenue</h6>
     <table class="table table-sm mb-3">
-      <thead class="table-light"><tr><th>Donation Type</th><th class="text-end">Amount</th></tr></thead>
+      <thead class="table-light"><tr><th data-i18n="Donation Type">Donation Type</th><th class="text-end" data-i18n="Amount">Amount</th></tr></thead>
       <tbody>
         {% for r in donations_by_type %}
         <tr><td>{{ r.donation_type }}</td><td class="text-end">${{ "%.2f"|format(r.total) }}</td></tr>
         {% endfor %}
       </tbody>
-      <tfoot><tr class="table-active"><td class="fw-bold">Subtotal — Donation Revenue</td><td class="text-end fw-bold">${{ "%.2f"|format(sum_donations) }}</td></tr></tfoot>
+      <tfoot><tr class="table-active"><td class="fw-bold" data-i18n="Subtotal — Donation Revenue">Subtotal — Donation Revenue</td><td class="text-end fw-bold">${{ "%.2f"|format(sum_donations) }}</td></tr></tfoot>
     </table>
 
-    <h6 class="text-muted mb-2">B. Grant Revenue</h6>
+    <h6 class="text-muted mb-2" data-i18n="B. Grant Revenue">B. Grant Revenue</h6>
     <table class="table table-sm mb-3">
-      <thead class="table-light"><tr><th>Funding Organization</th><th class="text-end">Amount</th></tr></thead>
+      <thead class="table-light"><tr><th data-i18n="Funding Organization">Funding Organization</th><th class="text-end" data-i18n="Amount">Amount</th></tr></thead>
       <tbody>
         {% for r in grants_by_org %}
         <tr><td>{{ r.funding_org }}</td><td class="text-end">${{ "%.2f"|format(r.total) }}</td></tr>
         {% endfor %}
       </tbody>
-      <tfoot><tr class="table-active"><td class="fw-bold">Subtotal — Grant Revenue</td><td class="text-end fw-bold">${{ "%.2f"|format(sum_grants) }}</td></tr></tfoot>
+      <tfoot><tr class="table-active"><td class="fw-bold" data-i18n="Subtotal — Grant Revenue">Subtotal — Grant Revenue</td><td class="text-end fw-bold">${{ "%.2f"|format(sum_grants) }}</td></tr></tfoot>
     </table>
 
-    <h6 class="text-muted mb-2">C. Other Revenue</h6>
+    <h6 class="text-muted mb-2" data-i18n="C. Other Revenue">C. Other Revenue</h6>
     <table class="table table-sm mb-3">
-      <thead class="table-light"><tr><th>Income Type</th><th class="text-end">Amount</th></tr></thead>
+      <thead class="table-light"><tr><th data-i18n="Income Type">Income Type</th><th class="text-end" data-i18n="Amount">Amount</th></tr></thead>
       <tbody>
         {% for r in other_by_type %}
         <tr><td>{{ r.income_type }}</td><td class="text-end">${{ "%.2f"|format(r.total) }}</td></tr>
         {% endfor %}
       </tbody>
-      <tfoot><tr class="table-active"><td class="fw-bold">Subtotal — Other Revenue</td><td class="text-end fw-bold">${{ "%.2f"|format(sum_other) }}</td></tr></tfoot>
+      <tfoot><tr class="table-active"><td class="fw-bold" data-i18n="Subtotal — Other Revenue">Subtotal — Other Revenue</td><td class="text-end fw-bold">${{ "%.2f"|format(sum_other) }}</td></tr></tfoot>
     </table>
 
     <div class="border-top pt-2 mt-2 d-flex justify-content-between fw-bold fs-6">
-      <span>Total Revenue</span><span class="text-success">${{ "%.2f"|format(total_revenue) }}</span>
+      <span data-i18n="Total Revenue">Total Revenue</span><span class="text-success">${{ "%.2f"|format(total_revenue) }}</span>
     </div>
   </div>
 </div>
@@ -82,32 +82,32 @@
 <!-- Section II: Expenses -->
 <div class="card mb-4">
   <div class="card-header bg-danger text-white">
-    <h6 class="mb-0">Section II — Expenses</h6>
+    <h6 class="mb-0" data-i18n="Section II — Expenses">Section II — Expenses</h6>
   </div>
   <div class="card-body">
-    <h6 class="text-muted mb-2">A. Personnel Compensation</h6>
+    <h6 class="text-muted mb-2" data-i18n="A. Personnel Compensation">A. Personnel Compensation</h6>
     <table class="table table-sm mb-3">
-      <thead class="table-light"><tr><th>Payment Type</th><th class="text-end">Amount</th></tr></thead>
+      <thead class="table-light"><tr><th data-i18n="Payment Type">Payment Type</th><th class="text-end" data-i18n="Amount">Amount</th></tr></thead>
       <tbody>
         {% for r in payments_by_type %}
         <tr><td>{{ r.payment_type }}</td><td class="text-end">${{ "%.2f"|format(r.total) }}</td></tr>
         {% endfor %}
       </tbody>
-      <tfoot><tr class="table-active"><td class="fw-bold">Subtotal — Personnel</td><td class="text-end fw-bold">${{ "%.2f"|format(sum_payments) }}</td></tr></tfoot>
+      <tfoot><tr class="table-active"><td class="fw-bold" data-i18n="Subtotal — Personnel">Subtotal — Personnel</td><td class="text-end fw-bold">${{ "%.2f"|format(sum_payments) }}</td></tr></tfoot>
     </table>
 
-    <h6 class="text-muted mb-2">B. Program Expenses</h6>
+    <h6 class="text-muted mb-2" data-i18n="B. Program Expenses">B. Program Expenses</h6>
     <table class="table table-sm mb-3">
-      <thead class="table-light"><tr><th>Expense Category</th><th class="text-end">Amount</th></tr></thead>
+      <thead class="table-light"><tr><th data-i18n="Expense Category">Expense Category</th><th class="text-end" data-i18n="Amount">Amount</th></tr></thead>
       <tbody>
-        <tr><td>Gift Procurement (Cost of Goods)</td><td class="text-end">${{ "%.2f"|format(total_gift_cost) }}</td></tr>
-        <tr><td>Delivery &amp; Logistics</td><td class="text-end">${{ "%.2f"|format(total_delivery) }}</td></tr>
+        <tr><td data-i18n="Gift Procurement (Cost of Goods)">Gift Procurement (Cost of Goods)</td><td class="text-end">${{ "%.2f"|format(total_gift_cost) }}</td></tr>
+        <tr><td data-i18n="Delivery & Logistics">Delivery &amp; Logistics</td><td class="text-end">${{ "%.2f"|format(total_delivery) }}</td></tr>
       </tbody>
-      <tfoot><tr class="table-active"><td class="fw-bold">Subtotal — Program Expenses</td><td class="text-end fw-bold">${{ "%.2f"|format(total_gift_cost + total_delivery) }}</td></tr></tfoot>
+      <tfoot><tr class="table-active"><td class="fw-bold" data-i18n="Subtotal — Program Expenses">Subtotal — Program Expenses</td><td class="text-end fw-bold">${{ "%.2f"|format(total_gift_cost + total_delivery) }}</td></tr></tfoot>
     </table>
 
     <div class="border-top pt-2 mt-2 d-flex justify-content-between fw-bold fs-6">
-      <span>Total Expenses</span><span class="text-danger">${{ "%.2f"|format(total_expenses) }}</span>
+      <span data-i18n="Total Expenses">Total Expenses</span><span class="text-danger">${{ "%.2f"|format(total_expenses) }}</span>
     </div>
   </div>
 </div>
@@ -115,17 +115,17 @@
 <!-- Section III: Change in Net Assets -->
 <div class="card mb-4">
   <div class="card-header bg-primary text-white">
-    <h6 class="mb-0">Section III — Change in Net Assets</h6>
+    <h6 class="mb-0" data-i18n="Section III — Change in Net Assets">Section III — Change in Net Assets</h6>
   </div>
   <div class="card-body">
     <table class="table table-sm mb-0">
       <tbody>
-        <tr><td>Total Revenue</td><td class="text-end">${{ "%.2f"|format(total_revenue) }}</td></tr>
-        <tr><td>Less: Total Expenses</td><td class="text-end">(${{ "%.2f"|format(total_expenses) }})</td></tr>
+        <tr><td data-i18n="Total Revenue">Total Revenue</td><td class="text-end">${{ "%.2f"|format(total_revenue) }}</td></tr>
+        <tr><td data-i18n="Less: Total Expenses">Less: Total Expenses</td><td class="text-end">(${{ "%.2f"|format(total_expenses) }})</td></tr>
       </tbody>
       <tfoot>
         <tr class="table-active">
-          <td class="fw-bold fs-6">Net Change in Net Assets (Net Income)</td>
+          <td class="fw-bold fs-6" data-i18n="Net Change in Net Assets (Net Income)">Net Change in Net Assets (Net Income)</td>
           <td class="text-end fw-bold fs-6 {{ 'text-success' if net_income >= 0 else 'text-danger' }}">${{ "%.2f"|format(net_income) }}</td>
         </tr>
       </tfoot>
@@ -136,32 +136,32 @@
 <!-- Monthly Trend Chart (no-print) -->
 <div class="card mb-4 no-print">
   <div class="card-body">
-    <h6>Monthly Revenue vs. Expenses Trend</h6>
+    <h6 data-i18n="Monthly Revenue vs. Expenses Trend">Monthly Revenue vs. Expenses Trend</h6>
     <canvas id="trendChart"></canvas>
   </div>
 </div>
 
 <!-- Notes to Financial Statements -->
 <div class="card mb-4">
-  <div class="card-header"><h6 class="mb-0">Notes to Financial Statements</h6></div>
+  <div class="card-header"><h6 class="mb-0" data-i18n="Notes to Financial Statements">Notes to Financial Statements</h6></div>
   <div class="card-body p-0">
     <div class="accordion accordion-flush" id="notesAccordion">
       <div class="accordion-item">
-        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note1">Note 1 — Basis of Accounting</button></h2>
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note1" data-i18n="Note 1 — Basis of Accounting">Note 1 — Basis of Accounting</button></h2>
         <div id="note1" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
-          <div class="accordion-body text-muted">These financial statements have been prepared on the <strong>cash basis of accounting</strong>. Revenue is recognized when cash is received; expenses are recognized when cash is disbursed. This basis differs from generally accepted accounting principles (GAAP) which require the accrual basis.</div>
+          <div class="accordion-body text-muted">These financial statements have been prepared on the <strong>cash basis of accounting</strong>. Revenue is recognized when cash is received; expenses are recognized when cash is disbursed.</div>
         </div>
       </div>
       <div class="accordion-item">
-        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note2">Note 2 — Revenue Recognition</button></h2>
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note2" data-i18n="Note 2 — Revenue Recognition">Note 2 — Revenue Recognition</button></h2>
         <div id="note2" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
-          <div class="accordion-body text-muted">Donations are recognized as revenue in the period the cash is received. Grants are recognized upon receipt of funds from the funding organization. Other income is recognized when the cash payment is received by the Foundation.</div>
+          <div class="accordion-body text-muted">Donations are recognized as revenue in the period the cash is received. Grants are recognized upon receipt of funds from the funding organization.</div>
         </div>
       </div>
       <div class="accordion-item">
-        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note3">Note 3 — Significant Accounting Policies</button></h2>
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note3" data-i18n="Note 3 — Significant Accounting Policies">Note 3 — Significant Accounting Policies</button></h2>
         <div id="note3" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
-          <div class="accordion-body text-muted">The Foundation is a nonprofit organization exempt from income taxes. All net assets are classified as unrestricted unless donor-imposed restrictions exist. Personnel compensation includes salaries, wages, and other direct payments to staff and volunteers.</div>
+          <div class="accordion-body text-muted">The Foundation is a nonprofit organization exempt from income taxes. All net assets are classified as unrestricted unless donor-imposed restrictions exist.</div>
         </div>
       </div>
     </div>
@@ -170,13 +170,13 @@
 
 <!-- Audit Trail Footer -->
 <div class="card mb-4">
-  <div class="card-header"><h6 class="mb-0">Audit Trail</h6></div>
+  <div class="card-header"><h6 class="mb-0" data-i18n="Audit Trail">Audit Trail</h6></div>
   <div class="card-body">
     <table class="table table-sm mb-0">
       <tbody>
-        <tr><td style="width:33%">Prepared by: <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
-        <tr><td>Reviewed by: <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
-        <tr><td>Approved by: <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
+        <tr><td style="width:33%"><span data-i18n="Prepared by:">Prepared by:</span> <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
+        <tr><td><span data-i18n="Reviewed by:">Reviewed by:</span> <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
+        <tr><td><span data-i18n="Approved by:">Approved by:</span> <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
       </tbody>
     </table>
   </div>
@@ -190,24 +190,15 @@ new Chart(document.getElementById('trendChart'), {
   data: {
     labels: {{ months|tojson }},
     datasets: [
-      {label: 'Revenue', data: {{ income_data|tojson }}, backgroundColor: 'rgba(90,138,106,.75)', hoverBackgroundColor: '#5a8a6a', borderRadius: 6, borderSkipped: false},
-      {label: 'Expenses', data: {{ expense_data|tojson }}, backgroundColor: 'rgba(192,122,86,.7)', hoverBackgroundColor: '#c07a56', borderRadius: 6, borderSkipped: false}
+      {label: I18n.t('Revenue'), data: {{ income_data|tojson }}, backgroundColor: 'rgba(90,138,106,.75)', hoverBackgroundColor: '#5a8a6a', borderRadius: 6, borderSkipped: false},
+      {label: I18n.t('Expenses'), data: {{ expense_data|tojson }}, backgroundColor: 'rgba(192,122,86,.7)', hoverBackgroundColor: '#c07a56', borderRadius: 6, borderSkipped: false}
     ]
   },
   options: {
-    responsive: true,
-    maintainAspectRatio: true,
+    responsive: true, maintainAspectRatio: true,
     plugins: {
-      legend: {
-        labels: { font: {family: fontFamily, size: 12}, color: '#6b6560', usePointStyle: true, pointStyleWidth: 8, padding: 16 }
-      },
-      tooltip: {
-        backgroundColor: 'rgba(42,58,48,.95)',
-        titleFont: { family: fontFamily, size: 12, weight: '600' },
-        bodyFont: { family: fontFamily, size: 11 },
-        padding: 12,
-        cornerRadius: 8,
-        displayColors: true,
+      legend: { labels: { font: {family: fontFamily, size: 12}, color: '#6b6560', usePointStyle: true, pointStyleWidth: 8, padding: 16 } },
+      tooltip: { backgroundColor: 'rgba(42,58,48,.95)', titleFont: { family: fontFamily, size: 12, weight: '600' }, bodyFont: { family: fontFamily, size: 11 }, padding: 12, cornerRadius: 8, displayColors: true,
         callbacks: { label: function(ctx) { return ctx.dataset.label + ': $' + ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2}); } }
       }
     },

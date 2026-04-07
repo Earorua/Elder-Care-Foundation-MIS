@@ -1,21 +1,21 @@
 {% extends "base.html" %}
 {% block title %}Grants - Elder Care MIS{% endblock %}
-{% block breadcrumb %}Grants{% endblock %}
+{% block breadcrumb %}<span data-i18n="Grants">Grants</span>{% endblock %}
 {% block content %}
 <div class="page-header">
   <div>
-    <h4 class="mb-1"><i class="bi bi-bank me-2"></i>Grants <span class="record-count"><i class="bi bi-database"></i>{{ grants|length }} records</span></h4>
-    <p class="page-subtitle">Manage grant records from funding organizations</p>
+    <h4 class="mb-1"><i class="bi bi-bank me-2"></i><span data-i18n="Grant Management">Grants</span> <span class="record-count"><i class="bi bi-database"></i>{{ grants|length }} <span data-i18n="records">records</span></span></h4>
+    <p class="page-subtitle" data-i18n="Manage foundation grants and funding">Manage grant records from funding organizations</p>
   </div>
   <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#grantModal" onclick="openAdd()">
-    <i class="bi bi-plus-lg me-1"></i>Add Grant
+    <i class="bi bi-plus-lg me-1"></i><span data-i18n="Add Grant">Add Grant</span>
   </button>
 </div>
 <div class="table-info-bar">
 <div class="table-search mb-3">
   <div class="input-group" style="max-width:320px;">
     <span class="input-group-text"><i class="bi bi-search"></i></span>
-    <input type="text" class="form-control" placeholder="Search grants..." id="tableSearch">
+    <input type="text" class="form-control" data-i18n-placeholder="Search grants..." placeholder="Search grants..." id="tableSearch">
   </div>
 </div>
 </div>
@@ -24,14 +24,14 @@
   <table class="table table-striped table-hover align-middle">
     <thead class="table-header">
       <tr>
-        <th>Grant ID</th>
-        <th>Grant Name</th>
-        <th>Funding Organization</th>
-        <th>Grant Code</th>
-        <th>Amount</th>
-        <th>Received Date</th>
-        <th>Created Date</th>
-        <th>Actions</th>
+        <th data-i18n="Grant ID">Grant ID</th>
+        <th data-i18n="Grant Name">Grant Name</th>
+        <th data-i18n="Funding Organization">Funding Organization</th>
+        <th data-i18n="Grant Code">Grant Code</th>
+        <th data-i18n="Amount">Amount</th>
+        <th data-i18n="Received Date">Received Date</th>
+        <th data-i18n="Created Date">Created Date</th>
+        <th data-i18n="Actions">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -45,12 +45,10 @@
         <td>{{ g.received_date }}</td>
         <td>{{ g.created_date }}</td>
         <td class="text-nowrap">
-          <button class="btn btn-sm btn-warning" aria-label="Edit" title="Edit"
+          <button class="btn btn-sm btn-warning" aria-label="Edit" data-i18n-title="Edit" title="Edit"
             onclick="openEdit({{ g._rowid }}, '{{ g.grant_name }}', '{{ g.funding_org }}', '{{ g.grant_code }}', '{{ g.amount }}', '{{ g.received_date }}')"
-            data-bs-toggle="modal" data-bs-target="#grantModal">
-            <i class="bi bi-pencil"></i>
-          </button>
-          <button class="btn btn-sm btn-danger" aria-label="Delete" data-bs-toggle="tooltip" title="Delete" onclick="confirmDelete('{{ url_for('finance.grants_delete', id=g._rowid) }}', 'Grant #{{ g._rowid }}')"><i class="bi bi-trash"></i></button>
+            data-bs-toggle="modal" data-bs-target="#grantModal"><i class="bi bi-pencil"></i></button>
+          <button class="btn btn-sm btn-danger" aria-label="Delete" data-bs-toggle="tooltip" data-i18n-title="Delete" title="Delete" onclick="confirmDelete('{{ url_for('finance.grants_delete', id=g._rowid) }}', 'Grant #{{ g._rowid }}')"><i class="bi bi-trash"></i></button>
         </td>
       </tr>
       {% endfor %}
@@ -60,8 +58,8 @@
 {% else %}
 <div class="empty-state">
   <i class="bi bi-inbox"></i>
-  <h6>No grants found</h6>
-  <p>Click "Add Grant" to create your first entry.</p>
+  <h6 data-i18n="No grants found">No grants found</h6>
+  <p data-i18n="Click &quot;Add&quot; to create your first entry.">Click "Add Grant" to create your first entry.</p>
 </div>
 {% endif %}
 
@@ -70,19 +68,19 @@
     <div class="modal-content">
       <form id="mainForm" method="post">
         <div class="modal-header">
-          <h5 class="modal-title" id="modalTitle">Add Grant</h5>
+          <h5 class="modal-title" id="modalTitle" data-i18n="Add Grant">Add Grant</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          <div class="mb-3"><label class="form-label">Grant Name</label><input type="text" class="form-control" name="grant_name" id="grant_name" required></div>
-          <div class="mb-3"><label class="form-label">Funding Organization</label><input type="text" class="form-control" name="funding_org" id="funding_org" required></div>
-          <div class="mb-3"><label class="form-label">Grant Code</label><input type="text" class="form-control" name="grant_code" id="grant_code" required></div>
-          <div class="mb-3"><label class="form-label">Amount</label><input type="number" step="0.01" class="form-control" name="amount" id="amount" required></div>
-          <div class="mb-3"><label class="form-label">Received Date</label><input type="date" class="form-control" name="received_date" id="received_date" required></div>
+          <div class="mb-3"><label class="form-label" data-i18n="Grant Name">Grant Name</label><input type="text" class="form-control" name="grant_name" id="grant_name" required></div>
+          <div class="mb-3"><label class="form-label" data-i18n="Funding Organization">Funding Organization</label><input type="text" class="form-control" name="funding_org" id="funding_org" required></div>
+          <div class="mb-3"><label class="form-label" data-i18n="Grant Code">Grant Code</label><input type="text" class="form-control" name="grant_code" id="grant_code" required></div>
+          <div class="mb-3"><label class="form-label" data-i18n="Amount">Amount</label><input type="number" step="0.01" class="form-control" name="amount" id="amount" required></div>
+          <div class="mb-3"><label class="form-label" data-i18n="Received Date">Received Date</label><input type="date" class="form-control" name="received_date" id="received_date" required></div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="Cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary" data-i18n="Save">Save</button>
         </div>
       </form>
     </div>
@@ -91,7 +89,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
-function openAdd() { document.getElementById('mainForm').action = "{{ url_for('finance.grants_add') }}"; document.getElementById('modalTitle').textContent = 'Add Grant'; document.getElementById('mainForm').reset(); }
-function openEdit(id, name, org, code, amount, date) { document.getElementById('mainForm').action = '/grants/edit/' + id; document.getElementById('modalTitle').textContent = 'Edit Grant'; document.getElementById('grant_name').value = name; document.getElementById('funding_org').value = org; document.getElementById('grant_code').value = code; document.getElementById('amount').value = amount; document.getElementById('received_date').value = date; }
+function openAdd() { document.getElementById('mainForm').action = "{{ url_for('finance.grants_add') }}"; document.getElementById('modalTitle').textContent = I18n.t('Add Grant'); document.getElementById('mainForm').reset(); }
+function openEdit(id, name, org, code, amount, date) { document.getElementById('mainForm').action = '/grants/edit/' + id; document.getElementById('modalTitle').textContent = I18n.t('Edit Grant'); document.getElementById('grant_name').value = name; document.getElementById('funding_org').value = org; document.getElementById('grant_code').value = code; document.getElementById('amount').value = amount; document.getElementById('received_date').value = date; }
 </script>
 {% endblock %}

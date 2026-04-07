@@ -1,19 +1,19 @@
 {% extends "base.html" %}
 {% block title %}Distribution Management - Elder Care MIS{% endblock %}
-{% block breadcrumb %}Distribution{% endblock %}
+{% block breadcrumb %}<span data-i18n="Distribution">Distribution</span>{% endblock %}
 {% block content %}
 <div class="page-header">
   <div>
-    <h4 class="mb-1"><i class="bi bi-truck me-2"></i>Distribution Management <span class="record-count"><i class="bi bi-database"></i>{{ rows|length }} records</span></h4>
-    <p class="page-subtitle">Manage gift distribution to recipients</p>
+    <h4 class="mb-1"><i class="bi bi-truck me-2"></i><span data-i18n="Gift Distribution">Distribution Management</span> <span class="record-count"><i class="bi bi-database"></i>{{ rows|length }} <span data-i18n="records">records</span></span></h4>
+    <p class="page-subtitle" data-i18n="Manage gift distribution records">Manage gift distribution to recipients</p>
   </div>
-  <button class="btn btn-primary" onclick="openAdd()"><i class="bi bi-plus-lg me-1"></i>Add Distribution</button>
+  <button class="btn btn-primary" onclick="openAdd()"><i class="bi bi-plus-lg me-1"></i><span data-i18n="Add Distribution">Add Distribution</span></button>
 </div>
 <div class="table-info-bar">
 <div class="table-search mb-3">
   <div class="input-group" style="max-width:320px;">
     <span class="input-group-text"><i class="bi bi-search"></i></span>
-    <input type="text" class="form-control" placeholder="Search distribution records..." id="tableSearch">
+    <input type="text" class="form-control" data-i18n-placeholder="Search distribution..." placeholder="Search distribution records..." id="tableSearch">
   </div>
 </div>
 </div>
@@ -22,8 +22,8 @@
   <table class="table table-striped table-hover align-middle">
     <thead class="table-header">
       <tr>
-        <th>Distribution ID</th><th>Batch</th><th>Donation ID</th><th>Delivery</th><th>Date</th>
-        <th>Qty</th><th>Free</th><th>Reason</th><th>Distributed By</th><th>Notes</th><th>Actions</th>
+        <th data-i18n="Distribution ID">Distribution ID</th><th data-i18n="Batches">Batch</th><th data-i18n="Donation ID">Donation ID</th><th data-i18n="Delivery">Delivery</th><th data-i18n="Date">Date</th>
+        <th data-i18n="Quantity">Qty</th><th data-i18n="Is Free">Free</th><th data-i18n="Reason">Reason</th><th data-i18n="Distributed By">Distributed By</th><th data-i18n="Notes">Notes</th><th data-i18n="Actions">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -40,8 +40,8 @@
         <td>{{ r.distributed_by }}</td>
         <td>{{ r.notes }}</td>
         <td>
-          <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" title="Edit" onclick="openEdit({{ r.distribution_id }}, '{{ r.batch_id }}', '{{ r.donation_id or '' }}', '{{ r.delivery_id or '' }}', '{{ r.distribution_date }}', '{{ r.quantity }}', '{{ r.is_free }}', '{{ r.distribution_reason }}', '{{ r.distributed_by }}', '{{ r.notes }}')"><i class="bi bi-pencil"></i></button>
-          <button class="btn btn-sm btn-danger" aria-label="Delete" data-bs-toggle="tooltip" title="Delete" onclick="confirmDelete('{{ url_for('gifts.distribution_delete', id=r.distribution_id) }}', 'Distribution #{{ r.distribution_id }}')"><i class="bi bi-trash"></i></button>
+          <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" data-i18n-title="Edit" title="Edit" onclick="openEdit({{ r.distribution_id }}, '{{ r.batch_id }}', '{{ r.donation_id or '' }}', '{{ r.delivery_id or '' }}', '{{ r.distribution_date }}', '{{ r.quantity }}', '{{ r.is_free }}', '{{ r.distribution_reason }}', '{{ r.distributed_by }}', '{{ r.notes }}')"><i class="bi bi-pencil"></i></button>
+          <button class="btn btn-sm btn-danger" aria-label="Delete" data-bs-toggle="tooltip" data-i18n-title="Delete" title="Delete" onclick="confirmDelete('{{ url_for('gifts.distribution_delete', id=r.distribution_id) }}', 'Distribution #{{ r.distribution_id }}')"><i class="bi bi-trash"></i></button>
         </td>
       </tr>
       {% endfor %}
@@ -51,8 +51,8 @@
 {% else %}
 <div class="empty-state">
   <i class="bi bi-inbox"></i>
-  <h6>No records found</h6>
-  <p>Click "Add" to create your first entry.</p>
+  <h6 data-i18n="No records found">No records found</h6>
+  <p data-i18n="Click &quot;Add&quot; to create your first entry.">Click "Add" to create your first entry.</p>
 </div>
 {% endif %}
 
@@ -61,33 +61,33 @@
     <div class="modal-content">
       <form id="mainForm" method="post">
         <div class="modal-header">
-          <h5 class="modal-title" id="modalTitle">Add Distribution</h5>
+          <h5 class="modal-title" id="modalTitle" data-i18n="Add Distribution">Add Distribution</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          <div class="mb-3"><label class="form-label">Batch</label><select class="form-select" name="batch_id" id="f_batch_id" required>{% for b in batches %}<option value="{{ b.batch_id }}">#{{ b.batch_id }} - {{ b.batch_type }} ({{ b.batch_date }})</option>{% endfor %}</select></div>
-          <div class="mb-3"><label class="form-label">Donation</label><select class="form-select" name="donation_id" id="f_donation_id"><option value="">-- None --</option>{% for d in donations %}<option value="{{ d.donation_id }}">#{{ d.donation_id }} - {{ d.donation_date }} (${{ d.amount }})</option>{% endfor %}</select></div>
-          <div class="mb-3"><label class="form-label">Delivery</label><select class="form-select" name="delivery_id" id="f_delivery_id"><option value="">-- None --</option>{% for d in deliveries %}<option value="{{ d.delivery_id }}">#{{ d.delivery_id }} - {{ d.delivery_company }} ({{ d.delivery_date }})</option>{% endfor %}</select></div>
-          <div class="mb-3"><label class="form-label">Date</label><input type="date" class="form-control" name="distribution_date" id="f_distribution_date" required></div>
-          <div class="mb-3"><label class="form-label">Quantity</label><input type="number" class="form-control" name="quantity" id="f_quantity" required></div>
-          <div class="mb-3"><label class="form-label">Free</label><select class="form-select" name="is_free" id="f_is_free"><option value="0">No</option><option value="1">Yes</option></select></div>
-          <div class="mb-3"><label class="form-label">Reason</label><select class="form-select" name="distribution_reason" id="f_distribution_reason" required>
-            <option value="Donor Thank-You">Donor Thank-You</option>
-            <option value="Long-Term Donor Appreciation">Long-Term Donor Appreciation</option>
-            <option value="Major Donor Recognition">Major Donor Recognition</option>
-            <option value="Corporate Sponsor Gift">Corporate Sponsor Gift</option>
-            <option value="Event Giveaway">Event Giveaway</option>
-            <option value="Holiday Campaign">Holiday Campaign</option>
-            <option value="Community Outreach">Community Outreach</option>
-            <option value="Promotional Mailing">Promotional Mailing</option>
-            <option value="Replacement / Reissue">Replacement / Reissue</option>
+          <div class="mb-3"><label class="form-label" data-i18n="Batches">Batch</label><select class="form-select" name="batch_id" id="f_batch_id" required>{% for b in batches %}<option value="{{ b.batch_id }}">#{{ b.batch_id }} - {{ b.batch_type }} ({{ b.batch_date }})</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label" data-i18n="Donation Records">Donation</label><select class="form-select" name="donation_id" id="f_donation_id"><option value="" data-i18n="-- None --">-- None --</option>{% for d in donations %}<option value="{{ d.donation_id }}">#{{ d.donation_id }} - {{ d.donation_date }} (${{ d.amount }})</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label" data-i18n="Delivery">Delivery</label><select class="form-select" name="delivery_id" id="f_delivery_id"><option value="" data-i18n="-- None --">-- None --</option>{% for d in deliveries %}<option value="{{ d.delivery_id }}">#{{ d.delivery_id }} - {{ d.delivery_company }} ({{ d.delivery_date }})</option>{% endfor %}</select></div>
+          <div class="mb-3"><label class="form-label" data-i18n="Date">Date</label><input type="date" class="form-control" name="distribution_date" id="f_distribution_date" required></div>
+          <div class="mb-3"><label class="form-label" data-i18n="Quantity">Quantity</label><input type="number" class="form-control" name="quantity" id="f_quantity" required></div>
+          <div class="mb-3"><label class="form-label" data-i18n="Is Free">Free</label><select class="form-select" name="is_free" id="f_is_free"><option value="0" data-i18n="No">No</option><option value="1" data-i18n="Yes">Yes</option></select></div>
+          <div class="mb-3"><label class="form-label" data-i18n="Reason">Reason</label><select class="form-select" name="distribution_reason" id="f_distribution_reason" required>
+            <option value="Donor Thank-You" data-i18n="Donor Thank-You">Donor Thank-You</option>
+            <option value="Long-Term Donor Appreciation" data-i18n="Long-Term Donor Appreciation">Long-Term Donor Appreciation</option>
+            <option value="Major Donor Recognition" data-i18n="Major Donor Recognition">Major Donor Recognition</option>
+            <option value="Corporate Sponsor Gift" data-i18n="Corporate Sponsor Gift">Corporate Sponsor Gift</option>
+            <option value="Event Giveaway" data-i18n="Event Giveaway">Event Giveaway</option>
+            <option value="Holiday Campaign" data-i18n="Holiday Campaign">Holiday Campaign</option>
+            <option value="Community Outreach" data-i18n="Community Outreach">Community Outreach</option>
+            <option value="Promotional Mailing" data-i18n="Promotional Mailing">Promotional Mailing</option>
+            <option value="Replacement / Reissue" data-i18n="Replacement / Reissue">Replacement / Reissue</option>
           </select></div>
-          <div class="mb-3"><label class="form-label">Distributed By</label><input type="text" class="form-control" name="distributed_by" id="f_distributed_by"></div>
-          <div class="mb-3"><label class="form-label">Notes</label><textarea class="form-control" name="notes" id="f_notes"></textarea></div>
+          <div class="mb-3"><label class="form-label" data-i18n="Distributed By">Distributed By</label><input type="text" class="form-control" name="distributed_by" id="f_distributed_by"></div>
+          <div class="mb-3"><label class="form-label" data-i18n="Notes">Notes</label><textarea class="form-control" name="notes" id="f_notes"></textarea></div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="Cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary" data-i18n="Save">Save</button>
         </div>
       </form>
     </div>
@@ -98,13 +98,13 @@
 <script>
 const modal = new bootstrap.Modal(document.getElementById('formModal'));
 function openAdd(){
-  document.getElementById('modalTitle').textContent='Add Distribution';
+  document.getElementById('modalTitle').textContent=I18n.t('Add Distribution');
   document.getElementById('mainForm').action='{{ url_for("gifts.distribution_add") }}';
   document.getElementById('mainForm').reset();
   modal.show();
 }
 function openEdit(id,batchId,donationId,deliveryId,date,qty,isFree,reason,by,notes){
-  document.getElementById('modalTitle').textContent='Edit Distribution';
+  document.getElementById('modalTitle').textContent=I18n.t('Edit Distribution');
   document.getElementById('mainForm').action='/distribution/edit/'+id;
   document.getElementById('f_batch_id').value=batchId;
   document.getElementById('f_donation_id').value=donationId;

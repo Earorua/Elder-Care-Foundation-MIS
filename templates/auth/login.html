@@ -1,12 +1,15 @@
 {% extends "base.html" %}
 {% block title %}Login - Elder Care MIS{% endblock %}
 {% block content_noauth %}
+<!-- Language Toggle (Login Page) -->
+<button id="langToggleBtn" class="btn btn-sm lang-toggle-btn login-lang-toggle" onclick="I18n.setLang(I18n.getLang()==='en'?'zh':'en')" title="切换为中文">
+  <i class="bi bi-translate me-1"></i>中文
+</button>
 <!-- Left: Branding Panel -->
 <div class="login-left">
   <div class="floating-shape"></div>
   <div class="floating-shape"></div>
   <div class="floating-shape"></div>
-  <!-- Floating leaves -->
   <span class="leaf" style="left:10%;animation-delay:0s;font-size:1.5rem;">&#127811;</span>
   <span class="leaf" style="left:25%;animation-delay:3s;font-size:2.2rem;">&#127810;</span>
   <span class="leaf" style="left:50%;animation-delay:6s;font-size:1.8rem;">&#127811;</span>
@@ -14,9 +17,9 @@
   <span class="leaf" style="left:85%;animation-delay:12s;font-size:2rem;">&#127811;</span>
   <div class="login-left-content">
     <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" style="width:72px;height:72px;object-fit:contain;filter:brightness(0) invert(1) sepia(1) saturate(.2) hue-rotate(15deg);opacity:.75;">
-    <div style="font-size:.55rem;text-transform:uppercase;letter-spacing:3px;color:rgba(255,255,255,.4);font-family:'Outfit',sans-serif;font-weight:500;margin-top:.6rem;">Elder Care<br>Foundation</div>
-    <h2 style="margin-top:2rem;">Elder Care Foundation</h2>
-    <p>Management Information System for tracking<br>donations, personnel, events, and financial reporting.</p>
+    <div style="font-size:.55rem;text-transform:uppercase;letter-spacing:3px;color:rgba(255,255,255,.4);font-family:'Outfit',sans-serif;font-weight:500;margin-top:.6rem;"><span data-i18n="Elder Care">Elder Care</span><br><span data-i18n="Foundation">Foundation</span></div>
+    <h2 style="margin-top:2rem;" data-i18n="Elder Care Foundation">Elder Care Foundation</h2>
+    <p data-i18n="Management Information System for tracking donations, personnel, events, and financial reporting.">Management Information System for tracking<br>donations, personnel, events, and financial reporting.</p>
   </div>
 </div>
 <!-- Right: Login Form -->
@@ -24,23 +27,23 @@
   <div class="card login-card">
     <div class="card-body">
       <div class="mb-4">
-        <p style="font-size:.78rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);font-family:'Outfit',sans-serif;margin-bottom:.5rem;font-weight:500;">Welcome back</p>
-        <h3 class="mb-1">Sign In</h3>
-        <p style="font-size:.85rem;color:var(--text-muted);font-family:'Outfit',sans-serif;">Enter your credentials to continue</p>
+        <p style="font-size:.78rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);font-family:'Outfit',sans-serif;margin-bottom:.5rem;font-weight:500;" data-i18n="Welcome back">Welcome back</p>
+        <h3 class="mb-1" data-i18n="Sign In">Sign In</h3>
+        <p style="font-size:.85rem;color:var(--text-muted);font-family:'Outfit',sans-serif;" data-i18n="Enter your credentials to continue">Enter your credentials to continue</p>
       </div>
       <form method="POST">
         <div class="mb-3">
-          <label class="form-label">Username</label>
+          <label class="form-label" data-i18n="Username">Username</label>
           <div class="input-group">
             <span class="input-group-text"><i class="bi bi-person" style="color:var(--text-muted);"></i></span>
-            <input type="text" name="username" class="form-control" placeholder="Enter username" required autofocus>
+            <input type="text" name="username" class="form-control" data-i18n-placeholder="Enter username" placeholder="Enter username" required autofocus>
           </div>
         </div>
         <div class="mb-3">
-          <label class="form-label">Password</label>
+          <label class="form-label" data-i18n="Password">Password</label>
           <div class="input-group" style="position:relative;">
             <span class="input-group-text"><i class="bi bi-lock" style="color:var(--text-muted);"></i></span>
-            <input type="password" name="password" class="form-control" placeholder="Enter password" required id="loginPassword" style="padding-right:2.5rem;">
+            <input type="password" name="password" class="form-control" data-i18n-placeholder="Enter password" placeholder="Enter password" required id="loginPassword" style="padding-right:2.5rem;">
             <button type="button" class="password-toggle" onclick="togglePassword()" aria-label="Toggle password visibility">
               <i class="bi bi-eye" id="toggleIcon"></i>
             </button>
@@ -49,16 +52,16 @@
         <div class="login-remember">
           <div class="form-check">
             <input class="form-check-input" type="checkbox" id="rememberMe">
-            <label class="form-check-label" for="rememberMe">Remember me</label>
+            <label class="form-check-label" for="rememberMe" data-i18n="Remember me">Remember me</label>
           </div>
         </div>
         <button type="submit" class="btn btn-primary w-100 py-2" style="font-size:.9rem;">
-          <i class="bi bi-arrow-right me-1"></i>Sign In
+          <i class="bi bi-arrow-right me-1"></i><span data-i18n="Sign In">Sign In</span>
         </button>
       </form>
-      <div class="login-divider">Secure Access</div>
+      <div class="login-divider" data-i18n="Secure Access">Secure Access</div>
       <p style="text-align:center;font-size:.72rem;color:var(--text-muted);font-family:'Outfit',sans-serif;margin:0;">
-        <i class="bi bi-shield-check me-1"></i>Protected by role-based access control
+        <i class="bi bi-shield-check me-1"></i><span data-i18n="Protected by role-based access control">Protected by role-based access control</span>
       </p>
     </div>
   </div>

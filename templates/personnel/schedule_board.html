@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Schedule Board - Elder Care MIS{% endblock %}
-{% block breadcrumb %}Schedule Board{% endblock %}
+{% block breadcrumb %}<span data-i18n="Schedule Board">Schedule Board</span>{% endblock %}
 {% block content %}
 <div class="page-header">
   <div>
-    <h4 class="mb-1"><i class="bi bi-kanban me-2"></i>Schedule Board</h4>
-    <p class="page-subtitle">Select an event to view shift assignments and attendance</p>
+    <h4 class="mb-1"><i class="bi bi-kanban me-2"></i><span data-i18n="Schedule Board">Schedule Board</span></h4>
+    <p class="page-subtitle" data-i18n="Select an event to view shift assignments and attendance">Select an event to view shift assignments and attendance</p>
   </div>
 </div>
 
@@ -13,9 +13,9 @@
 <div class="card p-3 mb-3 fade-in">
   <div class="row align-items-center">
     <div class="col-md-6">
-      <label class="form-label" style="font-weight:600;font-size:.85rem;">Select Event</label>
+      <label class="form-label" style="font-weight:600;font-size:.85rem;" data-i18n="Select Event">Select Event</label>
       <select class="form-select" id="eventSelect">
-        <option value="">— Choose an event —</option>
+        <option value="" data-i18n="— Choose an event —">— Choose an event —</option>
         {% for e in events %}
         <option value="{{ e.event_id }}"
           data-status="{{ e.status }}"
@@ -38,14 +38,14 @@
 <!-- Empty state -->
 <div id="emptyState" class="empty-state fade-in">
   <i class="bi bi-calendar2-week"></i>
-  <h6>No event selected</h6>
-  <p>Choose an event above to view its schedule board.</p>
+  <h6 data-i18n="No event selected">No event selected</h6>
+  <p data-i18n="Choose an event above to view its schedule board.">Choose an event above to view its schedule board.</p>
 </div>
 
 <!-- Loading -->
 <div id="loadingState" style="display:none;text-align:center;padding:3rem;">
   <div class="spinner-border text-muted" role="status"><span class="visually-hidden">Loading...</span></div>
-  <p class="text-muted mt-2">Loading shifts…</p>
+  <p class="text-muted mt-2" data-i18n="Loading shifts…">Loading shifts…</p>
 </div>
 
 <!-- Kanban Board -->
@@ -53,7 +53,7 @@
   <div class="kanban-column scheduled">
     <div class="kanban-column-header">
       <span class="kanban-dot" style="background:#c8a45c;"></span>
-      <h6>Scheduled</h6>
+      <h6 data-i18n="Scheduled">Scheduled</h6>
       <span class="kanban-count" id="countScheduled">0</span>
     </div>
     <div class="kanban-cards" id="colScheduled"></div>
@@ -61,7 +61,7 @@
   <div class="kanban-column in-progress">
     <div class="kanban-column-header">
       <span class="kanban-dot" style="background:#5a8a6a;"></span>
-      <h6>In Progress</h6>
+      <h6 data-i18n="In Progress">In Progress</h6>
       <span class="kanban-count" id="countInProgress">0</span>
     </div>
     <div class="kanban-cards" id="colInProgress"></div>
@@ -69,7 +69,7 @@
   <div class="kanban-column completed">
     <div class="kanban-column-header">
       <span class="kanban-dot" style="background:#8a6dab;"></span>
-      <h6>Completed</h6>
+      <h6 data-i18n="Completed">Completed</h6>
       <span class="kanban-count" id="countCompleted">0</span>
     </div>
     <div class="kanban-cards" id="colCompleted"></div>
@@ -77,7 +77,7 @@
   <div class="kanban-column absent">
     <div class="kanban-column-header">
       <span class="kanban-dot" style="background:#c07a56;"></span>
-      <h6>Absent / Cancelled</h6>
+      <h6 data-i18n="Absent / Cancelled">Absent / Cancelled</h6>
       <span class="kanban-count" id="countAbsent">0</span>
     </div>
     <div class="kanban-cards" id="colAbsent"></div>
@@ -86,7 +86,7 @@
 
 <!-- Daily Attendance Section -->
 <div id="dailyAttendance" style="display:none;" class="mt-4">
-  <div class="section-divider"><i class="bi bi-calendar-check me-1"></i> Daily Attendance</div>
+  <div class="section-divider"><i class="bi bi-calendar-check me-1"></i> <span data-i18n="Daily Attendance">Daily Attendance</span></div>
   <div id="dailyAccordion" class="accordion"></div>
 </div>
 
@@ -103,11 +103,11 @@ const dailyAccordion = document.getElementById('dailyAccordion');
 
 function attendanceBadge(item) {
   const absent = item.is_absent === 1 || (item.status || '').toLowerCase() === 'absent';
-  if (absent) return '<span class="att-badge att-absent"><i class="bi bi-x-circle-fill"></i> Absent</span>';
+  if (absent) return '<span class="att-badge att-absent"><i class="bi bi-x-circle-fill"></i> '+I18n.t('Absent')+'</span>';
   const st = (item.status || '').toLowerCase();
-  if (st === 'completed') return '<span class="att-badge att-ontime"><i class="bi bi-check-circle-fill"></i> On Time</span>';
-  if (st === 'in_progress') return '<span class="att-badge att-onduty"><i class="bi bi-play-circle-fill"></i> On Duty</span>';
-  return '<span class="att-badge att-pending"><i class="bi bi-hourglass-split"></i> Pending</span>';
+  if (st === 'completed') return '<span class="att-badge att-ontime"><i class="bi bi-check-circle-fill"></i> '+I18n.t('On Time')+'</span>';
+  if (st === 'in_progress') return '<span class="att-badge att-onduty"><i class="bi bi-play-circle-fill"></i> '+I18n.t('On Duty')+'</span>';
+  return '<span class="att-badge att-pending"><i class="bi bi-hourglass-split"></i> '+I18n.t('Pending')+'</span>';
 }
 
 function renderCard(item) {
@@ -129,7 +129,7 @@ function renderCard(item) {
       <div class="kanban-card-footer">
         ${badge}
         ${ot}
-        ${item.notes ? '<span class="kanban-tag note" title="'+item.notes+'"><i class="bi bi-chat-left-text"></i> Note</span>' : ''}
+        ${item.notes ? '<span class="kanban-tag note" title="'+item.notes+'"><i class="bi bi-chat-left-text"></i> '+I18n.t('Notes')+'</span>' : ''}
       </div>
     </div>`;
 }
@@ -163,7 +163,7 @@ function buildDailyAttendance(allItems) {
           <i class="bi bi-calendar-date me-2"></i>
           <span style="font-weight:600;">${date}</span>
           <span class="ms-auto me-3 d-flex align-items-center gap-2">
-            <span style="font-size:.78rem;color:var(--text-muted);">${present}/${total} present</span>
+            <span style="font-size:.78rem;color:var(--text-muted);">${present}/${total} ${I18n.t('present')}</span>
             <span class="att-badge ${rateClass}" style="font-size:.7rem;">${rate}%</span>
           </span>
         </button>
@@ -173,12 +173,12 @@ function buildDailyAttendance(allItems) {
           <table class="table table-hover mb-0" style="font-size:.82rem;">
             <thead>
               <tr style="background:var(--border-light);">
-                <th style="padding:.5rem .75rem;">Person</th>
-                <th style="padding:.5rem .75rem;">Role</th>
-                <th style="padding:.5rem .75rem;">Shift</th>
-                <th style="padding:.5rem .75rem;">Overtime</th>
-                <th style="padding:.5rem .75rem;">Attendance</th>
-                <th style="padding:.5rem .75rem;">Notes</th>
+                <th style="padding:.5rem .75rem;">${I18n.t('Person')}</th>
+                <th style="padding:.5rem .75rem;">${I18n.t('Role')}</th>
+                <th style="padding:.5rem .75rem;">${I18n.t('Shift')}</th>
+                <th style="padding:.5rem .75rem;">${I18n.t('Overtime')}</th>
+                <th style="padding:.5rem .75rem;">${I18n.t('Attendance')}</th>
+                <th style="padding:.5rem .75rem;">${I18n.t('Notes')}</th>
               </tr>
             </thead>
             <tbody>`;
@@ -244,7 +244,7 @@ function loadBoard(eventId) {
         const items = data[dataKey] || [];
         col.innerHTML = items.length
           ? items.map(renderCard).join('')
-          : '<div class="kanban-empty"><i class="bi bi-inbox"></i><br>No shifts</div>';
+          : '<div class="kanban-empty"><i class="bi bi-inbox"></i><br>'+I18n.t('No shifts')+'</div>';
         document.getElementById('count' + key).textContent = items.length;
       });
 
@@ -260,7 +260,7 @@ function loadBoard(eventId) {
     .catch(() => {
       loading.style.display = 'none';
       empty.style.display = '';
-      empty.querySelector('h6').textContent = 'Failed to load data';
+      empty.querySelector('h6').textContent = I18n.t('Failed to load data');
     });
 }
 
