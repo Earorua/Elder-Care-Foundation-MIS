@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Dashboard - Elder Care MIS{% endblock %}
-{% block breadcrumb %}Dashboard{% endblock %}
+{% block breadcrumb %}<span data-i18n="Dashboard">Dashboard</span>{% endblock %}
 {% block head %}
 <script src="{{ url_for('static', filename='js/us-states.js') }}"></script>
 {% endblock %}
@@ -9,7 +9,7 @@
 <div class="welcome-header fade-in">
   <div>
     <h4 id="welcomeMsg">Dashboard</h4>
-    <p class="welcome-greeting">Overview of foundation activity and key metrics</p>
+    <p class="welcome-greeting" data-i18n="Overview of foundation activity and key metrics">Overview of foundation activity and key metrics</p>
   </div>
   <div>
     <span class="chart-timestamp" id="dataTimestamp"></span>
@@ -23,9 +23,9 @@
       <div class="d-flex align-items-center h-100">
         <div class="stat-icon me-3"><i class="bi bi-cash-coin"></i></div>
         <div>
-          <div class="text-muted">Total Donations</div>
+          <div class="text-muted" data-i18n="Total Donations">Total Donations</div>
           <h3>${{ "%.2f"|format(stats.total_donations) }}</h3>
-          <div class="stat-trend" style="color:var(--accent);"><i class="bi bi-graph-up-arrow"></i> All-time cumulative</div>
+          <div class="stat-trend" style="color:var(--accent);"><i class="bi bi-graph-up-arrow"></i> <span data-i18n="All-time cumulative">All-time cumulative</span></div>
         </div>
       </div>
     </div>
@@ -35,9 +35,9 @@
       <div class="d-flex align-items-center h-100">
         <div class="stat-icon me-3"><i class="bi bi-people"></i></div>
         <div>
-          <div class="text-muted">Donors</div>
+          <div class="text-muted" data-i18n="Donors">Donors</div>
           <h3>{{ stats.donor_count }}</h3>
-          <div class="stat-trend" style="color:#5a9e6f;"><i class="bi bi-person-plus"></i> Registered donors</div>
+          <div class="stat-trend" style="color:#5a9e6f;"><i class="bi bi-person-plus"></i> <span data-i18n="Registered donors">Registered donors</span></div>
         </div>
       </div>
     </div>
@@ -47,9 +47,9 @@
       <div class="d-flex align-items-center h-100">
         <div class="stat-icon me-3"><i class="bi bi-calendar-event"></i></div>
         <div>
-          <div class="text-muted">Events</div>
+          <div class="text-muted" data-i18n="Events">Events</div>
           <h3>{{ stats.event_count }}</h3>
-          <div class="stat-trend" style="color:var(--terracotta);"><i class="bi bi-calendar-check"></i> Total events</div>
+          <div class="stat-trend" style="color:var(--terracotta);"><i class="bi bi-calendar-check"></i> <span data-i18n="Total events">Total events</span></div>
         </div>
       </div>
     </div>
@@ -59,7 +59,7 @@
       <div class="d-flex align-items-center h-100">
         <div class="stat-icon me-2"><i class="bi bi-person-badge"></i></div>
         <div class="me-auto">
-          <div class="text-muted">Personnel</div>
+          <div class="text-muted" data-i18n="Personnel">Personnel</div>
           <h3 class="mb-0">{{ stats.person_count }}</h3>
         </div>
         <div class="d-flex flex-column gap-1 ms-2">
@@ -68,14 +68,14 @@
               <i class="bi bi-briefcase-fill" style="color:#fff;font-size:.6rem;"></i>
             </div>
             <div style="font-size:.85rem;font-weight:700;font-family:'Playfair Display',serif;color:var(--text-primary);line-height:1;">{{ stats.employee_count }}</div>
-            <div style="font-size:.58rem;font-weight:500;color:#5a8a6a;font-family:'Outfit',sans-serif;">Emp</div>
+            <div style="font-size:.58rem;font-weight:500;color:#5a8a6a;font-family:'Outfit',sans-serif;" data-i18n="Emp">Emp</div>
           </div>
           <div class="d-flex align-items-center gap-1" style="background:rgba(200,164,92,.08);border-radius:.4rem;padding:.2rem .5rem;">
             <div style="width:22px;height:22px;border-radius:.3rem;background:linear-gradient(135deg,#c8a45c,#ddc07a);display:flex;align-items:center;justify-content:center;">
               <i class="bi bi-heart-fill" style="color:#fff;font-size:.6rem;"></i>
             </div>
             <div style="font-size:.85rem;font-weight:700;font-family:'Playfair Display',serif;color:var(--text-primary);line-height:1;">{{ stats.volunteer_count }}</div>
-            <div style="font-size:.58rem;font-weight:500;color:#c8a45c;font-family:'Outfit',sans-serif;">Vol</div>
+            <div style="font-size:.58rem;font-weight:500;color:#c8a45c;font-family:'Outfit',sans-serif;" data-i18n="Vol">Vol</div>
           </div>
         </div>
       </div>
@@ -89,7 +89,7 @@
     <div class="card p-3 h-100 fade-in fade-in-d2">
       <div class="chart-card-title">
         <span class="chart-icon" style="background:linear-gradient(135deg,#5a8a6a,#7aaa8a);"><i class="bi bi-bar-chart"></i></span>
-        <h6>Monthly Donation Trend</h6>
+        <h6 data-i18n="Monthly Donation Trend">Monthly Donation Trend</h6>
       </div>
       <div style="position:relative;height:260px;"><canvas id="chartMonthly"></canvas></div>
     </div>
@@ -98,7 +98,7 @@
     <div class="card p-3 h-100 fade-in fade-in-d3">
       <div class="chart-card-title">
         <span class="chart-icon" style="background:linear-gradient(135deg,#c8a45c,#ddc07a);"><i class="bi bi-pie-chart"></i></span>
-        <h6>Donation Type</h6>
+        <h6 data-i18n="Donation Type">Donation Type</h6>
       </div>
       <div class="d-flex align-items-center justify-content-center" style="height:260px;"><canvas id="chartTypes"></canvas></div>
     </div>
@@ -111,7 +111,7 @@
     <div class="card p-3 h-100 fade-in fade-in-d3">
       <div class="chart-card-title">
         <span class="chart-icon" style="background:linear-gradient(135deg,#8a6dab,#a88bc5);"><i class="bi bi-pie-chart"></i></span>
-        <h6>Gender Distribution</h6>
+        <h6 data-i18n="Gender Distribution">Gender Distribution</h6>
       </div>
       <div class="d-flex align-items-center justify-content-center" style="height:220px;"><canvas id="chartGender"></canvas></div>
     </div>
@@ -120,7 +120,7 @@
     <div class="card p-3 h-100 fade-in fade-in-d4">
       <div class="chart-card-title">
         <span class="chart-icon" style="background:linear-gradient(135deg,#c07a56,#d4956f);"><i class="bi bi-bar-chart"></i></span>
-        <h6>Age Distribution</h6>
+        <h6 data-i18n="Age Distribution">Age Distribution</h6>
       </div>
       <div style="position:relative;height:220px;"><canvas id="chartAge"></canvas></div>
     </div>
@@ -133,7 +133,7 @@
     <div class="card p-3 fade-in fade-in-d5">
       <div class="chart-card-title">
         <span class="chart-icon" style="background:linear-gradient(135deg,#5a9e6f,#7abe8f);"><i class="bi bi-geo-alt"></i></span>
-        <h6>Donor Map — U.S. States</h6>
+        <h6 data-i18n="Donor Map — U.S. States">Donor Map — U.S. States</h6>
       </div>
       <div class="us-map-container" style="position:relative;height:360px;overflow:hidden;">
         <div id="mapTooltip" class="map-tooltip" style="display:none;"></div>
@@ -152,7 +152,7 @@
     <div class="card p-3 h-100 fade-in fade-in-d3">
       <div class="chart-card-title">
         <span class="chart-icon" style="background:linear-gradient(135deg,#c07a56,#d4956f);"><i class="bi bi-gift"></i></span>
-        <h6>Gift Distribution Overview</h6>
+        <h6 data-i18n="Gift Distribution Overview">Gift Distribution Overview</h6>
       </div>
       <div style="position:relative;height:260px;"><canvas id="chartGiftDist"></canvas></div>
     </div>
@@ -161,7 +161,7 @@
     <div class="card p-3 h-100 fade-in fade-in-d4">
       <div class="chart-card-title">
         <span class="chart-icon" style="background:linear-gradient(135deg,#c8a45c,#b89a4c);"><i class="bi bi-trophy"></i></span>
-        <h6>Event Fundraising Progress</h6>
+        <h6 data-i18n="Event Fundraising Progress">Event Fundraising Progress</h6>
       </div>
       <div style="position:relative;height:260px;"><canvas id="chartEvents"></canvas></div>
     </div>
@@ -170,14 +170,14 @@
 
 {# ── Row 4: Financial Reports Quick Access ── #}
 {% if current_user.has_role('finance') %}
-<div class="section-divider fade-in fade-in-d3"><i class="bi bi-graph-up me-1"></i> Financial Reports Quick Access</div>
+<div class="section-divider fade-in fade-in-d3"><i class="bi bi-graph-up me-1"></i> <span data-i18n="Financial Reports Quick Access">Financial Reports Quick Access</span></div>
 <div class="row g-3 mb-3">
   <div class="col-md-4">
     <div class="card stat-card green p-3 fade-in fade-in-d3">
       <div class="d-flex align-items-center">
         <div class="stat-icon me-3" style="background:linear-gradient(135deg,#5a9e6f,#7abe8f);"><i class="bi bi-arrow-up-circle"></i></div>
         <div>
-          <div class="text-muted">Total Revenue</div>
+          <div class="text-muted" data-i18n="Total Revenue">Total Revenue</div>
           <h4>${{ "%.2f"|format(finance.total_revenue) }}</h4>
         </div>
       </div>
@@ -188,7 +188,7 @@
       <div class="d-flex align-items-center">
         <div class="stat-icon me-3" style="background:linear-gradient(135deg,#8a6dab,#a88bc5);"><i class="bi bi-arrow-down-circle"></i></div>
         <div>
-          <div class="text-muted">Total Expenses</div>
+          <div class="text-muted" data-i18n="Total Expenses">Total Expenses</div>
           <h4>${{ "%.2f"|format(finance.total_expenses) }}</h4>
         </div>
       </div>
@@ -199,7 +199,7 @@
       <div class="d-flex align-items-center">
         <div class="stat-icon me-3" style="background:linear-gradient(135deg,#5a8a6a,#7aaa8a);"><i class="bi bi-piggy-bank"></i></div>
         <div>
-          <div class="text-muted">Net Income</div>
+          <div class="text-muted" data-i18n="Net Income">Net Income</div>
           <h4 class="{{ 'text-success' if finance.net_income >= 0 else 'text-danger' }}">${{ "%.2f"|format(finance.net_income) }}</h4>
         </div>
       </div>
@@ -213,8 +213,8 @@
         <div style="width:48px;height:48px;border-radius:.75rem;background:linear-gradient(135deg,rgba(90,138,106,.1),rgba(90,138,106,.05));display:flex;align-items:center;justify-content:center;margin:0 auto .5rem;">
           <i class="bi bi-file-earmark-bar-graph" style="font-size:1.25rem;color:var(--accent);"></i>
         </div>
-        <h6 style="font-size:.9rem;margin-bottom:.25rem;">Statement of Activities</h6>
-        <p class="text-muted mb-0" style="font-size:.75rem;">Revenue detail & trends</p>
+        <h6 style="font-size:.9rem;margin-bottom:.25rem;" data-i18n="Statement of Activities">Statement of Activities</h6>
+        <p class="text-muted mb-0" style="font-size:.75rem;" data-i18n="Revenue detail & trends">Revenue detail & trends</p>
       </div>
     </a>
   </div>
@@ -224,8 +224,8 @@
         <div style="width:48px;height:48px;border-radius:.75rem;background:linear-gradient(135deg,rgba(200,164,92,.1),rgba(200,164,92,.05));display:flex;align-items:center;justify-content:center;margin:0 auto .5rem;">
           <i class="bi bi-clipboard-data" style="font-size:1.25rem;color:var(--accent-gold);"></i>
         </div>
-        <h6 style="font-size:.9rem;margin-bottom:.25rem;">Financial Position</h6>
-        <p class="text-muted mb-0" style="font-size:.75rem;">Assets & fund balance</p>
+        <h6 style="font-size:.9rem;margin-bottom:.25rem;" data-i18n="Financial Position">Financial Position</h6>
+        <p class="text-muted mb-0" style="font-size:.75rem;" data-i18n="Assets & fund balance">Assets & fund balance</p>
       </div>
     </a>
   </div>
@@ -235,8 +235,8 @@
         <div style="width:48px;height:48px;border-radius:.75rem;background:linear-gradient(135deg,rgba(192,122,86,.1),rgba(192,122,86,.05));display:flex;align-items:center;justify-content:center;margin:0 auto .5rem;">
           <i class="bi bi-cash-stack" style="font-size:1.25rem;color:var(--terracotta);"></i>
         </div>
-        <h6 style="font-size:.9rem;margin-bottom:.25rem;">Functional Expenses</h6>
-        <p class="text-muted mb-0" style="font-size:.75rem;">Expenses by category</p>
+        <h6 style="font-size:.9rem;margin-bottom:.25rem;" data-i18n="Functional Expenses">Functional Expenses</h6>
+        <p class="text-muted mb-0" style="font-size:.75rem;" data-i18n="Expenses by category">Expenses by category</p>
       </div>
     </a>
   </div>
@@ -245,16 +245,16 @@
 
 {# ── Row 5: Schedule Monitor ── #}
 {% if current_user.has_role('event_coordinator') or current_user.has_role('admin') %}
-<div class="section-divider fade-in fade-in-d4"><i class="bi bi-calendar-week me-1"></i> Schedule Monitor</div>
+<div class="section-divider fade-in fade-in-d4"><i class="bi bi-calendar-week me-1"></i> <span data-i18n="Schedule Monitor">Schedule Monitor</span></div>
 <div class="row g-3 mb-3">
   <div class="col-md-6">
     <div class="card stat-card orange p-3 fade-in fade-in-d4">
       <div class="d-flex align-items-center">
         <div class="stat-icon me-3" style="background:linear-gradient(135deg,#c8a45c,#ddc07a);"><i class="bi bi-calendar-check"></i></div>
         <div>
-          <div class="text-muted">Upcoming Events</div>
+          <div class="text-muted" data-i18n="Upcoming Events">Upcoming Events</div>
           <h3>{{ schedule_stats.upcoming_events }}</h3>
-          <div class="stat-trend" style="color:var(--accent-gold);"><i class="bi bi-flag"></i> Planned or active</div>
+          <div class="stat-trend" style="color:var(--accent-gold);"><i class="bi bi-flag"></i> <span data-i18n="Planned or active">Planned or active</span></div>
         </div>
       </div>
     </div>
@@ -264,9 +264,9 @@
       <div class="d-flex align-items-center">
         <div class="stat-icon me-3" style="background:linear-gradient(135deg,#8a6dab,#a88bc5);"><i class="bi bi-clock-history"></i></div>
         <div>
-          <div class="text-muted">Scheduled Shifts</div>
+          <div class="text-muted" data-i18n="Scheduled Shifts">Scheduled Shifts</div>
           <h3>{{ schedule_stats.upcoming_schedules }}</h3>
-          <div class="stat-trend" style="color:var(--plum);"><i class="bi bi-list-check"></i> Awaiting start</div>
+          <div class="stat-trend" style="color:var(--plum);"><i class="bi bi-list-check"></i> <span data-i18n="Awaiting start">Awaiting start</span></div>
         </div>
       </div>
     </div>
@@ -279,8 +279,8 @@
         <div class="d-flex align-items-center justify-content-center">
           <i class="bi bi-kanban me-2" style="font-size:1.5rem;color:var(--accent-gold);"></i>
           <div class="text-start">
-            <h6 style="margin:0;font-size:1rem;">Open Schedule Board</h6>
-            <p class="text-muted mb-0" style="font-size:.8rem;">Select an event to view detailed shift assignments and personnel timeline</p>
+            <h6 style="margin:0;font-size:1rem;" data-i18n="Open Schedule Board">Open Schedule Board</h6>
+            <p class="text-muted mb-0" style="font-size:.8rem;" data-i18n="Select an event to view detailed shift assignments and personnel timeline">Select an event to view detailed shift assignments and personnel timeline</p>
           </div>
           <i class="bi bi-arrow-right ms-auto" style="font-size:1.25rem;color:var(--text-muted);"></i>
         </div>
@@ -296,16 +296,16 @@
 // Welcome message
 (function() {
   const h = new Date().getHours();
-  let greeting = 'Good evening';
-  if (h < 12) greeting = 'Good morning';
-  else if (h < 18) greeting = 'Good afternoon';
+  let greetingKey = 'Good evening';
+  if (h < 12) greetingKey = 'Good morning';
+  else if (h < 18) greetingKey = 'Good afternoon';
   const el = document.getElementById('welcomeMsg');
-  if (el) el.textContent = greeting + ', {{ current_user.user_name }}';
+  if (el) el.textContent = I18n.t(greetingKey) + ', {{ current_user.user_name }}';
 })();
 // Data timestamp
 (function() {
   var ts = document.getElementById('dataTimestamp');
-  if (ts) ts.textContent = 'Data updated ' + new Date().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
+  if (ts) ts.textContent = I18n.t('Data updated') + ' ' + new Date().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
 })();
 
 const colors = ['#5a8a6a','#c07a56','#c8a45c','#8a6dab','#d4956f','#7aaa8a','#a88bc5','#ddc07a'];
@@ -352,7 +352,7 @@ function fetchChart(url, cb){ fetch(url).then(r=>r.json()).then(cb); }
 fetchChart('/api/charts/monthly_donations', d => {
   new Chart(document.getElementById('chartMonthly'), {
     type:'bar',
-    data:{labels:d.labels, datasets:[{label:'Donations ($)',data:d.data,backgroundColor:'rgba(90,138,106,.75)',hoverBackgroundColor:'#5a8a6a',borderRadius:8,borderSkipped:false}]},
+    data:{labels:d.labels, datasets:[{label:I18n.t('Donations ($)'),data:d.data,backgroundColor:'rgba(90,138,106,.75)',hoverBackgroundColor:'#5a8a6a',borderRadius:8,borderSkipped:false}]},
     options:makeBarOpts('$','', '$','')
   });
 });
@@ -361,8 +361,8 @@ fetchChart('/api/charts/monthly_donations', d => {
 fetchChart('/api/charts/donation_types', d => {
   new Chart(document.getElementById('chartTypes'), {
     type:'doughnut',
-    data:{labels:d.labels, datasets:[{data:d.data,backgroundColor:colors,borderWidth:2,borderColor:'#fffdf9',hoverBorderColor:'#fffdf9'}]},
-    options:doughnutOpts('donations')
+    data:{labels:d.labels.map(l=>I18n.t(l)), datasets:[{data:d.data,backgroundColor:colors,borderWidth:2,borderColor:'#fffdf9',hoverBorderColor:'#fffdf9'}]},
+    options:doughnutOpts(I18n.t('donations'))
   });
 });
 
@@ -370,18 +370,18 @@ fetchChart('/api/charts/donation_types', d => {
 fetchChart('/api/charts/gender', d => {
   new Chart(document.getElementById('chartGender'), {
     type:'doughnut',
-    data:{labels:d.labels, datasets:[{data:d.data,backgroundColor:['#5a8a6a','#c07a56','#c8a45c','#8a6dab'],borderWidth:2,borderColor:'#fffdf9'}]},
-    options:doughnutOpts('donors')
+    data:{labels:d.labels.map(l=>I18n.t(l)), datasets:[{data:d.data,backgroundColor:['#5a8a6a','#c07a56','#c8a45c','#8a6dab'],borderWidth:2,borderColor:'#fffdf9'}]},
+    options:doughnutOpts(I18n.t('donors'))
   });
 });
 
 // ── Age Distribution (people count, integer only) ──
 fetchChart('/api/charts/age', d => {
-  const opts = makeBarOpts('',' people', '',' people');
+  const opts = makeBarOpts('',I18n.t(' people'), '',I18n.t(' people'));
   opts.scales.y.ticks.stepSize = 1;
   new Chart(document.getElementById('chartAge'), {
     type:'bar',
-    data:{labels:d.labels, datasets:[{label:'Donors',data:d.data,backgroundColor:'rgba(192,122,86,.7)',hoverBackgroundColor:'#c07a56',borderRadius:8,borderSkipped:false}]},
+    data:{labels:d.labels, datasets:[{label:I18n.t('Donors'),data:d.data,backgroundColor:'rgba(192,122,86,.7)',hoverBackgroundColor:'#c07a56',borderRadius:8,borderSkipped:false}]},
     options:opts
   });
 });
@@ -391,8 +391,8 @@ fetchChart('/api/charts/event_progress', d => {
   new Chart(document.getElementById('chartEvents'), {
     type:'bar',
     data:{labels:d.labels, datasets:[
-      {label:'Target ($)',data:d.target,backgroundColor:'rgba(232,226,217,.6)',hoverBackgroundColor:'#e8e2d9',borderRadius:8,borderSkipped:false},
-      {label:'Actual ($)',data:d.actual,backgroundColor:'rgba(90,138,106,.75)',hoverBackgroundColor:'#5a8a6a',borderRadius:8,borderSkipped:false}
+      {label:I18n.t('Target ($)'),data:d.target,backgroundColor:'rgba(232,226,217,.6)',hoverBackgroundColor:'#e8e2d9',borderRadius:8,borderSkipped:false},
+      {label:I18n.t('Actual ($)'),data:d.actual,backgroundColor:'rgba(90,138,106,.75)',hoverBackgroundColor:'#5a8a6a',borderRadius:8,borderSkipped:false}
     ]},
     options:makeBarOpts('$','', '$','')
   });
@@ -400,12 +400,12 @@ fetchChart('/api/charts/event_progress', d => {
 
 // ── Gift Distribution (items count, horizontal bar) ──
 fetchChart('/api/charts/gift_distribution', d => {
-  const giftBarOpts = makeBarOpts('',' items', '',' items');
+  const giftBarOpts = makeBarOpts('',I18n.t(' items'), '',I18n.t(' items'));
   // Swap axes for horizontal bar
   giftBarOpts.indexAxis = 'y';
   const tmp = giftBarOpts.scales.x;
   giftBarOpts.scales.x = {...giftBarOpts.scales.y, grid:{color:'rgba(232,226,217,.5)',drawBorder:false}};
-  giftBarOpts.scales.x.ticks.callback = function(v){return v.toLocaleString()+' items';};
+  giftBarOpts.scales.x.ticks.callback = function(v){return v.toLocaleString()+I18n.t(' items');};
   giftBarOpts.scales.y = {...tmp, grid:{display:false}};
   giftBarOpts.scales.y.ticks.callback = function(v){return v;};
 
@@ -414,8 +414,8 @@ fetchChart('/api/charts/gift_distribution', d => {
     data:{
       labels:d.labels,
       datasets:[
-        {label:'Free Distribution',data:d.free,backgroundColor:'rgba(90,138,106,.75)',hoverBackgroundColor:'#5a8a6a',borderRadius:8,borderSkipped:false},
-        {label:'Donor Gifts',data:d.donated,backgroundColor:'rgba(200,164,92,.7)',hoverBackgroundColor:'#c8a45c',borderRadius:8,borderSkipped:false}
+        {label:I18n.t('Free Distribution'),data:d.free,backgroundColor:'rgba(90,138,106,.75)',hoverBackgroundColor:'#5a8a6a',borderRadius:8,borderSkipped:false},
+        {label:I18n.t('Donor Gifts'),data:d.donated,backgroundColor:'rgba(200,164,92,.7)',hoverBackgroundColor:'#c8a45c',borderRadius:8,borderSkipped:false}
       ]
     },
     options:giftBarOpts
@@ -458,8 +458,11 @@ fetchChart('/api/charts/gift_distribution', d => {
             : 'rgba(200,164,92,.25)');
           this.setAttribute('stroke', count > 0 ? '#3a6a4a' : '#c8a45c');
           this.setAttribute('stroke-width', '1.5');
+          const donorLabel = I18n.getLang()==='zh'
+            ? count + ' 位捐款人'
+            : count + ' donor' + (count!==1?'s':'');
           tooltip.innerHTML = '<strong>' + (stateNames[code]||code) + '</strong><br>' +
-                              '<i class="bi bi-people-fill"></i> ' + count + ' donor' + (count!==1?'s':'');
+                              '<i class="bi bi-people-fill"></i> ' + donorLabel;
           tooltip.style.display = 'block';
         });
         path.addEventListener('mousemove', function(e) {
@@ -509,7 +512,10 @@ fetchChart('/api/charts/gift_distribution', d => {
       if (legend) {
         const total = Object.values(stateData).reduce((a,b)=>a+b,0);
         const statesWithDonors = Object.keys(stateData).length;
-        legend.innerHTML = '<span style="font-size:.7rem;color:var(--text-muted);">'+total+' donors in '+statesWithDonors+' state'+(statesWithDonors!==1?'s':'')+'</span>';
+        const legendText = I18n.getLang()==='zh'
+          ? total + ' 位捐款人，来自 ' + statesWithDonors + ' 个州'
+          : total + ' donors in ' + statesWithDonors + ' state' + (statesWithDonors!==1?'s':'');
+        legend.innerHTML = '<span style="font-size:.7rem;color:var(--text-muted);">'+legendText+'</span>';
       }
     });
 })();

@@ -1,0 +1,667 @@
+// Elder Care MIS — Bilingual i18n (EN / ZH)
+// Usage: window.I18n.t('key') returns current-language string
+// All keys are English; ZH provides Chinese overrides.
+
+(function(global) {
+  const ZH = {
+    // ── Sidebar ──
+    'Dashboard': '仪表盘',
+    'Donations': '捐款',
+    'Donation Records': '捐款记录',
+    'Donors': '捐款人',
+    'Categories': '捐款类别',
+    'Donor Feedback': '捐款人反馈',
+    'Tax Receipts': '税务收据',
+    'Personnel': '人员',
+    'Persons': '人员管理',
+    'Schedules': '排班',
+    'Schedule Board': '排班看板',
+    'Payments': '薪酬',
+    'Gifts': '礼品',
+    'Batches': '批次',
+    'Distribution': '分发',
+    'Delivery': '配送',
+    'Suppliers': '供应商',
+    'Events': '活动',
+    'Donor Participation': '捐款人参与',
+    'Finance': '财务',
+    'Grants': '拨款',
+    'Other Income': '其他收入',
+    'Financial Reports': '财务报告',
+    'Administration': '系统管理',
+    'User Management': '用户管理',
+    'Logout': '退出登录',
+
+    // ── Topbar / General ──
+    'Skip to main content': '跳转到主内容',
+    'Toggle navigation': '切换导航',
+    'Foundation MIS': '基金会管理系统',
+
+    // ── Delete Modal (base.html) ──
+    'Confirm Delete': '确认删除',
+    'Are you sure you want to delete': '确定要删除',
+    'this record': '此记录',
+    'This action cannot be undone.': '此操作无法撤销。',
+    'Cancel': '取消',
+    'Delete': '删除',
+
+    // ── Login ──
+    'Welcome back': '欢迎回来',
+    'Sign In': '登录',
+    'Enter your credentials to continue': '请输入凭据以继续',
+    'Username': '用户名',
+    'Enter username': '请输入用户名',
+    'Password': '密码',
+    'Enter password': '请输入密码',
+    'Remember me': '记住我',
+    'Secure Access': '安全访问',
+    'Protected by role-based access control': '受基于角色的访问控制保护',
+    'Management Information System for tracking donations, personnel, events, and financial reporting.': '用于追踪捐款、人员、活动和财务报告的管理信息系统。',
+
+    // ── Dashboard ──
+    'Overview of foundation activity and key metrics': '基金会活动概览与关键指标',
+    'Total Donations': '捐款总额',
+    'All-time cumulative': '历史累计',
+    'Registered donors': '已注册捐款人',
+    'Total events': '活动总数',
+    'Personnel': '人员',
+    'Emp': '员工',
+    'Vol': '志愿者',
+    'Monthly Donation Trend': '月度捐款趋势',
+    'Donation Type': '捐款类型',
+    'Gender Distribution': '性别分布',
+    'Age Distribution': '年龄分布',
+    'Donor Map — U.S. States': '捐款人地图 — 美国各州',
+    'Gift Distribution Overview': '礼品分发概览',
+    'Event Fundraising Progress': '活动筹款进度',
+    'Financial Reports Quick Access': '财务报告快速入口',
+    'Total Revenue': '总收入',
+    'Total Expenses': '总支出',
+    'Net Income': '净收入',
+    'Statement of Activities': '活动报表',
+    'Revenue detail & trends': '收入明细与趋势',
+    'Financial Position': '财务状况',
+    'Assets & fund balance': '资产与基金余额',
+    'Functional Expenses': '功能性支出',
+    'Expenses by category': '按类别的支出',
+    'Schedule Monitor': '排班监控',
+    'Upcoming Events': '即将举行的活动',
+    'Planned or active': '已计划或进行中',
+    'Scheduled Shifts': '已排班次',
+    'Awaiting start': '等待开始',
+    'Open Schedule Board': '打开排班看板',
+    'Select an event to view detailed shift assignments and personnel timeline': '选择活动以查看详细班次分配和人员时间线',
+    'Good morning': '早上好',
+    'Good afternoon': '下午好',
+    'Good evening': '晚上好',
+    'Data updated': '数据更新于',
+
+    // ── Common CRUD ──
+    'Add': '添加',
+    'Edit': '编辑',
+    'Save': '保存',
+    'Search': '搜索',
+    'Actions': '操作',
+    'records': '条记录',
+    'No records found': '暂无记录',
+    'Click "Add" to create your first entry.': '点击"添加"创建第一条记录。',
+    'records found': '条记录',
+
+    // ── Donation Records ──
+    'Donation Records': '捐款记录',
+    'Manage donation records across all categories': '管理所有类别的捐款记录',
+    'Add Donation': '添加捐款',
+    'Search donations...': '搜索捐款...',
+    'Donation ID': '捐款编号',
+    'Donor': '捐款人',
+    'Type': '类型',
+    'Amount': '金额',
+    'Date': '日期',
+    'Tax Deductible': '可抵税',
+    'Gift': '礼品',
+    'Description': '描述',
+    'Donation Type': '捐款类型',
+    'Donation Date': '捐款日期',
+    'No donation records found': '暂无捐款记录',
+    'Click "Add Donation" to create your first entry.': '点击"添加捐款"创建第一条记录。',
+    'Add Donation': '添加捐款',
+    'Edit Donation': '编辑捐款',
+    'Select...': '请选择...',
+    '-- None --': '-- 无 --',
+
+    // ── Donors ──
+    'Donors': '捐款人',
+    'Manage donor profiles and contact information': '管理捐款人档案和联系信息',
+    'Add Donor': '添加捐款人',
+    'Search donors...': '搜索捐款人...',
+    'Donor ID': '捐款人编号',
+    'First Name': '名',
+    'Last Name': '姓',
+    'Email': '邮箱',
+    'Phone': '电话',
+    'Location': '地区',
+    'Donation Count': '捐款次数',
+    'No donors found': '暂无捐款人',
+    'Click "Add Donor" to create your first entry.': '点击"添加捐款人"创建第一条记录。',
+    'Add Donor': '添加捐款人',
+    'Edit Donor': '编辑捐款人',
+
+    // ── Categories ──
+    'Donation Categories': '捐款类别',
+    'Manage donation categories and types': '管理捐款类别和类型',
+    'Add Category': '添加类别',
+    'Search categories...': '搜索类别...',
+    'Category ID': '类别编号',
+    'Category Name': '类别名称',
+    'No categories found': '暂无类别',
+    'Add Category': '添加类别',
+    'Edit Category': '编辑类别',
+
+    // ── Feedback ──
+    'Donor Feedback': '捐款人反馈',
+    'Manage donor feedback and communications': '管理捐款人反馈和沟通记录',
+    'Add Feedback': '添加反馈',
+    'Search feedback...': '搜索反馈...',
+    'Feedback ID': '反馈编号',
+    'Feedback Date': '反馈日期',
+    'Feedback Type': '反馈类型',
+    'Content': '内容',
+    'No feedback found': '暂无反馈',
+    'Add Feedback': '添加反馈',
+    'Edit Feedback': '编辑反馈',
+
+    // ── Tax Receipts ──
+    'Tax Receipts': '税务收据',
+    'Manage tax receipts for donations': '管理捐款税务收据',
+    'Add Receipt': '添加收据',
+    'Search receipts...': '搜索收据...',
+    'Receipt ID': '收据编号',
+    'Receipt Number': '收据号码',
+    'Issue Date': '开具日期',
+    'Tax Year': '税务年度',
+    'No receipts found': '暂无收据',
+    'Add Receipt': '添加收据',
+    'Edit Receipt': '编辑收据',
+
+    // ── Personnel ──
+    'Personnel Management': '人员管理',
+    'Manage personnel records, roles, and contact information': '管理人员档案、角色和联系信息',
+    'Add Person': '添加人员',
+    'Search personnel...': '搜索人员...',
+    'Person ID': '人员编号',
+    'Role': '角色',
+    'Hire Date': '入职日期',
+    'Birthday': '生日',
+    'Gender': '性别',
+    'Status': '状态',
+    'Add Person': '添加人员',
+    'Edit Person': '编辑人员',
+    'Male': '男',
+    'Female': '女',
+    'Other': '其他',
+
+    // ── Schedules ──
+    'Schedule Management': '排班管理',
+    'View and manage staff scheduling': '查看和管理员工排班',
+    'Add Schedule': '添加排班',
+    'Search schedules...': '搜索排班...',
+    'Schedule ID': '排班编号',
+    'Person': '人员',
+    'Event ID': '活动编号',
+    'Available Time': '可用时间',
+    'Shift Date': '班次日期',
+    'Start': '开始',
+    'End': '结束',
+    'Absent': '缺勤',
+    'Overtime': '加班',
+    'Notes': '备注',
+    'Add Schedule': '添加排班',
+    'Edit Schedule': '编辑排班',
+    '-- Select Person --': '-- 选择人员 --',
+    'Overtime (hrs)': '加班（小时）',
+    'Start Time': '开始时间',
+    'End Time': '结束时间',
+
+    // ── Schedule Board ──
+    'Select an event to view shift assignments and attendance': '选择活动以查看班次分配和出勤情况',
+    'Select Event': '选择活动',
+    '— Choose an event —': '— 请选择活动 —',
+    'No event selected': '未选择活动',
+    'Choose an event above to view its schedule board.': '请在上方选择活动以查看排班看板。',
+    'Loading shifts…': '加载班次中…',
+    'Scheduled': '已排班',
+    'In Progress': '进行中',
+    'Completed': '已完成',
+    'Absent / Cancelled': '缺勤/取消',
+    'No shifts': '暂无班次',
+    'Daily Attendance': '每日出勤',
+    'present': '出勤',
+    'Failed to load data': '数据加载失败',
+    'Absent': '缺勤',
+    'On Time': '准时',
+    'On Duty': '在岗',
+    'Pending': '待定',
+    'Shift': '班次',
+    'Attendance': '出勤',
+
+    // ── Payments ──
+    'Payment Management': '薪酬管理',
+    'Manage personnel payments and compensation': '管理人员薪酬和补偿',
+    'Add Payment': '添加薪酬',
+    'Search payments...': '搜索薪酬...',
+    'Payment ID': '薪酬编号',
+    'Payment Type': '薪酬类型',
+    'Payment Date': '薪酬日期',
+    'No payments found': '暂无薪酬记录',
+    'Add Payment': '添加薪酬',
+    'Edit Payment': '编辑薪酬',
+
+    // ── Gifts ──
+    'Gift Management': '礼品管理',
+    'Manage gift inventory and details': '管理礼品库存和详情',
+    'Add Gift': '添加礼品',
+    'Search gifts...': '搜索礼品...',
+    'Gift ID': '礼品编号',
+    'Name': '名称',
+    'Unit Cost': '单价',
+    'Stock': '库存',
+    'Min Stock': '最低库存',
+    'Created Date': '创建日期',
+    'No gifts found': '暂无礼品',
+    'Add Gift': '添加礼品',
+    'Edit Gift': '编辑礼品',
+    'Current Stock': '当前库存',
+    'Min Stock Level': '最低库存量',
+    'Active': '启用',
+    'Inactive': '停用',
+
+    // ── Batches ──
+    'Gift Batches': '礼品批次',
+    'Manage gift procurement batches': '管理礼品采购批次',
+    'Add Batch': '添加批次',
+    'Search batches...': '搜索批次...',
+    'Batch ID': '批次编号',
+    'Batch Date': '批次日期',
+    'Quantity': '数量',
+    'Total Cost': '总费用',
+    'No batches found': '暂无批次',
+    'Add Batch': '添加批次',
+    'Edit Batch': '编辑批次',
+
+    // ── Distribution ──
+    'Gift Distribution': '礼品分发',
+    'Manage gift distribution records': '管理礼品分发记录',
+    'Add Distribution': '添加分发',
+    'Search distribution...': '搜索分发...',
+    'Distribution ID': '分发编号',
+    'Distribution Date': '分发日期',
+    'Recipient': '接收人',
+    'Is Free': '免费',
+    'No distribution records found': '暂无分发记录',
+    'Add Distribution': '添加分发',
+    'Edit Distribution': '编辑分发',
+
+    // ── Delivery ──
+    'Gift Delivery': '礼品配送',
+    'Manage gift delivery logistics': '管理礼品配送物流',
+    'Add Delivery': '添加配送',
+    'Search delivery...': '搜索配送...',
+    'Delivery ID': '配送编号',
+    'Delivery Date': '配送日期',
+    'Tracking Number': '追踪号码',
+    'Carrier': '承运商',
+    'No delivery records found': '暂无配送记录',
+    'Add Delivery': '添加配送',
+    'Edit Delivery': '编辑配送',
+
+    // ── Suppliers ──
+    'Supplier Management': '供应商管理',
+    'Manage gift suppliers and vendors': '管理礼品供应商和供货商',
+    'Add Supplier': '添加供应商',
+    'Search suppliers...': '搜索供应商...',
+    'Supplier ID': '供应商编号',
+    'Supplier Name': '供应商名称',
+    'Contact Name': '联系人',
+    'Address': '地址',
+    'No suppliers found': '暂无供应商',
+    'Add Supplier': '添加供应商',
+    'Edit Supplier': '编辑供应商',
+
+    // ── Events ──
+    'Event Management': '活动管理',
+    'Manage foundation events and campaigns': '管理基金会活动和项目',
+    'Add Event': '添加活动',
+    'Search events...': '搜索活动...',
+    'Event ID': '活动编号',
+    'Event Name': '活动名称',
+    'Start Date': '开始日期',
+    'End Date': '结束日期',
+    'Target Amount': '目标金额',
+    'Actual Amount': '实际金额',
+    'No events found': '暂无活动',
+    'Add Event': '添加活动',
+    'Edit Event': '编辑活动',
+
+    // ── Donor Participation ──
+    'Donor Participation': '捐款人参与',
+    'Manage donor event participation': '管理捐款人活动参与情况',
+    'Add Participation': '添加参与',
+    'Search participation...': '搜索参与...',
+    'Participation ID': '参与编号',
+    'No participation records found': '暂无参与记录',
+    'Add Participation': '添加参与',
+    'Edit Participation': '编辑参与',
+
+    // ── Grants ──
+    'Grant Management': '拨款管理',
+    'Manage foundation grants and funding': '管理基金会拨款和资金',
+    'Add Grant': '添加拨款',
+    'Search grants...': '搜索拨款...',
+    'Grant ID': '拨款编号',
+    'Grant Name': '拨款名称',
+    'Funding Organization': '资助机构',
+    'Grant Amount': '拨款金额',
+    'Received Date': '收款日期',
+    'No grants found': '暂无拨款',
+    'Add Grant': '添加拨款',
+    'Edit Grant': '编辑拨款',
+
+    // ── Other Income ──
+    'Other Income': '其他收入',
+    'Manage other income sources': '管理其他收入来源',
+    'Add Income': '添加收入',
+    'Search income...': '搜索收入...',
+    'Income ID': '收入编号',
+    'Income Type': '收入类型',
+    'Received Date': '收款日期',
+    'No income records found': '暂无收入记录',
+    'Add Income': '添加收入',
+    'Edit Income': '编辑收入',
+
+    // ── Financial Reports ──
+    'Financial Reports': '财务报告',
+    'GAAS-compliant financial statements and analysis': '符合GAAS标准的财务报表与分析',
+    'Revenue Breakdown': '收入明细',
+    'Donations': '捐款',
+    'Other Income': '其他收入',
+    'Personnel Expenses': '人员支出',
+    'Financial Statements': '财务报表',
+    'View revenue detail and trends by category': '按类别查看收入明细和趋势',
+    'Statement of Financial Position': '财务状况表',
+    'View assets, inventory, and fund balance': '查看资产、库存和基金余额',
+    'Statement of Functional Expenses': '功能性支出表',
+    'View expenses by category and personnel': '按类别和人员查看支出',
+
+    // ── Statement of Activities ──
+    'Statement of Activities': '活动报表',
+    'Revenue detail, expense breakdown, and monthly trends': '收入明细、支出分解和月度趋势',
+    'Print Report': '打印报告',
+    'Back to Overview': '返回概览',
+    'For the Period Ended:': '截止期间：',
+    'Prepared:': '编制日期：',
+    'Currency: USD (United States Dollar)': '货币：美元（USD）',
+    'Basis of Accounting: Cash Basis': '会计基础：现金制',
+    'Section I — Revenue': '第一节 — 收入',
+    'A. Donation Revenue': 'A. 捐款收入',
+    'Donation Type': '捐款类型',
+    'Subtotal — Donation Revenue': '小计 — 捐款收入',
+    'B. Grant Revenue': 'B. 拨款收入',
+    'Subtotal — Grant Revenue': '小计 — 拨款收入',
+    'C. Other Revenue': 'C. 其他收入',
+    'Income Type': '收入类型',
+    'Subtotal — Other Revenue': '小计 — 其他收入',
+    'Total Revenue': '总收入',
+    'Section II — Expenses': '第二节 — 支出',
+    'A. Personnel Compensation': 'A. 人员薪酬',
+    'Payment Type': '薪酬类型',
+    'Subtotal — Personnel': '小计 — 人员',
+    'B. Program Expenses': 'B. 项目支出',
+    'Expense Category': '支出类别',
+    'Gift Procurement (Cost of Goods)': '礼品采购（商品成本）',
+    'Delivery & Logistics': '配送与物流',
+    'Subtotal — Program Expenses': '小计 — 项目支出',
+    'Total Expenses': '总支出',
+    'Section III — Change in Net Assets': '第三节 — 净资产变动',
+    'Less: Total Expenses': '减：总支出',
+    'Net Change in Net Assets (Net Income)': '净资产净变动（净收入）',
+    'Monthly Revenue vs. Expenses Trend': '月度收入与支出趋势',
+    'Notes to Financial Statements': '财务报表附注',
+    'Note 1 — Basis of Accounting': '附注1 — 会计基础',
+    'Note 2 — Revenue Recognition': '附注2 — 收入确认',
+    'Note 3 — Significant Accounting Policies': '附注3 — 重要会计政策',
+    'Audit Trail': '审计追踪',
+    'Prepared by:': '编制人：',
+    'Reviewed by:': '审核人：',
+    'Approved by:': '批准人：',
+
+    // ── Balance Sheet ──
+    'Statement of Financial Position': '财务状况表',
+    'Asset composition and fund balance': '资产构成与基金余额',
+    'Section I — Assets': '第一节 — 资产',
+    'A. Current Assets': 'A. 流动资产',
+    'Cash & Cash Equivalents': '现金及现金等价物',
+    'Total Donations Received': '已收捐款总额',
+    'Total Grants Received': '已收拨款总额',
+    'Total Other Income': '其他收入合计',
+    'Total Cash Inflows': '现金流入合计',
+    'B. Non-Current Assets': 'B. 非流动资产',
+    'Gift Inventory (at cost)': '礼品库存（按成本）',
+    'Total Assets': '总资产',
+    'Section II — Liabilities': '第二节 — 负债',
+    'A. Current Liabilities': 'A. 流动负债',
+    'Accrued Personnel Costs': '应计人员费用',
+    'Accrued Delivery Costs': '应计配送费用',
+    'Total Liabilities': '总负债',
+    'Section III — Net Assets': '第三节 — 净资产',
+    'Unrestricted Net Assets': '非限制性净资产',
+    'Total Net Assets': '净资产合计',
+    'Total Liabilities and Net Assets': '负债和净资产合计',
+    'Asset Composition': '资产构成',
+    'Gift Inventory Detail': '礼品库存明细',
+    'Gift Name': '礼品名称',
+    'Unit Cost': '单价',
+    'Inventory Value': '库存价值',
+
+    // ── Expenditure ──
+    'Statement of Functional Expenses': '功能性支出表',
+    'Expense breakdown by category and personnel': '按类别和人员的支出分解',
+    'Personnel Compensation': '人员薪酬',
+    'Program Expenses': '项目支出',
+    'Gift Procurement': '礼品采购',
+    'Expense Distribution': '支出分布',
+    'Monthly Expense Trend': '月度支出趋势',
+    'Personnel Compensation Detail': '人员薪酬明细',
+
+    // ── User Management ──
+    'User Management': '用户管理',
+    'Manage user accounts, roles, and access control': '管理用户账户、角色和访问控制',
+    'Add User': '添加用户',
+    'Search users...': '搜索用户...',
+    'User ID': '用户编号',
+    'Username': '用户名',
+    'Role': '角色',
+    'Active': '启用',
+    'Inactive': '停用',
+    'Edit User': '编辑用户',
+    'New Password (leave blank to keep current)': '新密码（留空则保持不变）',
+    'No users found': '暂无用户',
+    'Click "Add User" to create your first user account.': '点击"添加用户"创建第一个用户账户。',
+    'Add': '添加',
+
+    // ── Standalone fields ──
+    'Age': '年龄',
+
+    // ── Page subtitles (keys used in templates) ──
+    'View and manage donor information': '查看和管理捐款人信息',
+    'Organize donations by category': '按类别整理捐款',
+    'Track donor feedback and communications': '追踪捐款人反馈和沟通记录',
+    'Manage tax receipt records': '管理税务收据记录',
+    'Track personnel compensation and payments': '追踪人员薪酬和付款记录',
+    'Track gift delivery status and logistics': '追踪礼品配送状态和物流',
+    'Manage supplier contacts and information': '管理供应商联系人和信息',
+    'Track gift batch orders and quantities': '追踪礼品批次订单和数量',
+    'Manage grant records from funding organizations': '管理来自资助机构的拨款记录',
+    'Track additional income sources': '追踪额外收入来源',
+    'Plan and manage foundation events': '规划和管理基金会活动',
+    'Track donor participation in events': '追踪捐款人活动参与情况',
+
+    // ── Categories ──
+    'Parent Category ID': '父类别编号',
+
+    // ── Feedback Status ──
+    'Pending': '待处理',
+    'Resolved': '已解决',
+    'Closed': '已关闭',
+
+    // ── Receipts ──
+    'Issued By': '开具人',
+
+    // ── Payments ──
+    'Period Start': '周期开始',
+    'Period End': '周期结束',
+
+    // ── Distribution ──
+    'Reason': '原因',
+    'Distributed By': '分发人',
+    'Yes': '是',
+    'No': '否',
+    'Donor Thank-You': '感谢捐款人',
+    'Long-Term Donor Appreciation': '长期捐款人感谢',
+    'Major Donor Recognition': '重要捐款人认可',
+    'Corporate Sponsor Gift': '企业赞助礼品',
+    'Event Giveaway': '活动赠品',
+    'Holiday Campaign': '节日活动',
+    'Community Outreach': '社区推广',
+    'Promotional Mailing': '促销邮寄',
+    'Replacement / Reissue': '补发/重新发放',
+
+    // ── Delivery ──
+    'Fee': '费用',
+
+    // ── Suppliers ──
+    'Company': '公司',
+
+    // ── Grants ──
+    'Grant Code': '拨款代码',
+
+    // ── Other Income ──
+    'Source': '来源',
+
+    // ── Expenditure report ──
+    'Expenses by Function and Natural Classification': '按功能和自然分类的支出',
+    'Program Services': '项目服务',
+    'Management & General': '管理与一般',
+    'Note 2 — Functional Expense Allocation': '附注2 — 功能性支出分配',
+    'Note 3 — Personnel Compensation': '附注3 — 人员薪酬',
+    'Note 4 — Significant Accounting Policies': '附注4 — 重要会计政策',
+
+    // ── Language toggle ──
+    'Language': '语言',
+    'English': 'English',
+    'Chinese': '中文',
+
+    // ── Brand name ──
+    'Elder Care': '老年关爱',
+    'Foundation': '基金会',
+    'Elder Care Foundation': '老年关爱基金会',
+
+    // ── Dashboard chart data labels (from DB) ──
+    'Cash': '现金',
+    'Check': '支票',
+    'Wire Transfer': '电汇',
+
+    // ── Dashboard chart dataset labels ──
+    'Donations ($)': '捐款（$）',
+    'Target ($)': '目标（$）',
+    'Actual ($)': '实际（$）',
+    'Free Distribution': '免费分发',
+    'Donor Gifts': '捐款人礼品',
+
+    // ── Chart axis / tooltip units ──
+    ' people': ' 人',
+    ' items': ' 件',
+    'donations': '笔',
+    'donors': '位',
+
+    // ── Finance chart dataset labels ──
+    'Revenue': '收入',
+    'Expenses': '支出',
+    'Cash & Equivalents': '现金及等价物',
+    'Gift Inventory': '礼品库存',
+  };
+
+  let currentLang = localStorage.getItem('ecmis_lang') || 'en';
+
+  function t(key) {
+    if (currentLang === 'zh' && ZH[key] !== undefined) return ZH[key];
+    return key;
+  }
+
+  function setLang(lang) {
+    currentLang = lang;
+    localStorage.setItem('ecmis_lang', lang);
+    location.reload();
+  }
+
+  function getLang() { return currentLang; }
+
+  // Apply translations to all [data-i18n] elements
+  function applyAll() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      const translated = t(key);
+      // For inputs/selects with placeholder
+      if (el.hasAttribute('placeholder')) {
+        el.placeholder = translated;
+      } else {
+        el.textContent = translated;
+      }
+    });
+    // data-i18n-placeholder: translate placeholder only
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
+    });
+    // data-i18n-title: translate tooltip title
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+      el.title = t(el.getAttribute('data-i18n-title'));
+      el.setAttribute('data-bs-original-title', el.title);
+    });
+    // data-i18n-html: translate innerHTML (for elements with icons inside)
+    document.querySelectorAll('[data-i18n-html]').forEach(el => {
+      const key = el.getAttribute('data-i18n-html');
+      if (currentLang === 'zh' && ZH[key] !== undefined) {
+        el.innerHTML = ZH[key];
+      } else {
+        el.innerHTML = key;
+      }
+    });
+    // Update html lang attribute
+    document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'en';
+  }
+
+  function updateToggleBtn() {
+    const btn = document.getElementById('langToggleBtn');
+    if (!btn) return;
+    if (currentLang === 'zh') {
+      btn.innerHTML = '<i class="bi bi-translate me-1"></i>EN';
+      btn.title = 'Switch to English';
+    } else {
+      btn.innerHTML = '<i class="bi bi-translate me-1"></i>中文';
+      btn.title = '切换为中文';
+    }
+  }
+
+  // Run on DOM ready
+  function init() {
+    applyAll();
+    updateToggleBtn();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  global.I18n = { t, setLang, getLang, applyAll };
+})(window);
