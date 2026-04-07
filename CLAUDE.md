@@ -68,6 +68,7 @@ C:\Users\XF\Desktop\elder_care_gui\
 │   └── finance/            # grants, other_income, reports, income_statement, balance_sheet, expenditure
 └── static/
     ├── css/style.css       # "Botanical Warmth" theme — Playfair Display + Outfit, sage/terracotta/gold palette
+    ├── js/i18n.js          # Bilingual i18n engine (EN/ZH): translation dict + DOM auto-apply + language toggle
     └── img/logo.png        # Transparent-background logo (auto-generated from elder_care_logo.png)
 ```
 
@@ -89,6 +90,19 @@ C:\Users\XF\Desktop\elder_care_gui\
 - Responsive: sidebar overlay on mobile, topbar hamburger toggle, content area padding adjustments, stat card resizing
 - Accessibility: skip-link, focus-visible outlines, reduced-motion media query support
 - CSS variables defined in `:root` in `style.css` for consistent theming (~1500 lines)
+
+## Bilingual i18n System (EN/ZH)
+- `static/js/i18n.js`: client-side translation engine loaded in `base.html` `<head>`
+- Translation dict `ZH` maps English keys to Chinese; English is the default/fallback
+- Language state persisted in `localStorage` key `ecmis_lang` (`'en'` or `'zh'`)
+- API: `I18n.t(key)` returns translated string; `I18n.getLang()` returns current lang; `I18n.setLang(lang)` switches and reloads
+- DOM attributes: `data-i18n` (textContent), `data-i18n-placeholder` (placeholder), `data-i18n-title` (tooltip title), `data-i18n-html` (innerHTML)
+- `I18n.applyAll()` runs on DOMContentLoaded, translating all `[data-i18n*]` elements
+- Language toggle button (`#langToggleBtn`) in topbar and login page, styled via `.lang-toggle-btn` in CSS
+- Chart data labels from API (e.g. "Cash", "Male") translated via `d.labels.map(l=>I18n.t(l))` in dashboard JS
+- Topbar clock and dashboard timestamp use `I18n.getLang()` to switch locale between `en-US` and `zh-CN`
+- Flash messages use `data-i18n="{{ message }}"` in base.html for client-side translation of server-side messages
+- Adding new translations: add English key + Chinese value to the `ZH` dict in `i18n.js`
 
 ## How to Run
 ```bash
@@ -138,3 +152,11 @@ python app.py
     - Sidebar: added Schedule Board link under Personnel section
     - CSS: Kanban board styles (~150 lines), US map tooltip styles, responsive grid for Kanban (4-col → 2-col → 1-col)
     - Backend: 3 new API endpoints (`/api/charts/location_map`, `/api/charts/gift_distribution`, `/api/schedule-board/<event_id>`); US_STATES dict in dashboard.py; schedule board routes in personnel.py
+20. Bilingual i18n system (EN/ZH)
+    - `static/js/i18n.js`: client-side translation engine with 200+ key-value pairs covering all UI text
+    - All 26+ templates annotated with `data-i18n`, `data-i18n-placeholder`, `data-i18n-title` attributes
+    - Language toggle button in topbar (authenticated pages) and login page; state persisted in localStorage
+    - Dashboard chart legends translated: donation type (Cash/Check/Wire Transfer → 现金/支票/电汇), gender (Male/Female → 男/女)
+    - Chart dataset labels, axis units, and tooltip text all pass through `I18n.t()` for bilingual display
+    - Topbar clock and dashboard "Data updated" timestamp switch locale (`en-US` ↔ `zh-CN`) based on language
+    - Flash messages (login page) rendered with `data-i18n` for client-side translation ("Logged out successfully", "Please log in first")
