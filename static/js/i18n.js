@@ -435,6 +435,12 @@
     'Prepared by:': '编制人：',
     'Reviewed by:': '审核人：',
     'Approved by:': '批准人：',
+    'Date:': '日期：',
+
+    // ── Statement of Activities — Note bodies ──
+    'note_income_1': '本财务报表按<strong>现金制会计基础</strong>编制。收入在收到现金时确认；支出在支付现金时确认。',
+    'note_income_2': '捐款在收到现金的期间确认为收入。拨款在收到资助机构资金时确认。',
+    'note_income_3': '本基金会为免税非营利组织。除捐赠人施加限制外，所有净资产均归类为非限制性净资产。',
 
     // ── Balance Sheet ──
     'Statement of Financial Position': '财务状况表',
@@ -462,7 +468,22 @@
     'Gift Inventory Detail': '礼品库存明细',
     'Gift Name': '礼品名称',
     'Unit Cost': '单价',
+    'Units on Hand': '库存数量',
     'Inventory Value': '库存价值',
+    'As of:': '截至：',
+    'Valued at cost per unit; FIFO method': '按单位成本计价；先进先出法',
+    '(No liabilities recorded in current period)': '（本期无已记录的负债）',
+    '(Total Assets − Total Liabilities)': '（总资产 − 总负债）',
+    'Note 2 — Cash and Cash Equivalents': '附注2 — 现金及现金等价物',
+    'Note 3 — Inventory Valuation': '附注3 — 存货计价',
+    'Note 4 — Liabilities': '附注4 — 负债',
+    'less Total Disbursements': '减去总支出',
+
+    // ── Balance Sheet — Note bodies ──
+    'note_bs_1': '本财务报表按<strong>现金制会计基础</strong>编制。资产和负债在发生现金交易时确认。',
+    'note_bs_2': '现金及现金等价物代表累计净现金头寸：自基金会运营以来至报告日期，从所有收入来源收到的现金总额减去所有现金支出。',
+    'note_bs_3': '礼品库存按成本计价，采用<strong>先进先出法（FIFO）</strong>。单位成本在采购时记录。',
+    'note_bs_4': '截至报告日期，本基金会无已记录的负债。所有义务均在支付时以现金方式结算。',
 
     // ── Expenditure ──
     'Statement of Functional Expenses': '功能性支出表',
@@ -473,6 +494,13 @@
     'Expense Distribution': '支出分布',
     'Monthly Expense Trend': '月度支出趋势',
     'Personnel Compensation Detail': '人员薪酬明细',
+    'payments': '笔付款',
+
+    // ── Expenditure — Note bodies ──
+    'note_exp_1': '本财务报表按<strong>现金制会计基础</strong>编制。支出在支付现金时确认。',
+    'note_exp_2': '支出按功能分类：<strong>项目服务</strong>包含与提供老年关爱服务直接相关的所有费用。目前所有支出均分配至项目服务。',
+    'note_exp_3': '人员薪酬包括向员工和志愿者支付的所有直接现金款项，按薪酬类型分类。',
+    'note_exp_4': '礼品采购成本代表为分发而采购商品的总成本。配送和物流费用代表实际支付给配送服务提供商的费用。',
 
     // ── User Management ──
     'User Management': '用户管理',
@@ -568,9 +596,12 @@
     'Elder Care Foundation': '老年关爱基金会',
 
     // ── Dashboard chart data labels (from DB) ──
+    'Donation': '捐款',
     'Cash': '现金',
     'Check': '支票',
     'Wire Transfer': '电汇',
+    'Credit Card': '信用卡',
+    'In-Kind': '实物',
 
     // ── Dashboard chart dataset labels ──
     'Donations ($)': '捐款（$）',

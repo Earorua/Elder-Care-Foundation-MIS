@@ -28,7 +28,7 @@
   <div class="card-body text-center py-4">
     <h3 class="fw-bold mb-1" data-i18n="Elder Care Foundation">Elder Care Foundation</h3>
     <h4 class="mb-2" data-i18n="Statement of Financial Position">Statement of Financial Position</h4>
-    <p class="mb-1 text-muted">As of: December 31, {{ fiscal_year }}</p>
+    <p class="mb-1 text-muted"><span data-i18n="As of:">As of:</span> December 31, {{ fiscal_year }}</p>
     <p class="mb-1 text-muted"><span data-i18n="Prepared:">Prepared:</span> {{ report_date }}</p>
     <p class="mb-0 text-muted"><span data-i18n="Currency: USD (United States Dollar)">Currency: USD (United States Dollar)</span> &nbsp;|&nbsp; <span data-i18n="Basis of Accounting: Cash Basis">Basis of Accounting: Cash Basis</span></p>
   </div>
@@ -45,13 +45,13 @@
       <tbody>
         <tr>
           <td><span data-i18n="Cash & Cash Equivalents">Cash and Cash Equivalents</span>
-            <small class="text-muted d-block">Total Revenue (${{ "%.2f"|format(total_income) }}) less Total Disbursements (${{ "%.2f"|format(total_expenses) }})</small>
+            <small class="text-muted d-block"><span data-i18n="Total Revenue">Total Revenue</span> (${{ "%.2f"|format(total_income) }}) <span data-i18n="less Total Disbursements">less Total Disbursements</span> (${{ "%.2f"|format(total_expenses) }})</small>
           </td>
           <td class="text-end fw-bold">${{ "%.2f"|format(cash) }}</td>
         </tr>
         <tr>
           <td><span data-i18n="Gift Inventory (at cost)">Gift Inventory (at cost)</span>
-            <small class="text-muted d-block">Valued at cost per unit; FIFO method</small>
+            <small class="text-muted d-block" data-i18n="Valued at cost per unit; FIFO method">Valued at cost per unit; FIFO method</small>
           </td>
           <td class="text-end fw-bold">${{ "%.2f"|format(inventory) }}</td>
         </tr>
@@ -78,7 +78,7 @@
   <div class="card-body">
     <table class="table table-sm mb-0">
       <tbody>
-        <tr><td><span data-i18n="A. Current Liabilities">Current Liabilities</span> <small class="text-muted">(No liabilities recorded in current period)</small></td><td class="text-end">$0.00</td></tr>
+        <tr><td><span data-i18n="A. Current Liabilities">Current Liabilities</span> <small class="text-muted" data-i18n="(No liabilities recorded in current period)">(No liabilities recorded in current period)</small></td><td class="text-end">$0.00</td></tr>
       </tbody>
       <tfoot>
         <tr class="table-active"><td class="fw-bold fs-6" data-i18n="Total Liabilities">Total Liabilities</td><td class="text-end fw-bold fs-6">$0.00</td></tr>
@@ -95,7 +95,7 @@
   <div class="card-body">
     <table class="table table-sm mb-0">
       <tbody>
-        <tr><td><span data-i18n="Unrestricted Net Assets">Unrestricted Net Assets</span> <small class="text-muted">(Total Assets − Total Liabilities)</small></td><td class="text-end fw-bold">${{ "%.2f"|format(fund_balance) }}</td></tr>
+        <tr><td><span data-i18n="Unrestricted Net Assets">Unrestricted Net Assets</span> <small class="text-muted" data-i18n="(Total Assets − Total Liabilities)">(Total Assets − Total Liabilities)</small></td><td class="text-end fw-bold">${{ "%.2f"|format(fund_balance) }}</td></tr>
       </tbody>
       <tfoot>
         <tr class="table-active"><td class="fw-bold fs-6" data-i18n="Total Net Assets">Total Net Assets</td><td class="text-end fw-bold fs-6">${{ "%.2f"|format(fund_balance) }}</td></tr>
@@ -111,7 +111,7 @@
   <div class="card-header"><h6 class="mb-0" data-i18n="Gift Inventory Detail">Schedule A — Gift Inventory Detail</h6></div>
   <div class="card-body p-0">
     <table class="table table-hover mb-0">
-      <thead class="table-light"><tr><th data-i18n="Gift Name">Gift Name</th><th class="text-end">Units on Hand</th><th class="text-end" data-i18n="Unit Cost">Unit Cost</th><th class="text-end" data-i18n="Inventory Value">Total Value</th></tr></thead>
+      <thead class="table-light"><tr><th data-i18n="Gift Name">Gift Name</th><th class="text-end" data-i18n="Units on Hand">Units on Hand</th><th class="text-end" data-i18n="Unit Cost">Unit Cost</th><th class="text-end" data-i18n="Inventory Value">Total Value</th></tr></thead>
       <tbody>
         {% for g in inventory_detail %}
         <tr><td>{{ g.gift_name }}</td><td class="text-end">{{ g.current_stock }}</td><td class="text-end">${{ "%.2f"|format(g.unit_cost) }}</td><td class="text-end">${{ "%.2f"|format(g.value) }}</td></tr>
@@ -139,25 +139,25 @@
       <div class="accordion-item">
         <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note1" data-i18n="Note 1 — Basis of Accounting">Note 1 — Basis of Accounting</button></h2>
         <div id="note1" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
-          <div class="accordion-body text-muted">These financial statements have been prepared on the <strong>cash basis of accounting</strong>. Assets and liabilities are recognized when cash transactions occur.</div>
+          <div class="accordion-body text-muted" data-i18n-html="note_bs_1">These financial statements have been prepared on the <strong>cash basis of accounting</strong>. Assets and liabilities are recognized when cash transactions occur.</div>
         </div>
       </div>
       <div class="accordion-item">
-        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note2">Note 2 — Cash and Cash Equivalents</button></h2>
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note2" data-i18n="Note 2 — Cash and Cash Equivalents">Note 2 — Cash and Cash Equivalents</button></h2>
         <div id="note2" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
-          <div class="accordion-body text-muted">Cash and cash equivalents represent the cumulative net cash position: total cash received from all revenue sources less all cash disbursements made during the Foundation's operating history through the report date.</div>
+          <div class="accordion-body text-muted" data-i18n="note_bs_2">Cash and cash equivalents represent the cumulative net cash position: total cash received from all revenue sources less all cash disbursements made during the Foundation's operating history through the report date.</div>
         </div>
       </div>
       <div class="accordion-item">
-        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note3">Note 3 — Inventory Valuation</button></h2>
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note3" data-i18n="Note 3 — Inventory Valuation">Note 3 — Inventory Valuation</button></h2>
         <div id="note3" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
-          <div class="accordion-body text-muted">Gift inventory is valued at cost using the <strong>First-In, First-Out (FIFO)</strong> method. Unit cost is recorded at the time of procurement.</div>
+          <div class="accordion-body text-muted" data-i18n-html="note_bs_3">Gift inventory is valued at cost using the <strong>First-In, First-Out (FIFO)</strong> method. Unit cost is recorded at the time of procurement.</div>
         </div>
       </div>
       <div class="accordion-item">
-        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note4">Note 4 — Liabilities</button></h2>
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#note4" data-i18n="Note 4 — Liabilities">Note 4 — Liabilities</button></h2>
         <div id="note4" class="accordion-collapse collapse" data-bs-parent="#notesAccordion">
-          <div class="accordion-body text-muted">As of the report date, the Foundation has no recorded liabilities. All obligations are settled on a cash basis at the time of disbursement.</div>
+          <div class="accordion-body text-muted" data-i18n="note_bs_4">As of the report date, the Foundation has no recorded liabilities. All obligations are settled on a cash basis at the time of disbursement.</div>
         </div>
       </div>
     </div>
@@ -170,9 +170,9 @@
   <div class="card-body">
     <table class="table table-sm mb-0">
       <tbody>
-        <tr><td style="width:33%"><span data-i18n="Prepared by:">Prepared by:</span> <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
-        <tr><td><span data-i18n="Reviewed by:">Reviewed by:</span> <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
-        <tr><td><span data-i18n="Approved by:">Approved by:</span> <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td>Date: <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
+        <tr><td style="width:33%"><span data-i18n="Prepared by:">Prepared by:</span> <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td><span data-i18n="Date:">Date:</span> <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
+        <tr><td><span data-i18n="Reviewed by:">Reviewed by:</span> <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td><span data-i18n="Date:">Date:</span> <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
+        <tr><td><span data-i18n="Approved by:">Approved by:</span> <span style="border-bottom:1px solid #999;display:inline-block;width:160px;">&nbsp;</span></td><td><span data-i18n="Date:">Date:</span> <span style="border-bottom:1px solid #999;display:inline-block;width:100px;">&nbsp;</span></td></tr>
       </tbody>
     </table>
   </div>
