@@ -305,7 +305,10 @@
 // Data timestamp
 (function() {
   var ts = document.getElementById('dataTimestamp');
-  if (ts) ts.textContent = I18n.t('Data updated') + ' ' + new Date().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
+  if (ts) {
+    var locale = I18n.getLang() === 'zh' ? 'zh-CN' : 'en-US';
+    ts.textContent = I18n.t('Data updated') + ' ' + new Date().toLocaleTimeString(locale, {hour:'2-digit', minute:'2-digit'});
+  }
 })();
 
 const colors = ['#5a8a6a','#c07a56','#c8a45c','#8a6dab','#d4956f','#7aaa8a','#a88bc5','#ddc07a'];

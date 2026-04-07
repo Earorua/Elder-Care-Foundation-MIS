@@ -156,7 +156,7 @@
   {% for category, message in messages %}
   <div class="alert alert-{{ category }} login-flash" role="alert">
     <i class="bi {% if category == 'info' %}bi-info-circle{% elif category == 'danger' %}bi-x-circle{% elif category == 'success' %}bi-check-circle{% else %}bi-exclamation-circle{% endif %}"></i>
-    <span>{{ message }}</span>
+    <span data-i18n="{{ message }}">{{ message }}</span>
     <button type="button" class="login-flash-close" aria-label="Close">&times;</button>
   </div>
   {% endfor %}
@@ -196,7 +196,9 @@ document.querySelectorAll('#sidebar .nav-link').forEach(link => {
   const el = document.getElementById('topbarTime');
   if (el) {
     const now = new Date();
-    el.textContent = now.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'}) + '  ' + now.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
+    const isZh = typeof I18n !== 'undefined' && I18n.getLang() === 'zh';
+    const locale = isZh ? 'zh-CN' : 'en-US';
+    el.textContent = now.toLocaleDateString(locale, {weekday:'short', month:'short', day:'numeric'}) + '  ' + now.toLocaleTimeString(locale, {hour:'2-digit', minute:'2-digit'});
   }
   setTimeout(updateTime, 30000);
 })();

@@ -46,6 +46,8 @@
     'Delete': '删除',
 
     // ── Login ──
+    'Logged out successfully': '已成功退出登录',
+    'Please log in first': '请先登录',
     'Welcome back': '欢迎回来',
     'Sign In': '登录',
     'Enter your credentials to continue': '请输入凭据以继续',
