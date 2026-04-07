@@ -94,8 +94,10 @@ python app.py
 
 管理所有捐赠交易记录。
 
-- **查看**：表格展示捐赠者姓名、捐赠类型、金额、日期等信息。
+- **查看**：表格展示捐赠者姓名、捐赠类型、金额、日期、礼品等信息。
 - **添加**：点击页面顶部「添加」按钮，在弹窗中填写捐赠者、类型、金额、日期、是否可抵税等字段。
+  - **捐赠类型**：下拉选择 Cash / Check / Wire Transfer / Credit Card / In-Kind。
+  - **礼品**：下拉选择从礼品表动态加载的活跃礼品（如 Donor Thank-You Kit、Campaign Postcard Set 等），也可选择"-- None --"表示无礼品。
 - **编辑**：点击对应行的编辑图标，修改后保存。
 - **删除**：点击删除图标，确认后删除记录。
 
@@ -134,7 +136,22 @@ python app.py
 - 标记是否缺勤、加班时长
 - 排班类型和状态
 
-### 7.3 薪酬（/payments）
+### 7.3 排班看板（/schedule-board）
+
+以 Kanban 看板形式查看某一活动的排班情况：
+
+1. 在页面顶部下拉框选择一个活动
+2. 看板按状态分为四列：Scheduled / In Progress / Completed / Absent
+3. 每张卡片显示人员姓名、角色、班次时间、排班类型，以及出勤状态标签：
+   - **On Time**（绿色）：已完成且未缺勤
+   - **On Duty**（蓝色）：进行中且未缺勤
+   - **Absent**（红色）：标记为缺勤或状态为 absent
+   - **Pending**（灰色）：尚未开始
+4. 看板下方的「Daily Attendance」区域按日期分组展示出勤详情：
+   - 每个日期为一个可折叠的手风琴卡片，标题显示日期、到勤人数和出勤率百分比
+   - 展开后以表格列出：人员、角色、班次时间、加班、出勤状态、备注
+
+### 7.4 薪酬（/payments）
 
 记录人员的薪酬发放：
 
@@ -151,6 +168,19 @@ python app.py
 ### 8.1 礼品（/gifts）
 
 管理礼品目录：名称、类型、单价、描述、当前库存、最低库存、是否启用。
+
+系统预置了 8 款与 Chao Feng & Maui 绘本系列相关的礼品：
+
+| 礼品名称 | 类型 | 单价 |
+|----------|------|------|
+| Chao Feng & Maui: The Last Adventure | Storybook | $10.00 |
+| Chao Feng & Maui: Digital Edition | Storybook | $0.00 |
+| Chao Feng & Maui: Animated Short DVD | Media | $5.00 |
+| Campaign Postcard Set | Promotional | $2.50 |
+| Donor Thank-You Kit | Donor Kit | $15.00 |
+| Campaign Poster | Promotional | $3.00 |
+| Chao Feng & Maui Picture Book (Chinese Edition) | Storybook | $10.00 |
+| Social Media Banner Pack | Promotional | $0.00 |
 
 ### 8.2 批次（/batches）
 
