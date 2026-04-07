@@ -71,7 +71,17 @@
           <div class="mb-3"><label class="form-label">Date</label><input type="date" class="form-control" name="distribution_date" id="f_distribution_date" required></div>
           <div class="mb-3"><label class="form-label">Quantity</label><input type="number" class="form-control" name="quantity" id="f_quantity" required></div>
           <div class="mb-3"><label class="form-label">Free</label><select class="form-select" name="is_free" id="f_is_free"><option value="0">No</option><option value="1">Yes</option></select></div>
-          <div class="mb-3"><label class="form-label">Reason</label><input type="text" class="form-control" name="distribution_reason" id="f_distribution_reason"></div>
+          <div class="mb-3"><label class="form-label">Reason</label><select class="form-select" name="distribution_reason" id="f_distribution_reason" required>
+            <option value="Donor Thank-You">Donor Thank-You</option>
+            <option value="Long-Term Donor Appreciation">Long-Term Donor Appreciation</option>
+            <option value="Major Donor Recognition">Major Donor Recognition</option>
+            <option value="Corporate Sponsor Gift">Corporate Sponsor Gift</option>
+            <option value="Event Giveaway">Event Giveaway</option>
+            <option value="Holiday Campaign">Holiday Campaign</option>
+            <option value="Community Outreach">Community Outreach</option>
+            <option value="Promotional Mailing">Promotional Mailing</option>
+            <option value="Replacement / Reissue">Replacement / Reissue</option>
+          </select></div>
           <div class="mb-3"><label class="form-label">Distributed By</label><input type="text" class="form-control" name="distributed_by" id="f_distributed_by"></div>
           <div class="mb-3"><label class="form-label">Notes</label><textarea class="form-control" name="notes" id="f_notes"></textarea></div>
         </div>

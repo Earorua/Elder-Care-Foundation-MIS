@@ -89,21 +89,43 @@ def _seed_admin():
             )
     db.commit()
 
-    # Seed new gift types if they don't exist
-    seed_gifts = [
-        ('Picture Book', 'Education', 10.0, 'Illustrated picture book for elderly readers', 120, 20, 1),
-        ('Postcard', 'Stationery', 2.5, 'Decorative postcard set for correspondence', 500, 50, 1),
-    ]
-    for gname, gtype, cost, desc, stock, min_stock, active in seed_gifts:
-        exists = query_db('SELECT gift_id FROM gifts WHERE gift_name = ?', [gname], one=True)
-        if not exists:
+    # Seed Chao Feng & Maui campaign gifts if table is empty
+    gift_count = query_db('SELECT COUNT(*) as cnt FROM gifts', one=True)
+    if gift_count['cnt'] == 0:
+        seed_gifts = [
+            ('Chao Feng & Maui: The Last Adventure', 'Storybook', 10.0,
+             "Illustrated children's storybook (print edition) - the tale of Chao Feng the dragon and Maui the demigod",
+             200, 30, 1),
+            ('Chao Feng & Maui: Digital Edition', 'Storybook', 0.0,
+             'Digital version of the storybook (PDF & EPUB) - included with every donation',
+             9999, 100, 1),
+            ('Chao Feng & Maui: Animated Short DVD', 'Media', 5.0,
+             '10-minute animated adaptation of the storybook on DVD',
+             150, 20, 1),
+            ('Campaign Postcard Set', 'Promotional', 2.5,
+             'Set of 4 postcards featuring Chao Feng & Maui illustrations by Buck Steel',
+             500, 50, 1),
+            ('Donor Thank-You Kit', 'Donor Kit', 15.0,
+             'Gift package: print storybook + postcard set + branded envelope for donors',
+             120, 20, 1),
+            ('Campaign Poster', 'Promotional', 3.0,
+             'Promotional poster showcasing the Chao Feng & Maui book series',
+             300, 40, 1),
+            ('Chao Feng & Maui Picture Book (Chinese Edition)', 'Storybook', 10.0,
+             "Chinese-language illustrated edition of the children's storybook",
+             100, 15, 1),
+            ('Social Media Banner Pack', 'Promotional', 0.0,
+             'Digital banner assets for social media outreach and donor campaigns',
+             9999, 100, 1),
+        ]
+        for gname, gtype, cost, desc, stock, min_stock, active in seed_gifts:
             db.execute(
                 'INSERT INTO gifts (gift_name, gift_type, unit_cost, description, '
                 'current_stock, min_stock_level, is_active, created_date) '
                 'VALUES (?, ?, ?, ?, ?, ?, ?, date("now"))',
                 [gname, gtype, cost, desc, stock, min_stock, active]
             )
-    db.commit()
+        db.commit()
 
 
 if __name__ == '__main__':

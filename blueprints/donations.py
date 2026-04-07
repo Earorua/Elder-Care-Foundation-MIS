@@ -18,7 +18,8 @@ def donations_list():
         'ORDER BY d.donation_id ASC'
     )
     donors = query_db('SELECT donor_id, first_name, last_name FROM donors ORDER BY last_name')
-    return render_template('donations/donations.html', donations=rows, donors=donors)
+    gifts = query_db('SELECT gift_id, gift_name FROM gifts WHERE is_active = 1 ORDER BY gift_id')
+    return render_template('donations/donations.html', donations=rows, donors=donors, gifts=gifts)
 
 
 @donations_bp.route('/donations/add', methods=['POST'])

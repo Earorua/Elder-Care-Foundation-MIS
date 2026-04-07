@@ -33,14 +33,16 @@
         <td>{{ r.gift_name }}</td>
         <td>{{ r.gift_type }}</td>
         <td>{{ r.unit_cost }}</td>
-        <td>{{ r.description }}</td>
+        <td title="{{ r.description }}">{{ r.description }}</td>
         <td>{{ r.current_stock }}</td>
         <td>{{ r.min_stock_level }}</td>
         <td>{{ 'Active' if r.is_active == 1 else 'Inactive' }}</td>
         <td>{{ r.created_date }}</td>
         <td>
-          <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" title="Edit" onclick="openEdit({{ r.gift_id }}, '{{ r.gift_name }}', '{{ r.gift_type }}', '{{ r.unit_cost }}', '{{ r.description }}', '{{ r.current_stock }}', '{{ r.min_stock_level }}', '{{ r.is_active }}')"><i class="bi bi-pencil"></i></button>
+          <div style="display:flex;gap:4px;flex-wrap:nowrap;">
+          <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" title="Edit" onclick="openEdit({{ r.gift_id }}, '{{ r.gift_name }}', '{{ r.gift_type }}', '{{ r.unit_cost }}', `{{ r.description }}`, '{{ r.current_stock }}', '{{ r.min_stock_level }}', '{{ r.is_active }}')"><i class="bi bi-pencil"></i></button>
           <button class="btn btn-sm btn-danger" aria-label="Delete" data-bs-toggle="tooltip" title="Delete" onclick="confirmDelete('{{ url_for('gifts.gifts_delete', id=r.gift_id) }}', '{{ r.gift_name }}')"><i class="bi bi-trash"></i></button>
+          </div>
         </td>
       </tr>
       {% endfor %}
