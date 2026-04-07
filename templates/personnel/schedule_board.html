@@ -5,7 +5,7 @@
 <div class="page-header">
   <div>
     <h4 class="mb-1"><i class="bi bi-kanban me-2"></i>Schedule Board</h4>
-    <p class="page-subtitle">Select an event to view shift assignments in Kanban layout</p>
+    <p class="page-subtitle">Select an event to view shift assignments and attendance</p>
   </div>
 </div>
 
@@ -84,6 +84,12 @@
   </div>
 </div>
 
+<!-- Daily Attendance Section -->
+<div id="dailyAttendance" style="display:none;" class="mt-4">
+  <div class="section-divider"><i class="bi bi-calendar-check me-1"></i> Daily Attendance</div>
+  <div id="dailyAccordion" class="accordion"></div>
+</div>
+
 {% endblock %}
 {% block scripts %}
 <script>
@@ -92,11 +98,23 @@ const board = document.getElementById('kanbanBoard');
 const empty = document.getElementById('emptyState');
 const loading = document.getElementById('loadingState');
 const meta = document.getElementById('eventMeta');
+const dailySection = document.getElementById('dailyAttendance');
+const dailyAccordion = document.getElementById('dailyAccordion');
+
+function attendanceBadge(item) {
+  const absent = item.is_absent === 1 || (item.status || '').toLowerCase() === 'absent';
+  if (absent) return '<span class="att-badge att-absent"><i class="bi bi-x-circle-fill"></i> Absent</span>';
+  const st = (item.status || '').toLowerCase();
+  if (st === 'completed') return '<span class="att-badge att-ontime"><i class="bi bi-check-circle-fill"></i> On Time</span>';
+  if (st === 'in_progress') return '<span class="att-badge att-onduty"><i class="bi bi-play-circle-fill"></i> On Duty</span>';
+  return '<span class="att-badge att-pending"><i class="bi bi-hourglass-split"></i> Pending</span>';
+}
 
 function renderCard(item) {
   const name = (item.first_name || '') + ' ' + (item.last_name || '');
   const role = item.role_name || 'Staff';
   const ot = item.overtime ? '<span class="kanban-tag ot">OT +' + item.overtime + 'h</span>' : '';
+  const badge = attendanceBadge(item);
   return `
     <div class="kanban-card fade-in">
       <div class="kanban-card-header">
@@ -109,10 +127,82 @@ function renderCard(item) {
         <div class="kanban-detail"><i class="bi bi-tag"></i> ${item.schedule_type || '—'}</div>
       </div>
       <div class="kanban-card-footer">
+        ${badge}
         ${ot}
         ${item.notes ? '<span class="kanban-tag note" title="'+item.notes+'"><i class="bi bi-chat-left-text"></i> Note</span>' : ''}
       </div>
     </div>`;
+}
+
+function buildDailyAttendance(allItems) {
+  // Group by shift_date
+  const byDate = {};
+  allItems.forEach(item => {
+    const d = item.shift_date || 'Unknown';
+    if (!byDate[d]) byDate[d] = [];
+    byDate[d].push(item);
+  });
+  const dates = Object.keys(byDate).sort();
+  if (!dates.length) {
+    dailySection.style.display = 'none';
+    return;
+  }
+  dailySection.style.display = '';
+  let html = '';
+  dates.forEach((date, idx) => {
+    const items = byDate[date];
+    const present = items.filter(i => i.is_absent !== 1 && (i.status || '').toLowerCase() !== 'absent').length;
+    const total = items.length;
+    const rate = total ? Math.round(present / total * 100) : 0;
+    const rateClass = rate === 100 ? 'att-ontime' : rate >= 50 ? 'att-onduty' : 'att-absent';
+    const collapseId = 'day' + idx;
+    html += `
+    <div class="accordion-item" style="border-color:var(--border-warm);border-radius:var(--radius);margin-bottom:.5rem;overflow:hidden;">
+      <h2 class="accordion-header">
+        <button class="accordion-button${idx > 0 ? ' collapsed' : ''}" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}">
+          <i class="bi bi-calendar-date me-2"></i>
+          <span style="font-weight:600;">${date}</span>
+          <span class="ms-auto me-3 d-flex align-items-center gap-2">
+            <span style="font-size:.78rem;color:var(--text-muted);">${present}/${total} present</span>
+            <span class="att-badge ${rateClass}" style="font-size:.7rem;">${rate}%</span>
+          </span>
+        </button>
+      </h2>
+      <div id="${collapseId}" class="accordion-collapse collapse${idx === 0 ? ' show' : ''}">
+        <div class="accordion-body p-0">
+          <table class="table table-hover mb-0" style="font-size:.82rem;">
+            <thead>
+              <tr style="background:var(--border-light);">
+                <th style="padding:.5rem .75rem;">Person</th>
+                <th style="padding:.5rem .75rem;">Role</th>
+                <th style="padding:.5rem .75rem;">Shift</th>
+                <th style="padding:.5rem .75rem;">Overtime</th>
+                <th style="padding:.5rem .75rem;">Attendance</th>
+                <th style="padding:.5rem .75rem;">Notes</th>
+              </tr>
+            </thead>
+            <tbody>`;
+    items.forEach(item => {
+      const name = (item.first_name || '') + ' ' + (item.last_name || '');
+      const ot = item.overtime ? '+' + item.overtime + 'h' : '—';
+      html += `
+              <tr>
+                <td style="padding:.5rem .75rem;"><i class="bi bi-person-circle me-1" style="color:var(--accent-gold);"></i>${name}</td>
+                <td style="padding:.5rem .75rem;">${item.role_name || '—'}</td>
+                <td style="padding:.5rem .75rem;">${item.start_time || '?'} – ${item.end_time || '?'}</td>
+                <td style="padding:.5rem .75rem;">${ot}</td>
+                <td style="padding:.5rem .75rem;">${attendanceBadge(item)}</td>
+                <td style="padding:.5rem .75rem;color:var(--text-muted);">${item.notes || '—'}</td>
+              </tr>`;
+    });
+    html += `
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+  });
+  dailyAccordion.innerHTML = html;
 }
 
 function loadBoard(eventId) {
@@ -120,11 +210,13 @@ function loadBoard(eventId) {
     board.style.display = 'none';
     empty.style.display = '';
     meta.style.display = 'none';
+    dailySection.style.display = 'none';
     return;
   }
   empty.style.display = 'none';
   board.style.display = 'none';
   loading.style.display = '';
+  dailySection.style.display = 'none';
 
   const opt = sel.options[sel.selectedIndex];
   const statusMap = {
@@ -160,6 +252,10 @@ function loadBoard(eventId) {
                     (data.completed||[]).length + (data.absent||[]).length;
       document.getElementById('shiftCount').innerHTML =
         '<i class="bi bi-people me-1"></i>' + total + ' shift' + (total !== 1 ? 's' : '');
+
+      // Build daily attendance from all items
+      const allItems = [].concat(data.scheduled||[], data.in_progress||[], data.completed||[], data.absent||[]);
+      buildDailyAttendance(allItems);
     })
     .catch(() => {
       loading.style.display = 'none';

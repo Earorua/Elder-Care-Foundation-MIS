@@ -1716,3 +1716,93 @@ td .btn-danger:hover {
   bottom: 2px;
   left: 4px;
 }
+
+/* ── Attendance Badges ────────────────────────────── */
+.att-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  padding: .15rem .55rem;
+  border-radius: 1rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: .72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.att-ontime  { background: rgba(90,138,106,.15); color: #3d7a52; }
+.att-onduty  { background: rgba(70,130,180,.15); color: #2e6da4; }
+.att-absent  { background: rgba(192,122,86,.15); color: #a0523d; }
+.att-pending { background: rgba(154,147,140,.15); color: #6b6560; }
+
+/* ── Daily Attendance Section ─────────────────────── */
+.section-divider {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  padding-bottom: .5rem;
+  margin-bottom: .75rem;
+  border-bottom: 2px solid var(--accent-gold);
+}
+#dailyAccordion .accordion-item {
+  background: var(--card-bg);
+  border: 1px solid var(--border-warm);
+}
+#dailyAccordion .accordion-button {
+  font-family: 'Outfit', sans-serif;
+  font-size: .85rem;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  box-shadow: none;
+}
+#dailyAccordion .accordion-button:not(.collapsed) {
+  background: var(--accent-gold-soft);
+  color: var(--text-primary);
+}
+#dailyAccordion .accordion-button::after {
+  filter: sepia(1) hue-rotate(-10deg) brightness(.7);
+}
+
+/* ── Attendance Badges ────────────────────────── */
+.att-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  padding: .15rem .5rem;
+  border-radius: .4rem;
+  font-size: .72rem;
+  font-weight: 600;
+  font-family: 'Outfit', sans-serif;
+  white-space: nowrap;
+}
+.att-ontime  { background: rgba(90,138,106,.15); color: #3d7a52; }
+.att-onduty  { background: rgba(70,130,180,.15); color: #2e6da4; }
+.att-absent  { background: rgba(192,122,86,.15); color: #a0523d; }
+.att-pending { background: rgba(154,147,140,.15); color: #6b6560; }
+
+/* ── Section Divider ──────────────────────────── */
+.section-divider {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  padding-bottom: .5rem;
+  margin-bottom: .75rem;
+  border-bottom: 2px solid var(--accent-gold);
+}
+
+/* ── Daily Attendance Accordion ───────────────── */
+#dailyAttendance .accordion-button {
+  font-family: 'Outfit', sans-serif;
+  font-size: .85rem;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  box-shadow: none;
+}
+#dailyAttendance .accordion-button:not(.collapsed) {
+  background: var(--accent-gold-soft);
+  color: var(--text-primary);
+}
+#dailyAttendance .accordion-button::after {
+  filter: sepia(1) hue-rotate(340deg) saturate(.6);
+}

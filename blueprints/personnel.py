@@ -260,6 +260,7 @@ def schedule_board_data(event_id):
     rows = query_db(
         'SELECT s.schedule_id, s.shift_date, s.start_time, s.end_time, '
         's.schedule_type, s.status, s.notes, s.overtime, '
+        's."is_absent\t" AS is_absent, '
         'p.first_name, p.last_name, p.role_name '
         'FROM schedules s '
         'LEFT JOIN persons p ON s.person_id = p.person_id '
@@ -270,6 +271,11 @@ def schedule_board_data(event_id):
     scheduled, in_progress, completed, absent = [], [], [], []
     for r in rows:
         item = dict(r)
+        # normalise is_absent key
+        for k in list(item.keys()):
+            if k.startswith('is_absent'):
+                item['is_absent'] = item.pop(k)
+                break
         st = (item.get('status') or '').lower()
         if st == 'completed':
             completed.append(item)
