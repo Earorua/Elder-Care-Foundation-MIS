@@ -14,6 +14,7 @@ def create_app():
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Please log in first'
+    login_manager.login_message_category = 'warning'
 
     from blueprints.auth import auth_bp, User
     from blueprints.dashboard import dashboard_bp

@@ -477,6 +477,48 @@ a:hover { color: var(--accent-hover); }
 .alert-success { background: #e8f5ec; color: #2d5a3a; border-left: 3px solid #5a9e6f; }
 .alert-danger  { background: #fce8e0; color: #8a3a20; border-left: 3px solid var(--terracotta); }
 .alert-warning { background: #fdf3e0; color: #7a5a20; border-left: 3px solid var(--accent-gold); }
+.alert-info    { background: #e0f0f8; color: #1a5276; border-left: 3px solid #5dade2; }
+
+/* Login page flash messages */
+.login-flash-container {
+  position: fixed;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: 380px;
+}
+.login-flash {
+  border-radius: 8px !important;
+  padding: .75rem 2.5rem .75rem 1rem !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,.15);
+  font-size: .88rem;
+  font-family: 'Outfit', sans-serif;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: .5rem;
+}
+.login-flash-close {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  background: none;
+  border: none;
+  padding: 0;
+  opacity: .6;
+  transition: opacity .2s;
+}
+.login-flash-close:hover { opacity: 1; }
+.login-flash.alert-info    .login-flash-close { color: #1a5276; }
+.login-flash.alert-warning .login-flash-close { color: #997a00; }
+.login-flash.alert-danger  .login-flash-close { color: #8a3a20; }
+.login-flash.alert-success .login-flash-close { color: #2d5a3a; }
 
 /* ── Login Page ────────────────────────────────── */
 .login-wrapper {
