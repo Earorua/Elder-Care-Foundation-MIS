@@ -329,6 +329,21 @@
     'Add Supplier': '添加供应商',
     'Edit Supplier': '编辑供应商',
 
+    // ── Supplier Accounts Payable ──
+    'Accounts Payable': '应付账款',
+    'Accounts Payable Summary': '应付账款汇总',
+    'Outstanding payable amounts by supplier for gift procurement': '按供应商划分的礼品采购应付金额',
+    'Total Payable': '应付总额',
+    'Suppliers with Balance': '有余额的供应商',
+    'Gift Types Procured': '已采购礼品种类',
+    'Payable by Supplier': '按供应商的应付款',
+    'Payable Breakdown by Gift': '按礼品的应付明细',
+    'Total Qty': '总数量',
+    'Line Total': '行合计',
+    'Grand Total': '合计',
+    'No outstanding payables': '无未付应付款',
+    'units': '件',
+
     // ── Events ──
     'Event Management': '活动管理',
     'Manage foundation events and campaigns': '管理基金会活动和项目',

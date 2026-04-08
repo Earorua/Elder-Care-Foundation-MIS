@@ -241,8 +241,29 @@ def delivery_delete(id):
 @login_required
 @role_required('event_coordinator')
 def suppliers_list():
-    rows = query_db('SELECT * FROM suppliers ORDER BY supplier_id ASC')
-    return render_template('gifts/suppliers.html', rows=rows)
+    rows = query_db(
+        'SELECT s.*, '
+        'COALESCE(SUM(b.batch_quantity * g.unit_cost), 0) as accounts_payable '
+        'FROM suppliers s '
+        'LEFT JOIN gift_batch b ON s.supplier_id = b.supplier_id '
+        'LEFT JOIN gifts g ON b.gift_id = g.gift_id '
+        'GROUP BY s.supplier_id '
+        'ORDER BY s.supplier_id ASC'
+    )
+    # Detailed payable breakdown: per supplier, per gift
+    payable_detail = query_db(
+        'SELECT s.supplier_id, s.supplier_name, g.gift_name, g.unit_cost, '
+        'SUM(b.batch_quantity) as total_qty, '
+        'SUM(b.batch_quantity * g.unit_cost) as line_total '
+        'FROM gift_batch b '
+        'JOIN suppliers s ON b.supplier_id = s.supplier_id '
+        'JOIN gifts g ON b.gift_id = g.gift_id '
+        'GROUP BY s.supplier_id, g.gift_id '
+        'ORDER BY s.supplier_name, g.gift_name'
+    )
+    total_payable = sum(r['accounts_payable'] for r in rows)
+    return render_template('gifts/suppliers.html', rows=rows,
+                           payable_detail=payable_detail, total_payable=total_payable)
 
 
 @gifts_bp.route('/suppliers/add', methods=['POST'])

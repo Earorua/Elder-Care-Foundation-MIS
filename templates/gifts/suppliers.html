@@ -23,7 +23,7 @@
     <thead class="table-header">
       <tr>
         <th data-i18n="Supplier ID">Supplier ID</th><th data-i18n="Supplier Name">Name</th><th data-i18n="Address">Address</th>
-        <th data-i18n="Phone">Phone</th><th data-i18n="Company">Company</th><th data-i18n="Contact Name">Contact</th><th data-i18n="Actions">Actions</th>
+        <th data-i18n="Phone">Phone</th><th data-i18n="Company">Company</th><th data-i18n="Contact Name">Contact</th><th data-i18n="Accounts Payable">Accounts Payable</th><th data-i18n="Actions">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -35,6 +35,13 @@
         <td>{{ r.phone }}</td>
         <td>{{ r.company }}</td>
         <td>{{ r.contact_name }}</td>
+        <td>
+          {% if r.accounts_payable > 0 %}
+          <span class="badge bg-warning text-dark">${{ '%.2f' % r.accounts_payable }}</span>
+          {% else %}
+          <span class="badge bg-success">$0.00</span>
+          {% endif %}
+        </td>
         <td>
           <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" data-i18n-title="Edit" title="Edit" onclick="openEdit({{ r.supplier_id }}, '{{ r.supplier_name }}', '{{ r.address }}', '{{ r.phone }}', '{{ r.company }}', '{{ r.contact_name }}')"><i class="bi bi-pencil"></i></button>
           <button class="btn btn-sm btn-danger" aria-label="Delete" data-bs-toggle="tooltip" data-i18n-title="Delete" title="Delete" onclick="confirmDelete('{{ url_for('gifts.suppliers_delete', id=r.supplier_id) }}', '{{ r.supplier_name }}')"><i class="bi bi-trash"></i></button>
@@ -49,6 +56,147 @@
   <i class="bi bi-inbox"></i>
   <h6 data-i18n="No records found">No records found</h6>
   <p data-i18n="Click &quot;Add&quot; to create your first entry.">Click "Add" to create your first entry.</p>
+</div>
+{% endif %}
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     Accounts Payable Summary Section
+     ═══════════════════════════════════════════════════════════════════════════ -->
+{% if rows %}
+<div class="section-divider"></div>
+
+<div class="page-header" style="margin-top:1rem;">
+  <div>
+    <h4 class="mb-1"><i class="bi bi-receipt-cutoff me-2"></i><span data-i18n="Accounts Payable Summary">Accounts Payable Summary</span></h4>
+    <p class="page-subtitle" data-i18n="Outstanding payable amounts by supplier for gift procurement">Outstanding payable amounts by supplier for gift procurement</p>
+  </div>
+</div>
+
+<!-- Stat Cards Row -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4 fade-in">
+    <div class="card stat-card" style="border-top: 3px solid #c07a56;">
+      <div class="card-body text-center">
+        <div class="text-muted mb-1"><i class="bi bi-cash-stack me-1"></i><span data-i18n="Total Payable">Total Payable</span></div>
+        <h3 class="mb-0 fw-bold" style="color:#c07a56;">${{ '%.2f' % total_payable }}</h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 fade-in fade-in-d1">
+    <div class="card stat-card" style="border-top: 3px solid #5a8a6a;">
+      <div class="card-body text-center">
+        <div class="text-muted mb-1"><i class="bi bi-building me-1"></i><span data-i18n="Suppliers with Balance">Suppliers with Balance</span></div>
+        <h3 class="mb-0 fw-bold" style="color:#5a8a6a;">{{ rows | selectattr('accounts_payable', 'gt', 0) | list | length }}</h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 fade-in fade-in-d2">
+    <div class="card stat-card" style="border-top: 3px solid #c8a45c;">
+      <div class="card-body text-center">
+        <div class="text-muted mb-1"><i class="bi bi-box-seam me-1"></i><span data-i18n="Gift Types Procured">Gift Types Procured</span></div>
+        <h3 class="mb-0 fw-bold" style="color:#c8a45c;">{{ payable_detail | length }}</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart + Detail Table Row -->
+<div class="row g-4 mb-4">
+  <!-- Doughnut Chart -->
+  <div class="col-lg-5 fade-in fade-in-d2">
+    <div class="card h-100">
+      <div class="card-body">
+        <h6 class="mb-3"><i class="bi bi-pie-chart me-2" style="color:#c07a56;"></i><span data-i18n="Payable by Supplier">Payable by Supplier</span></h6>
+        <canvas id="payableChart" style="max-height:300px;"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Table -->
+  <div class="col-lg-7 fade-in fade-in-d3">
+    <div class="card h-100">
+      <div class="card-header" style="background:linear-gradient(135deg,#5a8a6a,#4a7a5a);color:#fff;border-radius:var(--bs-card-inner-border-radius) var(--bs-card-inner-border-radius) 0 0;">
+        <h6 class="mb-0"><i class="bi bi-list-columns-reverse me-2"></i><span data-i18n="Payable Breakdown by Gift">Payable Breakdown by Gift</span></h6>
+      </div>
+      <div class="card-body p-0">
+        {% if payable_detail %}
+        <table class="table table-hover table-sm mb-0 align-middle">
+          <thead class="table-light">
+            <tr>
+              <th data-i18n="Supplier Name">Supplier</th>
+              <th data-i18n="Gift Name">Gift</th>
+              <th class="text-end" data-i18n="Unit Cost">Unit Cost</th>
+              <th class="text-end" data-i18n="Total Qty">Total Qty</th>
+              <th class="text-end" data-i18n="Line Total">Line Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% set ns = namespace(current_supplier='') %}
+            {% for d in payable_detail %}
+            <tr>
+              <td>
+                {% if d.supplier_name != ns.current_supplier %}
+                  <strong>{{ d.supplier_name }}</strong>
+                  {% set ns.current_supplier = d.supplier_name %}
+                {% endif %}
+              </td>
+              <td>{{ d.gift_name }}</td>
+              <td class="text-end">${{ '%.2f' % d.unit_cost }}</td>
+              <td class="text-end">{{ d.total_qty }}</td>
+              <td class="text-end"><strong>${{ '%.2f' % d.line_total }}</strong></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr class="table-active">
+              <td colspan="4" class="fw-bold"><span data-i18n="Grand Total">Grand Total</span></td>
+              <td class="text-end fw-bold fs-6" style="color:#c07a56;">${{ '%.2f' % total_payable }}</td>
+            </tr>
+          </tfoot>
+        </table>
+        {% else %}
+        <div class="text-center text-muted py-4">
+          <i class="bi bi-check-circle" style="font-size:2rem;color:#5a8a6a;"></i>
+          <p class="mt-2 mb-0" data-i18n="No outstanding payables">No outstanding payables</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Per-Supplier Cards -->
+<div class="row g-3 mb-4">
+  {% for r in rows %}
+  {% if r.accounts_payable > 0 %}
+  <div class="col-md-6 col-lg-4 fade-in fade-in-d{{ loop.index0 % 5 }}">
+    <div class="card h-100" style="border-left:4px solid #c07a56;">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div>
+            <h6 class="fw-bold mb-0">{{ r.supplier_name }}</h6>
+            <small class="text-muted">{{ r.company }}</small>
+          </div>
+          <span class="badge bg-warning text-dark fs-6">${{ '%.2f' % r.accounts_payable }}</span>
+        </div>
+        <div class="mt-2">
+          {% for d in payable_detail %}
+          {% if d.supplier_id == r.supplier_id %}
+          <div class="d-flex justify-content-between align-items-center py-1" style="border-bottom:1px dashed #e8e4df;">
+            <small><i class="bi bi-gift me-1" style="color:#c8a45c;"></i>{{ d.gift_name }}</small>
+            <small class="text-muted text-nowrap ms-2">{{ d.total_qty }} <span data-i18n="units">units</span> &times; ${{ '%.2f' % d.unit_cost }} = <strong>${{ '%.2f' % d.line_total }}</strong></small>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+        {% if r.phone %}
+        <div class="mt-2 text-muted small"><i class="bi bi-telephone me-1"></i>{{ r.phone }}</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  {% endfor %}
 </div>
 {% endif %}
 
@@ -95,5 +243,68 @@ function openEdit(id,name,address,phone,company,contact){
   document.getElementById('f_contact_name').value=contact;
   modal.show();
 }
+
+// ── Accounts Payable Doughnut Chart ──
+{% if rows %}
+(function(){
+  const canvas = document.getElementById('payableChart');
+  if (!canvas) return;
+
+  const labels = [{% for r in rows %}{% if r.accounts_payable > 0 %}I18n.t('{{ r.supplier_name }}'),{% endif %}{% endfor %}];
+  const data   = [{% for r in rows %}{% if r.accounts_payable > 0 %}{{ r.accounts_payable }},{% endif %}{% endfor %}];
+  const colors = ['#c07a56','#5a8a6a','#c8a45c','#8a6dab','#5b9bd5','#d97b5d','#6dab8a','#ab8a6d'];
+
+  if (data.length === 0) {
+    canvas.parentElement.innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-check-circle" style="font-size:2rem;color:#5a8a6a;"></i><p class="mt-2">' + I18n.t('No outstanding payables') + '</p></div>';
+    return;
+  }
+
+  new Chart(canvas, {
+    type: 'doughnut',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: data,
+        backgroundColor: colors.slice(0, data.length),
+        borderWidth: 2,
+        borderColor: '#fffdf9',
+        hoverBorderColor: '#fffdf9',
+        hoverOffset: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      cutout: '58%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            font: { family: 'Outfit, sans-serif', size: 12 },
+            color: '#6b6560',
+            padding: 14,
+            usePointStyle: true,
+            pointStyleWidth: 8
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(42,58,48,.95)',
+          titleFont: { family: 'Outfit, sans-serif', size: 12, weight: '600' },
+          bodyFont: { family: 'Outfit, sans-serif', size: 11 },
+          padding: 12,
+          cornerRadius: 8,
+          callbacks: {
+            label: function(ctx) {
+              const total = ctx.dataset.data.reduce((a,b) => a+b, 0);
+              const pct = ((ctx.parsed / total) * 100).toFixed(1);
+              return ctx.label + ': $' + ctx.parsed.toLocaleString('en-US', {minimumFractionDigits:2}) + ' (' + pct + '%)';
+            }
+          }
+        }
+      }
+    }
+  });
+})();
+{% endif %}
 </script>
 {% endblock %}
