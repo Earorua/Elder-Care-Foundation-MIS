@@ -659,14 +659,13 @@
       el.title = t(el.getAttribute('data-i18n-title'));
       el.setAttribute('data-bs-original-title', el.title);
     });
-    // data-i18n-html: translate innerHTML (for elements with icons inside)
+    // data-i18n-html: translate innerHTML (for elements with rich HTML)
     document.querySelectorAll('[data-i18n-html]').forEach(el => {
       const key = el.getAttribute('data-i18n-html');
       if (currentLang === 'zh' && ZH[key] !== undefined) {
         el.innerHTML = ZH[key];
-      } else {
-        el.innerHTML = key;
       }
+      // English: keep original HTML from template, do not overwrite
     });
     // Update html lang attribute
     document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'en';
