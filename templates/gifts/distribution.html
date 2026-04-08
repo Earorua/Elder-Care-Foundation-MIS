@@ -23,7 +23,7 @@
     <thead class="table-header">
       <tr>
         <th data-i18n="Distribution ID">Distribution ID</th><th data-i18n="Batches">Batch</th><th data-i18n="Donation ID">Donation ID</th><th data-i18n="Delivery">Delivery</th><th data-i18n="Date">Date</th>
-        <th data-i18n="Quantity">Qty</th><th data-i18n="Is Free">Free</th><th data-i18n="Reason">Reason</th><th data-i18n="Distributed By">Distributed By</th><th data-i18n="Notes">Notes</th><th data-i18n="Actions">Actions</th>
+        <th data-i18n="Quantity">Qty</th><th data-i18n="Is Free">Free</th><th data-i18n="Reason">Reason</th><th data-i18n="Distributed By">Distributed By</th><th data-i18n="Notes" style="width:10%">Notes</th><th data-i18n="Actions" style="width:120px;white-space:nowrap">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -39,7 +39,7 @@
         <td>{{ r.distribution_reason }}</td>
         <td>{{ r.distributed_by }}</td>
         <td>{{ r.notes }}</td>
-        <td>
+        <td style="white-space:nowrap">
           <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" data-i18n-title="Edit" title="Edit" onclick="openEdit({{ r.distribution_id }}, '{{ r.batch_id }}', '{{ r.donation_id or '' }}', '{{ r.delivery_id or '' }}', '{{ r.distribution_date }}', '{{ r.quantity }}', '{{ r.is_free }}', '{{ r.distribution_reason }}', '{{ r.distributed_by }}', '{{ r.notes }}')"><i class="bi bi-pencil"></i></button>
           <button class="btn btn-sm btn-danger" aria-label="Delete" data-bs-toggle="tooltip" data-i18n-title="Delete" title="Delete" onclick="confirmDelete('{{ url_for('gifts.distribution_delete', id=r.distribution_id) }}', 'Distribution #{{ r.distribution_id }}')"><i class="bi bi-trash"></i></button>
         </td>
