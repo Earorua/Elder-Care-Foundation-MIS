@@ -649,6 +649,8 @@
     'Metrics': '指标',
     'What to calculate': '要计算的指标',
     '+ Add filter...': '+ 添加筛选...',
+    'Select dimensions...': '选择维度...',
+    'Select metrics...': '选择指标...',
     'No filters applied — all records included': '未设置筛选 — 包含所有记录',
     'Run Query': '执行查询',
     'Clear All': '全部清除',
