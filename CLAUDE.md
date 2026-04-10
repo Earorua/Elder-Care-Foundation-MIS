@@ -1,7 +1,7 @@
 # Elder Care Foundation MIS
 
 ## Overview
-Flask-based Management Information System for an elder care foundation. Connects to an SQLite database (19 tables), providing CRUD management across 6 modules: Dashboard, Donations, Personnel, Gifts, Events, and Finance. Features RBAC access control and GAAS-compliant financial reports.
+Flask-based Management Information System for an elder care foundation. Connects to an SQLite database (19 tables), providing CRUD management across 7 modules: Dashboard, Donations, Personnel, Gifts, Events, Finance, and BI Explorer. Features RBAC access control, GAAS-compliant financial reports, and a dynamic BI query builder.
 
 ## Tech Stack
 - Flask + Jinja2 + Flask-Login
@@ -27,7 +27,7 @@ Flask-based Management Information System for an elder care foundation. Connects
 - `User.has_role(*roles)` method auto-grants access to admin role
 - Role definitions: admin (all), finance (donations + finance), event_coordinator (personnel + gifts + events), viewer (dashboard only)
 - Sidebar in `base.html` uses `{% if current_user.has_role(...) %}` for role-conditional navigation rendering
-- Blueprint route permissions: donations/finance -> `finance`, events/personnel/gifts -> `event_coordinator`, dashboard -> all roles
+- Blueprint route permissions: donations/finance -> `finance`, events/personnel/gifts -> `event_coordinator`, dashboard -> all roles, bi -> all roles
 - User management page `/users` (admin only): add/edit role/reset password/enable-disable/delete users
 
 ## Seed Users
@@ -55,7 +55,8 @@ C:\Users\XF\Desktop\elder_care_gui\
 │   ├── personnel.py        # Persons/schedules/payments (event_coordinator role)
 │   ├── gifts.py            # Gifts/batches/distribution/delivery/suppliers (event_coordinator role)
 │   ├── events.py           # Events/donor participation (event_coordinator role)
-│   └── finance.py          # Grants/other income/reports overview + 3 sub-reports (finance role)
+│   ├── finance.py          # Grants/other income/reports overview + 3 sub-reports (finance role)
+│   └── bi.py               # BI Explorer: whitelist defs (46 dims, 30+ metrics, 6 domains) + query builder + API
 ├── templates/
 │   ├── base.html           # Layout: sidebar + sticky topbar (breadcrumb + clock) + watermark footer
 │   ├── auth/login.html     # Split-panel login: left branding + right form
@@ -65,7 +66,8 @@ C:\Users\XF\Desktop\elder_care_gui\
 │   ├── personnel/          # persons, schedules, payments
 │   ├── gifts/              # gifts, batches, distribution, delivery, suppliers
 │   ├── events/             # events, donors_events
-│   └── finance/            # grants, other_income, reports, income_statement, balance_sheet, expenditure
+│   ├── finance/            # grants, other_income, reports, income_statement, balance_sheet, expenditure
+│   └── bi/index.html       # BI Explorer: domain selector, filter/dimension/metric panels, chart + table
 └── static/
     ├── css/style.css       # "Botanical Warmth" theme — Playfair Display + Outfit, sage/terracotta/gold palette
     ├── js/i18n.js          # Bilingual i18n engine (EN/ZH): translation dict + DOM auto-apply + language toggle
@@ -160,3 +162,12 @@ python app.py
     - Chart dataset labels, axis units, and tooltip text all pass through `I18n.t()` for bilingual display
     - Topbar clock and dashboard "Data updated" timestamp switch locale (`en-US` ↔ `zh-CN`) based on language
     - Flash messages (login page) rendered with `data-i18n` for client-side translation ("Logged out successfully", "Please log in first")
+21. BI Explorer module (`/bi`)
+    - Backend (`blueprints/bi.py`): whitelist-based query builder with 6 data domains (donor, person, event, gift, finance, schedule), 46 dimensions, 30+ metrics, 30+ filters; parameterised SQL generation with domain auto-detection; `/api/bi/query` POST endpoint + `/api/bi/meta` GET endpoint
+    - Frontend (`templates/bi/index.html`): three-panel builder (Filters / Dimensions / Metrics) with multi-select dropdowns; domain selector radio buttons; 12 presets (6 basic + 6 comprehensive); collapsible query summary bar; sortable results table; CSV export
+    - Chart system: 4 chart types (bar / horizontal bar / doughnut / line) with type toggle buttons; chart metric selector (multi-select dropdown to choose which metrics to chart); multi-axis support (each metric gets independent Y-axis with color-coded labels and formatted ticks to handle magnitude differences); 12-color palette
+    - Doughnut chart enhancements: per-metric pagination with dot indicator + arrow navigation; title displays current metric name centered above chart; legend at bottom showing all dimension labels (multi-dim joined with `/`); tooltip shows value + percentage
+    - URL hash state encoding (`#q=base64`) for shareable/bookmarkable queries; state restore on page load
+    - CSS: doughnut pagination styles (nav buttons, dot indicators, labels), multi-select dropdown styles
+    - i18n: all BI UI text, preset labels, and 50+ dimension/metric value translations added to `i18n.js`
+22. Database fix: removed broken foreign key constraint on `donations.donation_type` that referenced empty table name `""`, causing "no such table: main." error when `PRAGMA foreign_keys = ON`
