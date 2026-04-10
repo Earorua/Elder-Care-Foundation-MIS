@@ -33,6 +33,32 @@ FILTER_DEFS = {
                          'options': ['Male', 'Female', 'Other']},
     'hire_date':        {'label': 'Hire Date',        'domain': 'person', 'type': 'daterange', 'sql': 'p.hire_date'},
     'payment_amount':   {'label': 'Payment Amount',   'domain': 'person', 'type': 'range',  'sql': 'pay.amount'},
+    # Event filters
+    'event_type':       {'label': 'Event Type',       'domain': 'event', 'type': 'enum',   'sql': 'e.event_type',
+                         'options_query': "SELECT DISTINCT event_type FROM events WHERE event_type != '' ORDER BY event_type"},
+    'event_status':     {'label': 'Event Status',     'domain': 'event', 'type': 'enum',   'sql': 'e.status',
+                         'options': ['Planned', 'Ongoing', 'Completed', 'Cancelled']},
+    'event_location':   {'label': 'Event Location',   'domain': 'event', 'type': 'enum',   'sql': 'e.location',
+                         'options_query': "SELECT DISTINCT location FROM events WHERE location != '' ORDER BY location"},
+    'event_date':       {'label': 'Event Date',       'domain': 'event', 'type': 'daterange', 'sql': 'e.start_date'},
+    'target_amount':    {'label': 'Target Amount',    'domain': 'event', 'type': 'range',  'sql': 'e.target_amount'},
+    # Gift filters
+    'gift_type':        {'label': 'Gift Type',        'domain': 'gift', 'type': 'enum',   'sql': 'g.gift_type',
+                         'options_query': "SELECT DISTINCT gift_type FROM gifts WHERE gift_type != '' ORDER BY gift_type"},
+    'gift_active':      {'label': 'Gift Active',      'domain': 'gift', 'type': 'bool',   'sql': 'g.is_active'},
+    'unit_cost':        {'label': 'Unit Cost',        'domain': 'gift', 'type': 'range',  'sql': 'g.unit_cost'},
+    'is_free':          {'label': 'Free Distribution','domain': 'gift', 'type': 'bool',   'sql': 'gd.is_free'},
+    # Finance filters
+    'source_type':      {'label': 'Source Type',      'domain': 'finance', 'type': 'enum',  'sql': 'f.source_type',
+                         'options': ['Grant', 'Other']},
+    'finance_amount':   {'label': 'Amount',           'domain': 'finance', 'type': 'range', 'sql': 'f.amount'},
+    'finance_date':     {'label': 'Received Date',    'domain': 'finance', 'type': 'daterange', 'sql': 'f.received'},
+    # Schedule filters
+    'shift_date':       {'label': 'Shift Date',       'domain': 'schedule', 'type': 'daterange', 'sql': 's.shift_date'},
+    'schedule_status':  {'label': 'Status',           'domain': 'schedule', 'type': 'enum',  'sql': 's.status',
+                         'options': ['Scheduled', 'In Progress', 'Completed', 'Absent']},
+    'is_absent_filter': {'label': 'Absent',           'domain': 'schedule', 'type': 'bool',  'sql': 's.is_absent'},
+    'overtime':         {'label': 'Overtime (hrs)',    'domain': 'schedule', 'type': 'range', 'sql': 's.overtime'},
 }
 
 # Dimensions: name -> {label, sql_expr, domain}
@@ -61,6 +87,45 @@ DIMENSION_DEFS = {
                          'alias': 'person_gender'},
     'payment_type':     {'label': 'Payment Type',     'domain': 'person', 'sql': 'pay.payment_type',
                          'alias': 'payment_type'},
+    # Event dimensions
+    'event_type':       {'label': 'Event Type',       'domain': 'event',  'sql': 'e.event_type',
+                         'alias': 'event_type'},
+    'event_status':     {'label': 'Event Status',     'domain': 'event',  'sql': 'e.status',
+                         'alias': 'event_status'},
+    'event_location':   {'label': 'Event Location',   'domain': 'event',  'sql': 'e.location',
+                         'alias': 'event_location'},
+    'event_year':       {'label': 'Event Year',       'domain': 'event',  'sql': "strftime('%Y', e.start_date)",
+                         'alias': 'event_year'},
+    # Gift dimensions
+    'gift_type':        {'label': 'Gift Type',        'domain': 'gift',  'sql': 'g.gift_type',
+                         'alias': 'gift_type'},
+    'gift_active_dim':  {'label': 'Gift Active',      'domain': 'gift',
+                         'sql': "CASE g.is_active WHEN 1 THEN 'Active' ELSE 'Inactive' END",
+                         'alias': 'gift_active'},
+    'is_free_dim':      {'label': 'Distribution Type','domain': 'gift',
+                         'sql': "CASE gd.is_free WHEN 1 THEN 'Free' ELSE 'Donor Gift' END",
+                         'alias': 'distribution_type'},
+    # Finance dimensions
+    'finance_source_type': {'label': 'Source Type',   'domain': 'finance', 'sql': 'f.source_type',
+                            'alias': 'source_type'},
+    'finance_source':      {'label': 'Source',        'domain': 'finance', 'sql': 'f.source',
+                            'alias': 'source'},
+    'finance_year':        {'label': 'Year',          'domain': 'finance',
+                            'sql': "strftime('%Y', f.received)",
+                            'alias': 'finance_year'},
+    # Schedule dimensions
+    'schedule_status_dim':  {'label': 'Schedule Status', 'domain': 'schedule', 'sql': 's.status',
+                             'alias': 'schedule_status'},
+    'is_absent_dim':        {'label': 'Attendance',      'domain': 'schedule',
+                             'sql': "CASE s.is_absent WHEN 1 THEN 'Absent' ELSE 'Present' END",
+                             'alias': 'attendance'},
+    'shift_month':          {'label': 'Shift Month',     'domain': 'schedule',
+                             'sql': "strftime('%Y-%m', s.shift_date)",
+                             'alias': 'shift_month'},
+    'schedule_event_name':  {'label': 'Event',           'domain': 'schedule', 'sql': 'e.event_name',
+                             'alias': 'event_name'},
+    'schedule_person_type': {'label': 'Person Type',     'domain': 'schedule', 'sql': 'p.person_type',
+                             'alias': 'person_type'},
 }
 
 # Metrics: name -> {label, sql_expr, domain, format}
@@ -91,6 +156,51 @@ METRIC_DEFS = {
                               'sql': 'SUM(pay.amount)', 'format': 'currency'},
     'avg_payment':          {'label': 'Avg Payment Amount',    'domain': 'person',
                               'sql': 'AVG(pay.amount)', 'format': 'currency'},
+    # Event metrics
+    'event_count':       {'label': 'Event Count',           'domain': 'event',
+                          'sql': 'COUNT(DISTINCT e.event_id)', 'format': 'integer'},
+    'participant_count': {'label': 'Participant Count',     'domain': 'event',
+                          'sql': 'COUNT(DISTINCT de.donor_id)', 'format': 'integer'},
+    'total_target':      {'label': 'Total Target Amount',   'domain': 'event',
+                          'sql': 'SUM(e.target_amount)', 'format': 'currency'},
+    'total_actual':      {'label': 'Total Actual Amount',   'domain': 'event',
+                          'sql': 'SUM(e.actual_amount)', 'format': 'currency'},
+    'avg_target':        {'label': 'Avg Target Amount',     'domain': 'event',
+                          'sql': 'AVG(e.target_amount)', 'format': 'currency'},
+    'achievement_rate':  {'label': 'Achievement Rate',      'domain': 'event',
+                          'sql': 'ROUND(SUM(e.actual_amount)*100.0/NULLIF(SUM(e.target_amount),0), 1)', 'format': 'percent_val'},
+    # Gift metrics
+    'gift_count':            {'label': 'Gift Count',       'domain': 'gift',
+                              'sql': 'COUNT(DISTINCT g.gift_id)', 'format': 'integer'},
+    'total_stock':           {'label': 'Total Stock',      'domain': 'gift',
+                              'sql': 'SUM(g.current_stock)', 'format': 'integer'},
+    'total_distributed':     {'label': 'Total Distributed','domain': 'gift',
+                              'sql': 'SUM(gd.quantity)', 'format': 'integer'},
+    'total_inventory_value': {'label': 'Inventory Value',  'domain': 'gift',
+                              'sql': 'SUM(g.current_stock * g.unit_cost)', 'format': 'currency'},
+    'avg_unit_cost':         {'label': 'Avg Unit Cost',    'domain': 'gift',
+                              'sql': 'AVG(g.unit_cost)', 'format': 'currency'},
+    # Finance metrics
+    'income_count':     {'label': 'Income Count',     'domain': 'finance',
+                         'sql': 'COUNT(*)', 'format': 'integer'},
+    'total_income':     {'label': 'Total Income',     'domain': 'finance',
+                         'sql': 'SUM(f.amount)', 'format': 'currency'},
+    'avg_income':       {'label': 'Avg Income',       'domain': 'finance',
+                         'sql': 'AVG(f.amount)', 'format': 'currency'},
+    'max_income':       {'label': 'Max Income',       'domain': 'finance',
+                         'sql': 'MAX(f.amount)', 'format': 'currency'},
+    'min_income':       {'label': 'Min Income',       'domain': 'finance',
+                         'sql': 'MIN(f.amount)', 'format': 'currency'},
+    # Schedule metrics
+    'shift_count':      {'label': 'Shift Count',      'domain': 'schedule',
+                         'sql': 'COUNT(*)', 'format': 'integer'},
+    'absent_count':     {'label': 'Absent Count',     'domain': 'schedule',
+                         'sql': 'SUM(CASE s.is_absent WHEN 1 THEN 1 ELSE 0 END)', 'format': 'integer'},
+    'total_overtime':   {'label': 'Total Overtime',    'domain': 'schedule',
+                         'sql': 'SUM(s.overtime)', 'format': 'integer'},
+    'attendance_rate':  {'label': 'Attendance Rate',   'domain': 'schedule',
+                         'sql': "ROUND((1.0 - CAST(SUM(CASE s.is_absent WHEN 1 THEN 1 ELSE 0 END) AS REAL) / NULLIF(COUNT(*), 0)) * 100, 1)",
+                         'format': 'percent_val'},
 }
 
 # ---------------------------------------------------------------------------
@@ -107,28 +217,63 @@ PERSON_BASE = (
     'LEFT JOIN payments pay ON p.person_id = pay.person_id'
 )
 
+EVENT_BASE = (
+    'FROM events e '
+    'LEFT JOIN donors_events de ON e.event_id = de.event_id '
+    'LEFT JOIN donors dn ON de.donor_id = dn.donor_id'
+)
+
+GIFT_BASE = (
+    'FROM gifts g '
+    'LEFT JOIN gift_batch gb ON g.gift_id = gb.gift_id '
+    'LEFT JOIN gift_distribution gd ON gb.batch_id = gd.batch_id'
+)
+
+FINANCE_BASE = (
+    "FROM ("
+    "SELECT grant_name AS name, 'Grant' AS source_type, "
+    "funding_org AS source, amount, received_date AS received "
+    "FROM grants "
+    "UNION ALL "
+    "SELECT income_name, 'Other' AS source_type, "
+    "source_name, amount, recevied_date "
+    "FROM other_income"
+    ") f"
+)
+
+SCHEDULE_BASE = (
+    'FROM (SELECT *, "is_absent\t" AS is_absent FROM schedules) s '
+    'LEFT JOIN persons p ON s.person_id = p.person_id '
+    'LEFT JOIN events e ON s.event_id = e.event_id'
+)
+
+VALID_DOMAINS = ('donor', 'person', 'event', 'gift', 'finance', 'schedule')
+
+DOMAIN_BASES = {
+    'donor': DONOR_BASE,
+    'person': PERSON_BASE,
+    'event': EVENT_BASE,
+    'gift': GIFT_BASE,
+    'finance': FINANCE_BASE,
+    'schedule': SCHEDULE_BASE,
+}
+
 
 def _detect_domain(filters, dimensions, metrics):
     """Determine query domain from selected fields."""
     all_keys = list(filters.keys()) + dimensions + metrics
-    has_donor  = any(FILTER_DEFS.get(k, {}).get('domain') == 'donor'  or
-                     DIMENSION_DEFS.get(k, {}).get('domain') == 'donor' or
-                     METRIC_DEFS.get(k, {}).get('domain') == 'donor'
-                     for k in all_keys)
-    has_person = any(FILTER_DEFS.get(k, {}).get('domain') == 'person' or
-                     DIMENSION_DEFS.get(k, {}).get('domain') == 'person' or
-                     METRIC_DEFS.get(k, {}).get('domain') == 'person'
-                     for k in all_keys)
-    if has_donor and not has_person:
-        return 'donor'
-    if has_person and not has_donor:
-        return 'person'
-    return 'donor'  # default
+    for dom in VALID_DOMAINS:
+        if any(FILTER_DEFS.get(k, {}).get('domain') == dom or
+               DIMENSION_DEFS.get(k, {}).get('domain') == dom or
+               METRIC_DEFS.get(k, {}).get('domain') == dom
+               for k in all_keys):
+            return dom
+    return 'donor'
 
 
 def _build_query(domain, filters, dimensions, metrics):
     """Build a safe parameterised SQL query from whitelisted field names."""
-    base = DONOR_BASE if domain == 'donor' else PERSON_BASE
+    base = DOMAIN_BASES.get(domain, DONOR_BASE)
     params = []
 
     # SELECT clause
@@ -205,11 +350,17 @@ def _build_query(domain, filters, dimensions, metrics):
 
 
 def _get_total(domain, filters):
-    """Get total count of all donors/persons (unfiltered) for percent-of-total."""
-    if domain == 'donor':
-        row = query_db("SELECT COUNT(DISTINCT donor_id) AS total FROM donors", one=True)
-    else:
-        row = query_db("SELECT COUNT(DISTINCT person_id) AS total FROM persons", one=True)
+    """Get total count for percent-of-total metrics."""
+    totals = {
+        'donor':    "SELECT COUNT(DISTINCT donor_id) AS total FROM donors",
+        'person':   "SELECT COUNT(DISTINCT person_id) AS total FROM persons",
+        'event':    "SELECT COUNT(DISTINCT event_id) AS total FROM events",
+        'gift':     "SELECT COUNT(DISTINCT gift_id) AS total FROM gifts",
+        'finance':  "SELECT COUNT(*) AS total FROM (SELECT 1 FROM grants UNION ALL SELECT 1 FROM other_income)",
+        'schedule': "SELECT COUNT(*) AS total FROM schedules",
+    }
+    sql = totals.get(domain, totals['donor'])
+    row = query_db(sql, one=True)
     return row['total'] if row else 1
 
 
@@ -240,14 +391,18 @@ def bi_index():
 @login_required
 def bi_query():
     body = request.get_json(force=True)
-    filters    = body.get('filters', {})     # {field_key: value_or_range}
-    dimensions = body.get('dimensions', [])  # [field_key, ...]
-    metrics    = body.get('metrics', [])     # [field_key, ...]
+    filters    = body.get('filters', {})
+    dimensions = body.get('dimensions', [])
+    metrics    = body.get('metrics', [])
 
     if not metrics:
         return jsonify(error='Select at least one metric'), 400
 
-    domain = _detect_domain(filters, dimensions, metrics)
+    # Accept explicit domain from frontend; fall back to auto-detection
+    domain = body.get('domain', '')
+    if domain not in VALID_DOMAINS:
+        domain = _detect_domain(filters, dimensions, metrics)
+
     sql, params, valid_metrics = _build_query(domain, filters, dimensions, metrics)
 
     if not sql:
@@ -276,7 +431,6 @@ def bi_query():
     for m_key in valid_metrics:
         m = METRIC_DEFS[m_key]
         if m.get('format') == 'percent':
-            # Only show the computed percentage column, not the raw count
             columns.append({'key': m_key + '_pct', 'label': m['label'], 'format': 'percent_val'})
         else:
             columns.append({'key': m_key, 'label': m['label'], 'format': m['format']})
