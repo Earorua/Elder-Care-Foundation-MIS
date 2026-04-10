@@ -1836,3 +1836,88 @@ td .btn-danger:hover {
   z-index: 9999;
   box-shadow: 0 2px 8px rgba(0,0,0,.12);
 }
+
+
+/* ── BI Explorer Enhancements ─────────────────── */
+.bi-builder-wrap {
+  max-height: 2000px;
+  overflow: visible;
+  opacity: 1;
+  transition: max-height .35s var(--ease), opacity .25s var(--ease);
+}
+.bi-builder-wrap.collapsed {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.bi-query-summary {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-warm);
+  border-radius: 10px;
+  padding: .6rem 1rem;
+  margin-bottom: .75rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.bi-chart-type-btn {
+  border: 1.5px solid var(--border-warm) !important;
+  background: transparent;
+  color: var(--text-muted);
+  padding: .25rem .5rem;
+  font-size: .85rem;
+  transition: all .2s var(--ease);
+}
+.bi-chart-type-btn:hover {
+  border-color: var(--accent) !important;
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.bi-chart-type-btn.active {
+  background: linear-gradient(135deg, #3d6b4e, #5a8a6a) !important;
+  border-color: #3d6b4e !important;
+  color: #fff !important;
+  box-shadow: 0 2px 8px rgba(61,107,78,.25);
+}
+
+.bi-sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background .15s;
+}
+.bi-sortable:hover {
+  background: rgba(90,138,106,.06);
+}
+.bi-sort-icon {
+  font-size: .7rem;
+  transition: opacity .15s;
+}
+
+.bi-preset-pill {
+  border: 1.5px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: .78rem;
+  padding: .3rem .75rem;
+  border-radius: 20px;
+  margin-right: .4rem;
+  white-space: nowrap;
+  transition: all .2s var(--ease);
+}
+.bi-preset-pill:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent-hover);
+  color: var(--accent-hover);
+}
+.bi-preset-pill.active {
+  background: linear-gradient(135deg, #3d6b4e, #5a8a6a);
+  border-color: #3d6b4e;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(61,107,78,.25);
+}
+
+@media (max-width: 767.98px) {
+  .bi-preset-row { padding-bottom: .5rem; }
+  .bi-domain-btn { font-size: .78rem; padding: .35rem .5rem; }
+}
