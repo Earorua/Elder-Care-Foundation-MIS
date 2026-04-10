@@ -157,6 +157,59 @@
     background: linear-gradient(135deg, #a08030, #c8a45c);
     border-color: #a08030;
   }
+
+  /* ── Doughnut pagination ── */
+  .doughnut-nav-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-warm);
+    background: var(--bg-main);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all .2s;
+  }
+  .doughnut-nav-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(90,138,106,.06);
+  }
+  .doughnut-nav-btn:disabled {
+    opacity: .3;
+    cursor: not-allowed;
+  }
+  .doughnut-dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .doughnut-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--border-warm);
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .doughnut-dot:hover {
+    background: var(--terracotta);
+    transform: scale(1.2);
+  }
+  .doughnut-dot.active {
+    background: linear-gradient(135deg, #a08030, #c8a45c);
+    box-shadow: 0 0 6px rgba(200,164,92,.5);
+    transform: scale(1.3);
+  }
+  .doughnut-nav-label {
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 40px;
+    text-align: center;
+  }
 </style>
 {% endblock %}
 
@@ -335,18 +388,31 @@
 
 <!-- Chart -->
 <div id="biChartWrap" class="card mt-3" style="display:none;border:none;background:var(--bg-card);box-shadow:var(--shadow-md);">
-  <div class="card-header d-flex align-items-center justify-content-between" style="background:var(--bg-card);border-bottom:2px solid var(--border-warm);">
+  <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2" style="background:var(--bg-card);border-bottom:2px solid var(--border-warm);">
     <span><i class="bi bi-bar-chart-fill me-2" style="color:var(--terracotta);"></i><span data-i18n="Chart">Chart</span></span>
-    <div class="btn-group btn-group-sm" id="chartTypeGroup">
-      <button class="btn bi-chart-type-btn active" data-chart="bar" title="Bar Chart" data-i18n-title="Bar Chart"><i class="bi bi-bar-chart-fill"></i></button>
-      <button class="btn bi-chart-type-btn" data-chart="horizontalBar" title="Horizontal Bar" data-i18n-title="Horizontal Bar"><i class="bi bi-bar-chart-steps"></i></button>
-      <button class="btn bi-chart-type-btn" data-chart="doughnut" title="Doughnut Chart" data-i18n-title="Doughnut Chart"><i class="bi bi-pie-chart-fill"></i></button>
-      <button class="btn bi-chart-type-btn" data-chart="line" title="Line Chart" data-i18n-title="Line Chart"><i class="bi bi-graph-up"></i></button>
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <!-- Chart Metric Selector -->
+      <div class="bi-multiselect" id="chartMetricSelector" style="min-width:180px;max-width:320px;">
+        <div class="bi-multiselect-trigger" id="chartMetTrigger" style="min-height:32px;padding:2px 28px 2px 6px;font-size:.8rem;">
+          <span class="bi-multiselect-placeholder" style="font-size:.78rem;" data-i18n="Select chart metrics...">Select chart metrics...</span>
+          <i class="bi bi-chevron-down bi-ms-arrow" style="font-size:.65rem;"></i>
+        </div>
+        <div class="bi-multiselect-dropdown" id="chartMetDropdown" style="min-width:200px;"></div>
+      </div>
+      <!-- Chart Type Toggle -->
+      <div class="btn-group btn-group-sm" id="chartTypeGroup">
+        <button class="btn bi-chart-type-btn active" data-chart="bar" title="Bar Chart" data-i18n-title="Bar Chart"><i class="bi bi-bar-chart-fill"></i></button>
+        <button class="btn bi-chart-type-btn" data-chart="horizontalBar" title="Horizontal Bar" data-i18n-title="Horizontal Bar"><i class="bi bi-bar-chart-steps"></i></button>
+        <button class="btn bi-chart-type-btn" data-chart="doughnut" title="Doughnut Chart" data-i18n-title="Doughnut Chart"><i class="bi bi-pie-chart-fill"></i></button>
+        <button class="btn bi-chart-type-btn" data-chart="line" title="Line Chart" data-i18n-title="Line Chart"><i class="bi bi-graph-up"></i></button>
+      </div>
     </div>
   </div>
-  <div class="card-body" style="height:320px;">
+  <div class="card-body" style="height:320px;position:relative;">
     <canvas id="biChart"></canvas>
   </div>
+  <!-- Doughnut pagination nav -->
+  <div id="doughnutNav" class="card-footer text-center py-2" style="display:none;background:var(--bg-card);border-top:1px solid var(--border-warm);"></div>
 </div>
 
 {% endblock %}
@@ -365,15 +431,25 @@
   let biChart = null;
   let chartType = 'bar';
   let lastQueryData = null;
+  let chartSelectedMets = []; // metrics selected for charting
+  let doughnutMetIndex = 0; // current metric index for doughnut pagination
 
   // ── Presets ──
   const PRESETS = [
+    // Basic
     { label: 'Donations by Type',  domain: 'donor',    dims: ['donation_type'],         mets: ['donor_count', 'total_donation'] },
     { label: 'Donors by Location', domain: 'donor',    dims: ['donor_location'],        mets: ['donor_count', 'total_donation'] },
     { label: 'Staff Payments',     domain: 'person',   dims: ['person_role'],           mets: ['person_count', 'total_payment'] },
     { label: 'Events Overview',    domain: 'event',    dims: ['event_type'],            mets: ['event_count', 'total_actual'] },
     { label: 'Gift Inventory',     domain: 'gift',     dims: ['gift_type'],             mets: ['gift_count', 'total_stock', 'total_inventory_value'] },
     { label: 'Income Sources',     domain: 'finance',  dims: ['finance_source_type'],   mets: ['income_count', 'total_income'] },
+    // Comprehensive
+    { label: 'Donation Analysis',    domain: 'donor',    dims: ['donation_type'],        mets: ['donor_count', 'total_donation', 'avg_donation', 'donation_count'] },
+    { label: 'Donor Demographics',   domain: 'donor',    dims: ['donor_gender'],         mets: ['donor_count', 'pct_of_total_donors', 'total_donation', 'avg_donation'] },
+    { label: 'Monthly Trends',       domain: 'donor',    dims: ['donation_month'],       mets: ['donation_count', 'total_donation', 'avg_donation'] },
+    { label: 'Event Performance',    domain: 'event',    dims: ['event_name_dim'],       mets: ['participant_count', 'total_target', 'total_actual', 'achievement_rate'] },
+    { label: 'Gift Distribution',    domain: 'gift',     dims: ['gift_name_dim'],        mets: ['total_distributed', 'total_stock', 'total_inventory_value'] },
+    { label: 'Schedule Overview',    domain: 'schedule', dims: ['schedule_status_dim'],  mets: ['shift_count', 'absent_count', 'attendance_rate', 'total_overtime'] },
   ];
   let activePreset = -1;
 
@@ -674,7 +750,94 @@
     const btn = e.target.closest('.bi-chart-type-btn');
     if (!btn || !lastQueryData) return;
     const newType = btn.dataset.chart;
-    renderChart(lastQueryData.rows, lastQueryData.dimCol, lastQueryData.metCols, newType);
+    renderChart(lastQueryData.rows, lastQueryData.dimCol, getChartMetCols(), newType);
+  });
+
+  // ── Chart metric selector ──
+  function getChartMetCols() {
+    if (!lastQueryData) return [];
+    if (chartSelectedMets.length === 0) return lastQueryData.metCols;
+    return lastQueryData.metCols.filter(c => chartSelectedMets.includes(c.key));
+  }
+
+  function renderChartMetSelector(metCols) {
+    const trigger = document.getElementById('chartMetTrigger');
+    const dropdown = document.getElementById('chartMetDropdown');
+
+    // Default: all metrics selected
+    chartSelectedMets = metCols.map(c => c.key);
+    renderChartMetTrigger(metCols);
+    renderChartMetDropdown(metCols);
+  }
+
+  function renderChartMetTrigger(metCols) {
+    const trigger = document.getElementById('chartMetTrigger');
+    trigger.querySelectorAll('.bi-ms-tag, .bi-multiselect-placeholder').forEach(el => el.remove());
+    const activeMets = metCols.filter(c => chartSelectedMets.includes(c.key));
+    if (activeMets.length === 0 || activeMets.length === metCols.length) {
+      const ph = document.createElement('span');
+      ph.className = 'bi-multiselect-placeholder';
+      ph.style.fontSize = '.78rem';
+      ph.setAttribute('data-i18n', activeMets.length === metCols.length ? 'All metrics' : 'Select chart metrics...');
+      ph.textContent = I18n.t(activeMets.length === metCols.length ? 'All metrics' : 'Select chart metrics...');
+      trigger.insertBefore(ph, trigger.querySelector('.bi-ms-arrow'));
+    } else {
+      activeMets.forEach(col => {
+        const tag = document.createElement('span');
+        tag.className = 'bi-ms-tag met-tag';
+        tag.style.fontSize = '.7rem';
+        tag.style.padding = '1px 6px';
+        tag.innerHTML = I18n.t(col.label) + ' <span class="bi-chart-met-remove" data-key="' + col.key + '" style="cursor:pointer;opacity:.75;font-size:.6rem;"><i class="bi bi-x"></i></span>';
+        trigger.insertBefore(tag, trigger.querySelector('.bi-ms-arrow'));
+      });
+    }
+    // Bind remove buttons
+    trigger.querySelectorAll('.bi-chart-met-remove').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const k = this.dataset.key;
+        chartSelectedMets = chartSelectedMets.filter(x => x !== k);
+        if (chartSelectedMets.length === 0) chartSelectedMets = metCols.map(c => c.key);
+        renderChartMetTrigger(metCols);
+        renderChartMetDropdown(metCols);
+        renderChart(lastQueryData.rows, lastQueryData.dimCol, getChartMetCols(), null);
+      });
+    });
+  }
+
+  function renderChartMetDropdown(metCols) {
+    const dropdown = document.getElementById('chartMetDropdown');
+    dropdown.innerHTML = '';
+    metCols.forEach(col => {
+      const opt = document.createElement('div');
+      opt.className = 'bi-ms-option' + (chartSelectedMets.includes(col.key) ? ' selected' : '');
+      opt.dataset.key = col.key;
+      opt.innerHTML = '<span class="bi-ms-check met-check"><i class="bi bi-check2"></i></span><span>' + I18n.t(col.label) + '</span>';
+      opt.addEventListener('click', function() {
+        const k = this.dataset.key;
+        if (chartSelectedMets.includes(k)) {
+          chartSelectedMets = chartSelectedMets.filter(x => x !== k);
+        } else {
+          chartSelectedMets.push(k);
+        }
+        if (chartSelectedMets.length === 0) chartSelectedMets = metCols.map(c => c.key);
+        renderChartMetTrigger(metCols);
+        renderChartMetDropdown(metCols);
+        renderChart(lastQueryData.rows, lastQueryData.dimCol, getChartMetCols(), null);
+      });
+      dropdown.appendChild(opt);
+    });
+  }
+
+  document.getElementById('chartMetTrigger').addEventListener('click', function(e) {
+    e.stopPropagation();
+    const dd = document.getElementById('chartMetDropdown');
+    const isOpen = dd.classList.contains('show');
+    closeAllDropdowns();
+    if (!isOpen) {
+      dd.classList.add('show');
+      this.classList.add('open');
+    }
   });
 
   // ── Collapsible builder ──
@@ -934,6 +1097,8 @@
     const dimCols = columns.filter(c => c.format === 'text');
     const metCols = columns.filter(c => c.format !== 'text');
     if (dimCols.length > 0 && metCols.length > 0 && rows.length > 1) {
+      lastQueryData = { rows, dimCols: dimCols, dimCol: dimCols[0], metCols };
+      renderChartMetSelector(metCols);
       renderChart(rows, dimCols[0], metCols, null);
     } else {
       document.getElementById('biChartWrap').style.display = 'none';
@@ -965,57 +1130,180 @@
     const ctx = document.getElementById('biChart').getContext('2d');
     if (biChart) biChart.destroy();
 
-    lastQueryData = { rows, dimCol, metCols };
-
     chartType = type || suggestChartType(rows, [dimCol], metCols);
     document.querySelectorAll('.bi-chart-type-btn').forEach(b => {
       b.classList.toggle('active', b.dataset.chart === chartType);
     });
 
-    const labels = rows.map(r => I18n.t(String(r[dimCol.key] || '—')));
-    const palette = ['#5a8a6a', '#c07a56', '#c8a45c', '#8a6dab', '#5a8a8a', '#a06a46', '#6a8a5a'];
+    // Build labels: combine ALL dimension columns for each row
+    const allDimCols = (lastQueryData && lastQueryData.dimCols) ? lastQueryData.dimCols : [dimCol];
+    const labels = rows.map(r => {
+      return allDimCols.map(dc => I18n.t(String(r[dc.key] || '—'))).join(' / ');
+    });
+
+    const palette = ['#5a8a6a', '#c07a56', '#c8a45c', '#8a6dab', '#5a8a8a', '#a06a46', '#6a8a5a',
+                     '#7a6a5a', '#5a7a8a', '#8a5a6a', '#6a8a6a', '#9a7a5a'];
     const filteredMets = metCols.filter(c => c.format !== 'percent_val');
 
+    // Hide/show doughnut nav
+    const doughnutNav = document.getElementById('doughnutNav');
+
     if (chartType === 'doughnut') {
-      const col = filteredMets[0];
+      // Clamp index
+      if (doughnutMetIndex >= filteredMets.length) doughnutMetIndex = 0;
+      const col = filteredMets[doughnutMetIndex] || filteredMets[0];
       if (!col) return;
+
+      const dataValues = rows.map(r => r[col.key] || 0);
+      const total = dataValues.reduce((s, v) => s + v, 0);
+      const bgColors = labels.map((_, i) => palette[i % palette.length] + 'cc');
+      const borderColors = labels.map((_, i) => palette[i % palette.length]);
+
       biChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
           labels,
           datasets: [{
-            data: rows.map(r => r[col.key] || 0),
-            backgroundColor: palette.slice(0, rows.length).map(c => c + 'cc'),
-            borderColor: palette.slice(0, rows.length),
+            data: dataValues,
+            backgroundColor: bgColors,
+            borderColor: borderColors,
             borderWidth: 1,
           }]
         },
         options: {
           responsive: true, maintainAspectRatio: false,
+          layout: { padding: { top: 0 } },
           plugins: {
-            legend: { position: 'right', labels: { font: { family: 'Outfit', size: 12 } } },
+            title: {
+              display: true,
+              text: I18n.t(col.label),
+              font: { family: 'Playfair Display', size: 15, weight: '600' },
+              color: '#5a4a3a',
+              padding: { top: 4, bottom: 6 }
+            },
+            legend: {
+              position: 'bottom',
+              labels: {
+                font: { family: 'Outfit', size: 11 },
+                padding: 14,
+                usePointStyle: true,
+                pointStyle: 'circle',
+                // Legend shows only dimension labels — no aggregated values
+                generateLabels: function(chart) {
+                  const data = chart.data;
+                  return data.labels.map(function(lbl, i) {
+                    return {
+                      text: lbl,
+                      fillStyle: data.datasets[0].backgroundColor[i],
+                      strokeStyle: data.datasets[0].borderColor[i],
+                      lineWidth: 1,
+                      hidden: false,
+                      index: i,
+                      pointStyle: 'circle'
+                    };
+                  });
+                }
+              }
+            },
             tooltip: {
               backgroundColor: '#1a1a2e', titleFont: { family: 'Outfit' }, bodyFont: { family: 'Outfit' },
-              callbacks: { label: function(ctx) { return ctx.label + ': ' + formatValue(ctx.raw, col.format); } }
+              callbacks: {
+                label: function(ctx) {
+                  const val = ctx.raw || 0;
+                  const pct = total > 0 ? (val / total * 100).toFixed(1) : 0;
+                  return ctx.label + ': ' + formatValue(val, col.format) + ' (' + pct + '%)';
+                }
+              }
             }
           }
         }
       });
+
+      // Doughnut pagination
+      if (filteredMets.length > 1) {
+        doughnutNav.style.display = '';
+        renderDoughnutNav(filteredMets);
+      } else {
+        doughnutNav.style.display = 'none';
+      }
     } else {
+      doughnutNav.style.display = 'none';
+
       const isHorizontal = chartType === 'horizontalBar';
       const cType = isHorizontal ? 'bar' : (chartType === 'line' ? 'line' : 'bar');
-      const datasets = filteredMets.map((col, i) => ({
-        label: I18n.t(col.label),
-        data: rows.map(r => r[col.key] || 0),
-        backgroundColor: palette[i % palette.length] + 'cc',
-        borderColor: palette[i % palette.length],
-        borderWidth: chartType === 'line' ? 2 : 1,
-        borderRadius: chartType === 'line' ? 0 : 4,
-        tension: chartType === 'line' ? 0.3 : 0,
-        fill: chartType === 'line' ? false : undefined,
-        pointRadius: chartType === 'line' ? 4 : 0,
-        pointHoverRadius: chartType === 'line' ? 6 : 0,
-      }));
+      const valueAxis = isHorizontal ? 'x' : 'y';
+      const categoryAxis = isHorizontal ? 'y' : 'x';
+
+      // Build independent Y-axis per metric so different magnitudes don't crush each other
+      const scales = {};
+      scales[categoryAxis] = {
+        ticks: { font: { family: 'Outfit', size: 11 } }
+      };
+
+      if (filteredMets.length === 1) {
+        // Single metric: one simple axis
+        scales[valueAxis] = {
+          beginAtZero: chartType !== 'line',
+          ticks: {
+            font: { family: 'Outfit', size: 11 },
+            callback: function(v) {
+              const col = filteredMets[0];
+              if (col.format === 'currency') return '$' + Number(v).toLocaleString();
+              if (col.format === 'percent_val') return v + '%';
+              return Number(v).toLocaleString();
+            }
+          }
+        };
+      } else {
+        // Multiple metrics: each gets its own axis
+        filteredMets.forEach((col, i) => {
+          const axisId = valueAxis + '_' + i;
+          scales[axisId] = {
+            type: 'linear',
+            position: i === 0 ? (isHorizontal ? 'bottom' : 'left') : (isHorizontal ? 'top' : 'right'),
+            beginAtZero: chartType !== 'line',
+            display: i < 2, // show max 2 axes (left + right) to avoid clutter
+            grid: { drawOnChartArea: i === 0 },
+            title: {
+              display: i < 2,
+              text: I18n.t(col.label),
+              font: { family: 'Outfit', size: 10, weight: '600' },
+              color: palette[i % palette.length]
+            },
+            ticks: {
+              font: { family: 'Outfit', size: 10 },
+              color: palette[i % palette.length],
+              callback: (function(fmt) {
+                return function(v) {
+                  if (fmt === 'currency') return '$' + Number(v).toLocaleString();
+                  if (fmt === 'percent_val') return v + '%';
+                  return Number(v).toLocaleString();
+                };
+              })(col.format)
+            }
+          };
+        });
+      }
+
+      const datasets = filteredMets.map((col, i) => {
+        const ds = {
+          label: I18n.t(col.label),
+          data: rows.map(r => r[col.key] || 0),
+          backgroundColor: palette[i % palette.length] + 'cc',
+          borderColor: palette[i % palette.length],
+          borderWidth: chartType === 'line' ? 2 : 1,
+          borderRadius: chartType === 'line' ? 0 : 4,
+          tension: chartType === 'line' ? 0.3 : 0,
+          fill: chartType === 'line' ? false : undefined,
+          pointRadius: chartType === 'line' ? 4 : 0,
+          pointHoverRadius: chartType === 'line' ? 6 : 0,
+        };
+        // Assign to own axis when multiple metrics
+        if (filteredMets.length > 1) {
+          ds[isHorizontal ? 'xAxisID' : 'yAxisID'] = valueAxis + '_' + i;
+        }
+        return ds;
+      });
 
       biChart = new Chart(ctx, {
         type: cType,
@@ -1036,13 +1324,47 @@
               }
             }
           },
-          scales: {
-            x: { ticks: { font: { family: 'Outfit', size: 11 } }, beginAtZero: !isHorizontal },
-            y: { ticks: { font: { family: 'Outfit', size: 11 } }, beginAtZero: isHorizontal || chartType !== 'line' }
-          }
+          scales: scales
         }
       });
     }
+  }
+
+  // ── Doughnut pagination ──
+  function renderDoughnutNav(filteredMets) {
+    const nav = document.getElementById('doughnutNav');
+    const total = filteredMets.length;
+    let dotsHtml = '';
+    for (let i = 0; i < total; i++) {
+      dotsHtml += '<span class="doughnut-dot' + (i === doughnutMetIndex ? ' active' : '') + '" data-idx="' + i + '" title="' + I18n.t(filteredMets[i].label) + '"></span>';
+    }
+    nav.innerHTML =
+      '<div class="d-flex align-items-center justify-content-center gap-3">' +
+        '<button class="btn btn-sm doughnut-nav-btn" id="doughnutPrev" ' + (doughnutMetIndex <= 0 ? 'disabled' : '') + '><i class="bi bi-chevron-left"></i></button>' +
+        '<div class="doughnut-dots">' + dotsHtml + '</div>' +
+        '<span class="doughnut-nav-label">' + (doughnutMetIndex + 1) + ' / ' + total + '</span>' +
+        '<button class="btn btn-sm doughnut-nav-btn" id="doughnutNext" ' + (doughnutMetIndex >= total - 1 ? 'disabled' : '') + '><i class="bi bi-chevron-right"></i></button>' +
+      '</div>';
+
+    // Bind events
+    nav.querySelector('#doughnutPrev').addEventListener('click', function() {
+      if (doughnutMetIndex > 0) {
+        doughnutMetIndex--;
+        renderChart(lastQueryData.rows, lastQueryData.dimCol, getChartMetCols(), 'doughnut');
+      }
+    });
+    nav.querySelector('#doughnutNext').addEventListener('click', function() {
+      if (doughnutMetIndex < filteredMets.length - 1) {
+        doughnutMetIndex++;
+        renderChart(lastQueryData.rows, lastQueryData.dimCol, getChartMetCols(), 'doughnut');
+      }
+    });
+    nav.querySelectorAll('.doughnut-dot').forEach(function(dot) {
+      dot.addEventListener('click', function() {
+        doughnutMetIndex = parseInt(this.dataset.idx);
+        renderChart(lastQueryData.rows, lastQueryData.dimCol, getChartMetCols(), 'doughnut');
+      });
+    });
   }
 
   // ── Export CSV ──

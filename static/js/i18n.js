@@ -651,6 +651,8 @@
     '+ Add filter...': '+ 添加筛选...',
     'Select dimensions...': '选择维度...',
     'Select metrics...': '选择指标...',
+    'Select chart metrics...': '选择图表指标...',
+    'All metrics': '所有指标',
     'No filters applied — all records included': '未设置筛选 — 包含所有记录',
     'Run Query': '执行查询',
     'Clear All': '全部清除',
@@ -856,6 +858,13 @@
     'Events Overview': '活动概览',
     'Gift Inventory': '礼品库存',
     'Income Sources': '收入来源',
+    // Comprehensive presets
+    'Donation Analysis': '捐款分析',
+    'Donor Demographics': '捐赠者画像',
+    'Monthly Trends': '月度趋势',
+    'Event Performance': '活动绩效',
+    'Gift Distribution': '礼品分发',
+    'Schedule Overview': '排班概览',
   };
 
   let currentLang = localStorage.getItem('ecmis_lang') || 'en';
