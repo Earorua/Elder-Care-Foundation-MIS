@@ -100,7 +100,7 @@
   }
   .bi-multiselect-dropdown {
     position: absolute;
-    top: calc(100% + 4px);
+    bottom: calc(100% + 4px);
     left: 0;
     right: 0;
     background: var(--bg-card);
@@ -210,23 +210,269 @@
     min-width: 40px;
     text-align: center;
   }
+
+  .bi-workspace-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .35rem 0 .6rem;
+    border-bottom: 1px solid rgba(90, 138, 106, .16);
+  }
+  .bi-workspace-title {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+  }
+  .bi-workspace-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(90, 138, 106, .12);
+    color: var(--accent);
+  }
+  .bi-workspace-eyebrow {
+    font-size: .72rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: .1rem;
+  }
+  .bi-workspace-header h4 {
+    font-family: 'Playfair Display', serif;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  .bi-workspace-header p {
+    margin: .2rem 0 0;
+    max-width: 620px;
+    color: var(--text-secondary);
+    font-size: .86rem;
+  }
+  .bi-workspace-meta {
+    color: var(--text-muted);
+    font-size: .78rem;
+    white-space: nowrap;
+  }
+  .bi-analysis-shell {
+    display: grid;
+    grid-template-columns: minmax(320px, 400px) minmax(0, 1fr);
+    grid-template-areas: "controls output";
+    gap: 1rem;
+    align-items: start;
+  }
+  .bi-control-rail {
+    grid-area: controls;
+    display: grid;
+    gap: .85rem;
+    min-width: 0;
+    position: sticky;
+    top: 1rem;
+  }
+  .bi-output-workspace {
+    grid-area: output;
+    min-width: 0;
+  }
+  .bi-question-select {
+    border: 1px solid rgba(90, 138, 106, .18);
+    background: rgba(255, 253, 249, .82);
+    border-radius: 8px;
+    padding: .85rem 1rem;
+  }
+  .bi-question-select label {
+    color: var(--text-primary);
+    display: block;
+    font-size: .8rem;
+    font-weight: 800;
+    margin-bottom: .45rem;
+  }
+  .bi-question-select .form-select {
+    border: 1.5px solid var(--border-warm);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: .85rem;
+    white-space: normal;
+    height: auto;
+    min-height: 42px;
+    padding-top: .45rem;
+    padding-bottom: .45rem;
+  }
+  .bi-question-select .form-select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(90,138,106,.12);
+  }
+  .bi-domain-panel {
+    border: 1px solid rgba(90, 138, 106, .18);
+    background: rgba(255, 253, 249, .76);
+    box-shadow: none;
+  }
+  .bi-domain-panel .card-body {
+    padding: .8rem 1rem;
+  }
+  .bi-builder-stack {
+    display: grid;
+    grid-template-areas:
+      "filters"
+      "dimensions"
+      "metrics";
+    gap: .75rem;
+    align-items: stretch;
+  }
+  .bi-builder-slot {
+    min-width: 0;
+  }
+  .bi-builder-slot-filter {
+    grid-area: filters;
+  }
+  .bi-builder-slot-dim {
+    grid-area: dimensions;
+  }
+  .bi-builder-slot-met {
+    grid-area: metrics;
+  }
+  .bi-builder-card {
+    border: 1px solid rgba(90, 138, 106, .16);
+    background: rgba(255, 253, 249, .82);
+    box-shadow: none;
+    overflow: visible;
+  }
+  .bi-builder-head {
+    border: 0;
+    border-bottom: 1px solid rgba(90, 138, 106, .12);
+    background: rgba(246, 243, 238, .72);
+    color: var(--text-primary);
+    padding: .75rem 1rem;
+  }
+  .bi-builder-head i {
+    color: var(--accent);
+  }
+  .bi-builder-dim .bi-builder-head i {
+    color: var(--terracotta);
+  }
+  .bi-builder-met .bi-builder-head i {
+    color: var(--accent-gold);
+  }
+  .bi-builder-subtitle {
+    color: var(--text-secondary);
+    font-size: .75rem;
+    margin-top: 2px;
+  }
+  .bi-builder-stack .bi-builder-card {
+    height: 100%;
+  }
+  #dimensionsPanel,
+  #metricsPanel {
+    min-height: 82px;
+  }
+  .bi-action-bar {
+    position: relative;
+    z-index: 20;
+  }
+  .bi-control-rail .bi-action-bar {
+    margin-bottom: 0 !important;
+  }
+  .bi-control-rail .bi-action-bar .btn {
+    flex: 1 1 auto;
+  }
+  .bi-result-stack {
+    display: grid;
+    gap: .85rem;
+  }
+  .bi-result-stack > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+  #biChartWrap,
+  #biResults,
+  #biInsightPanel {
+    width: 100%;
+  }
+  .bi-result-stack .table-responsive {
+    overflow-x: auto;
+  }
+  .bi-insight-panel {
+    border: 1.5px solid var(--border-warm);
+    background: linear-gradient(135deg, rgba(255,253,249,.98), rgba(246,243,238,.92));
+    box-shadow: var(--shadow-sm);
+  }
+  .bi-insight-kicker {
+    color: var(--text-secondary);
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .bi-insight-value {
+    color: var(--accent);
+    font-size: 1.25rem;
+    font-weight: 800;
+  }
+  .bi-insight-note {
+    color: var(--text-muted);
+    font-size: .78rem;
+  }
+  @media (max-width: 1099.98px) {
+    .bi-analysis-shell {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "controls"
+        "output";
+    }
+    .bi-control-rail {
+      position: static;
+    }
+  }
+  @media (max-width: 767.98px) {
+    .bi-workspace-header {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: .5rem;
+    }
+    .bi-workspace-meta {
+      white-space: normal;
+    }
+    .bi-action-bar {
+      background: rgba(246,243,238,.92);
+      border: 1px solid var(--border-warm);
+      border-radius: 8px;
+      padding: .5rem;
+      box-shadow: var(--shadow-md);
+      backdrop-filter: blur(12px);
+    }
+    .bi-action-bar .btn {
+      flex: 1 1 auto;
+    }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="d-flex align-items-center mb-4">
+<div class="bi-workspace-header mb-3">
   <div>
-    <h4 class="mb-1" style="font-family:'Playfair Display',serif;color:var(--text-primary);">
-      <i class="bi bi-bar-chart-line me-2" style="color:var(--accent);"></i><span data-i18n="BI Explorer">BI Explorer</span>
-    </h4>
-    <p class="text-muted mb-0" style="font-size:.85rem;" data-i18n="Build custom queries to analyze data across all foundation modules">Build custom queries to analyze data across all foundation modules</p>
+    <div class="bi-workspace-title">
+      <span class="bi-workspace-icon"><i class="bi bi-bar-chart-line"></i></span>
+      <div>
+        <div class="bi-workspace-eyebrow" data-i18n="Analytics Workspace">Analytics Workspace</div>
+        <h4><span data-i18n="BI Explorer">BI Explorer</span></h4>
+      </div>
+    </div>
+    <p data-i18n="Build custom queries to analyze data across all foundation modules">Build custom queries to analyze data across all foundation modules</p>
   </div>
+  <div class="bi-workspace-meta" data-i18n="Question-led analysis across 6 domains">Question-led analysis across 6 domains</div>
 </div>
 
-<!-- Quick Presets -->
-<div class="bi-preset-row mb-3" style="overflow-x:auto;white-space:nowrap;padding:2px 0;">
-  <span class="me-2" style="font-size:.8rem;font-weight:600;color:var(--text-secondary);" data-i18n="Presets">Presets</span>
-  <span id="presetContainer"></span>
+<div class="bi-analysis-shell">
+<aside class="bi-control-rail">
+
+<!-- Business Question Select -->
+<div class="bi-question-select">
+  <label for="businessQuestionSelect" data-i18n="Business Questions">Business Questions</label>
+  <select class="form-select" id="businessQuestionSelect" aria-label="Business Questions"></select>
 </div>
 
 <!-- Query Summary Bar (shown when collapsed) -->
@@ -245,7 +491,7 @@
 <div id="biBuilderWrap" class="bi-builder-wrap">
 
 <!-- Domain Selector -->
-<div class="card mb-3" style="border:1px solid var(--border-warm);background:var(--bg-card);box-shadow:var(--shadow-sm);">
+<div class="card mb-3 bi-domain-panel">
   <div class="card-body py-3">
     <label class="form-label fw-semibold mb-2" style="font-size:.85rem;color:var(--text-primary);" data-i18n="Data Domain">Data Domain</label>
     <div class="row g-2">
@@ -278,13 +524,13 @@
 </div>
 
 <!-- Three-panel builder -->
-<div class="row g-3 mb-3">
+<div class="bi-builder-stack mb-3">
   <!-- Filters Panel -->
-  <div class="col-lg-4">
-    <div class="card h-100" style="border:2px solid var(--accent);background:var(--bg-card);box-shadow:var(--shadow-md);overflow:hidden;">
-      <div class="card-header" style="background:linear-gradient(135deg,#3d6b4e,#5a8a6a);color:#fff;border:0;padding:.75rem 1rem;">
+  <div class="bi-builder-slot bi-builder-slot-filter">
+    <div class="card h-100 bi-builder-card bi-builder-filter">
+      <div class="card-header bi-builder-head">
         <i class="bi bi-funnel-fill me-2" style="font-size:1.1rem;"></i><span style="font-weight:700;font-size:.95rem;" data-i18n="Filters">Filters</span>
-        <div style="font-size:.75rem;opacity:.85;margin-top:2px;" data-i18n="Which people to include">Which people to include</div>
+        <div id="filterHelp" class="bi-builder-subtitle" data-i18n="Choose records to include">Choose records to include</div>
       </div>
       <div class="card-body p-3" id="filtersPanel">
         <div class="mb-2">
@@ -302,11 +548,11 @@
   </div>
 
   <!-- Dimensions Panel -->
-  <div class="col-lg-4">
-    <div class="card h-100" style="border:2px solid var(--terracotta);background:var(--bg-card);box-shadow:var(--shadow-md);overflow:hidden;">
-      <div class="card-header" style="background:linear-gradient(135deg,#a06040,#c07a56);color:#fff;border:0;padding:.75rem 1rem;">
+  <div class="bi-builder-slot bi-builder-slot-dim">
+    <div class="card h-100 bi-builder-card bi-builder-dim">
+      <div class="card-header bi-builder-head">
         <i class="bi bi-grid-3x3-gap-fill me-2" style="font-size:1.1rem;"></i><span style="font-weight:700;font-size:.95rem;" data-i18n="Dimensions">Dimensions</span>
-        <div style="font-size:.75rem;opacity:.85;margin-top:2px;" data-i18n="Group results by">Group results by</div>
+        <div id="dimensionHelp" class="bi-builder-subtitle" data-i18n="Group results by">Group results by</div>
       </div>
       <div class="card-body p-3" id="dimensionsPanel">
         <div id="dimensionMultiselect" class="bi-multiselect">
@@ -321,11 +567,11 @@
   </div>
 
   <!-- Metrics Panel -->
-  <div class="col-lg-4">
-    <div class="card h-100" style="border:2px solid var(--accent-gold);background:var(--bg-card);box-shadow:var(--shadow-md);overflow:hidden;">
-      <div class="card-header" style="background:linear-gradient(135deg,#a08030,#c8a45c);color:#fff;border:0;padding:.75rem 1rem;">
+  <div class="bi-builder-slot bi-builder-slot-met">
+    <div class="card h-100 bi-builder-card bi-builder-met">
+      <div class="card-header bi-builder-head">
         <i class="bi bi-calculator-fill me-2" style="font-size:1.1rem;"></i><span style="font-weight:700;font-size:.95rem;" data-i18n="Metrics">Metrics</span>
-        <div style="font-size:.75rem;opacity:.85;margin-top:2px;" data-i18n="What to calculate">What to calculate</div>
+        <div id="metricHelp" class="bi-builder-subtitle" data-i18n="Choose measures to compare">Choose measures to compare</div>
       </div>
       <div class="card-body p-3" id="metricsPanel">
         <div id="metricMultiselect" class="bi-multiselect">
@@ -343,7 +589,7 @@
 </div><!-- /biBuilderWrap -->
 
 <!-- Action Bar -->
-<div class="d-flex gap-2 mb-4">
+<div class="d-flex gap-2 bi-action-bar">
   <button class="btn px-4" id="btnRunQuery" style="background:linear-gradient(135deg,#e8723a,#c05a28);color:#fff;font-weight:700;font-size:.95rem;box-shadow:0 4px 14px rgba(200,90,40,.35);border:0;letter-spacing:.3px;transition:all .2s;"
     onmouseover="this.style.background='linear-gradient(135deg,#d4652f,#a84a20)';this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 20px rgba(200,90,40,.45)'"
     onmouseout="this.style.background='linear-gradient(135deg,#e8723a,#c05a28)';this.style.transform='';this.style.boxShadow='0 4px 14px rgba(200,90,40,.35)'">
@@ -357,6 +603,10 @@
   </button>
 </div>
 
+</aside>
+
+<section class="bi-output-workspace">
+
 <!-- Loading -->
 <div id="biLoading" style="display:none;" class="text-center py-4">
   <div class="spinner-border text-secondary" role="status"></div>
@@ -367,21 +617,23 @@
 <div id="biError" class="alert alert-danger" style="display:none;" role="alert"></div>
 
 <!-- Summary Cards -->
+<div class="bi-result-stack">
 <div id="biSummary" class="row g-3 mb-3" style="display:none;"></div>
 
-<!-- Results Table -->
-<div id="biResults" style="display:none;">
-  <div class="card" style="border:none;background:var(--bg-card);box-shadow:var(--shadow-md);">
-    <div class="card-header d-flex align-items-center justify-content-between" style="background:var(--bg-card);border-bottom:2px solid var(--border-warm);">
-      <span><i class="bi bi-table me-2" style="color:var(--accent);"></i><span data-i18n="Query Results">Query Results</span>
-        <span class="badge rounded-pill ms-2" id="resultCount" style="background:var(--accent);color:#fff;font-size:.7rem;"></span>
-      </span>
+<!-- Insight Summary -->
+<div id="biInsightPanel" class="bi-insight-panel rounded p-3 mb-3" style="display:none;">
+  <div class="row g-3 align-items-center">
+    <div class="col-md-5">
+      <div class="bi-insight-kicker" data-i18n="Current question">Current question</div>
+      <div id="biInsightQuestion" style="font-weight:700;color:var(--text-primary);"></div>
     </div>
-    <div class="table-responsive">
-      <table class="table table-hover mb-0" id="biTable">
-        <thead><tr id="biTableHead"></tr></thead>
-        <tbody id="biTableBody"></tbody>
-      </table>
+    <div class="col-md-4">
+      <div class="bi-insight-kicker" data-i18n="Top result">Top result</div>
+      <div id="biInsightTop" class="bi-insight-value"></div>
+    </div>
+    <div class="col-md-3">
+      <div class="bi-insight-kicker" data-i18n="Result scope">Result scope</div>
+      <div id="biInsightScope" class="bi-insight-note"></div>
     </div>
   </div>
 </div>
@@ -415,6 +667,28 @@
   <div id="doughnutNav" class="card-footer text-center py-2" style="display:none;background:var(--bg-card);border-top:1px solid var(--border-warm);"></div>
 </div>
 
+<!-- Results Table -->
+<div id="biResults" class="mt-3" style="display:none;">
+  <div class="card" style="border:none;background:var(--bg-card);box-shadow:var(--shadow-md);">
+    <div class="card-header d-flex align-items-center justify-content-between" style="background:var(--bg-card);border-bottom:2px solid var(--border-warm);">
+      <span><i class="bi bi-table me-2" style="color:var(--accent);"></i><span data-i18n="Query Results">Query Results</span>
+        <span class="badge rounded-pill ms-2" id="resultCount" style="background:var(--accent);color:#fff;font-size:.7rem;"></span>
+      </span>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover mb-0" id="biTable">
+        <thead><tr id="biTableHead"></tr></thead>
+        <tbody id="biTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div>
+
+</section>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -434,22 +708,51 @@
   let chartSelectedMets = []; // metrics selected for charting
   let doughnutMetIndex = 0; // current metric index for doughnut pagination
 
+  const DOMAIN_GUIDANCE = {
+    donor: {
+      filter: 'Choose donor and donation records',
+      dimension: 'Group by donor traits or giving activity',
+      metric: 'Compare donor counts and donation value'
+    },
+    person: {
+      filter: 'Choose personnel and payment records',
+      dimension: 'Group by role, status, or payment period',
+      metric: 'Compare headcount and payment measures'
+    },
+    event: {
+      filter: 'Choose event records',
+      dimension: 'Group by event, status, place, or period',
+      metric: 'Compare participation and fundraising progress'
+    },
+    gift: {
+      filter: 'Choose gift and distribution records',
+      dimension: 'Group by gift, batch, or distribution type',
+      metric: 'Compare stock, movement, and inventory value'
+    },
+    finance: {
+      filter: 'Choose income records',
+      dimension: 'Group by source or received period',
+      metric: 'Compare income totals and averages'
+    },
+    schedule: {
+      filter: 'Choose schedule and attendance records',
+      dimension: 'Group by shift, event, person type, or period',
+      metric: 'Compare shifts, absence, and overtime'
+    }
+  };
+
   // ── Presets ──
   const PRESETS = [
-    // Basic
-    { label: 'Donations by Type',  domain: 'donor',    dims: ['donation_type'],         mets: ['donor_count', 'total_donation'] },
-    { label: 'Donors by Location', domain: 'donor',    dims: ['donor_location'],        mets: ['donor_count', 'total_donation'] },
-    { label: 'Staff Payments',     domain: 'person',   dims: ['person_role'],           mets: ['person_count', 'total_payment'] },
-    { label: 'Events Overview',    domain: 'event',    dims: ['event_type'],            mets: ['event_count', 'total_actual'] },
-    { label: 'Gift Inventory',     domain: 'gift',     dims: ['gift_type'],             mets: ['gift_count', 'total_stock', 'total_inventory_value'] },
-    { label: 'Income Sources',     domain: 'finance',  dims: ['finance_source_type'],   mets: ['income_count', 'total_income'] },
-    // Comprehensive
-    { label: 'Donation Analysis',    domain: 'donor',    dims: ['donation_type'],        mets: ['donor_count', 'total_donation', 'avg_donation', 'donation_count'] },
-    { label: 'Donor Demographics',   domain: 'donor',    dims: ['donor_gender'],         mets: ['donor_count', 'pct_of_total_donors', 'total_donation', 'avg_donation'] },
-    { label: 'Monthly Trends',       domain: 'donor',    dims: ['donation_month'],       mets: ['donation_count', 'total_donation', 'avg_donation'] },
-    { label: 'Event Performance',    domain: 'event',    dims: ['event_name_dim'],       mets: ['participant_count', 'total_target', 'total_actual', 'achievement_rate'] },
-    { label: 'Gift Distribution',    domain: 'gift',     dims: ['gift_name_dim'],        mets: ['total_distributed', 'total_stock', 'total_inventory_value'] },
-    { label: 'Schedule Overview',    domain: 'schedule', dims: ['schedule_status_dim'],  mets: ['shift_count', 'absent_count', 'attendance_rate', 'total_overtime'] },
+    { label: 'Donation Value', question: 'Which donation channel brings the most value?', domain: 'donor', dims: ['donation_type'], mets: ['donor_count', 'total_donation', 'avg_donation', 'donation_count'], primaryMetric: 'total_donation' },
+    { label: 'Donor Geography', question: 'Where are donors concentrated?', domain: 'donor', dims: ['donor_location'], mets: ['donor_count', 'total_donation'], primaryMetric: 'donor_count' },
+    { label: 'Donor Profile', question: 'Which donor groups are most engaged?', domain: 'donor', dims: ['donor_gender'], mets: ['donor_count', 'pct_of_total_donors', 'total_donation', 'avg_donation'], primaryMetric: 'donor_count' },
+    { label: 'Giving Trend', question: 'How are donations changing by month?', domain: 'donor', dims: ['donation_month'], mets: ['donation_count', 'total_donation', 'avg_donation'], primaryMetric: 'total_donation' },
+    { label: 'Staff Cost', question: 'Which personnel roles drive payment cost?', domain: 'person', dims: ['person_role'], mets: ['person_count', 'total_payment', 'avg_payment'], primaryMetric: 'total_payment' },
+    { label: 'Event Performance', question: 'Which events are closest to target?', domain: 'event', dims: ['event_name_dim'], mets: ['participant_count', 'total_target', 'total_actual', 'achievement_rate'], primaryMetric: 'achievement_rate' },
+    { label: 'Gift Movement', question: 'Which gifts are moving fastest?', domain: 'gift', dims: ['gift_name_dim'], mets: ['total_distributed', 'total_stock', 'total_inventory_value'], primaryMetric: 'total_distributed' },
+    { label: 'Gift Inventory', question: 'Which gift types hold the most inventory value?', domain: 'gift', dims: ['gift_type'], mets: ['gift_count', 'total_stock', 'total_inventory_value'], primaryMetric: 'total_inventory_value' },
+    { label: 'Income Mix', question: 'Which income source contributes the most?', domain: 'finance', dims: ['finance_source_type'], mets: ['income_count', 'total_income', 'avg_income'], primaryMetric: 'total_income' },
+    { label: 'Schedule Health', question: 'How is attendance trending?', domain: 'schedule', dims: ['schedule_status_dim'], mets: ['shift_count', 'absent_count', 'attendance_rate', 'total_overtime'], primaryMetric: 'attendance_rate' },
   ];
   let activePreset = -1;
 
@@ -469,6 +772,7 @@
   });
 
   function renderAll() {
+    updateDomainGuidance();
     renderFilterDropdown();
     renderActiveFilters();
     renderDimensions();
@@ -480,36 +784,60 @@
 
   // ── Presets ──
   function renderPresets() {
-    const container = document.getElementById('presetContainer');
-    container.innerHTML = '';
+    const select = document.getElementById('businessQuestionSelect');
+    if (!select) return;
+    select.innerHTML = '<option value="">' + I18n.t('Select a business question') + '</option>';
     PRESETS.forEach((p, i) => {
-      const btn = document.createElement('button');
-      btn.className = 'btn btn-sm bi-preset-pill' + (activePreset === i ? ' active' : '');
-      btn.textContent = I18n.t(p.label);
-      btn.addEventListener('click', function() {
-        if (activePreset === i) {
-          activePreset = -1;
-          renderPresets();
-          return;
-        }
-        activePreset = i;
-        currentDomain = p.domain;
-        const radio = document.querySelector('input[name="biDomain"][value="' + p.domain + '"]');
-        if (radio) radio.checked = true;
-        activeFilterKeys = [];
-        selectedDims = [...p.dims];
-        selectedMets = [...p.mets];
-        renderFilterDropdown();
-        renderActiveFilters();
-        renderDimTrigger();
-        renderDimDropdown();
-        renderMetTrigger();
-        renderMetDropdown();
-        renderPresets();
-        expandBuilder();
-        runQuery();
-      });
-      container.appendChild(btn);
+      const opt = document.createElement('option');
+      opt.value = String(i);
+      opt.textContent = I18n.t(p.label) + ' - ' + I18n.t(p.question);
+      opt.selected = activePreset === i;
+      select.appendChild(opt);
+    });
+  }
+
+  function applyPreset(i) {
+    const p = PRESETS[i];
+    if (!p) return;
+    activePreset = i;
+    currentDomain = p.domain;
+    const radio = document.querySelector('input[name="biDomain"][value="' + p.domain + '"]');
+    if (radio) radio.checked = true;
+    activeFilterKeys = [];
+    selectedDims = [...p.dims];
+    selectedMets = [...p.mets];
+    updateDomainGuidance();
+    renderFilterDropdown();
+    renderActiveFilters();
+    renderDimTrigger();
+    renderDimDropdown();
+    renderMetTrigger();
+    renderMetDropdown();
+    renderPresets();
+    expandBuilder();
+    runQuery();
+  }
+
+  document.getElementById('businessQuestionSelect').addEventListener('change', function() {
+    if (this.value === '') {
+      activePreset = -1;
+      renderPresets();
+      return;
+    }
+    applyPreset(Number(this.value));
+  });
+
+  function updateDomainGuidance() {
+    const guidance = DOMAIN_GUIDANCE[currentDomain] || DOMAIN_GUIDANCE.donor;
+    [
+      ['filterHelp', guidance.filter],
+      ['dimensionHelp', guidance.dimension],
+      ['metricHelp', guidance.metric]
+    ].forEach(([id, text]) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.setAttribute('data-i18n', text);
+      el.textContent = I18n.t(text);
     });
   }
 
@@ -564,8 +892,9 @@
         const opts = FILTER_OPTIONS[key] || fd.options || [];
         let html = '<div class="bi-enum-options">';
         opts.forEach(o => {
-          html += '<div class="form-check form-check-inline" style="font-size:.8rem;"><input class="form-check-input bi-filter-enum" type="checkbox" data-key="' + key + '" value="' + o + '" id="fe_' + key + '_' + o + '">' +
-            '<label class="form-check-label" for="fe_' + key + '_' + o + '">' + I18n.t(o) + '</label></div>';
+          const safeId = 'fe_' + key + '_' + o.replace(/[^a-zA-Z0-9_-]/g, '_');
+          html += '<div class="form-check form-check-inline" style="font-size:.8rem;"><input class="form-check-input bi-filter-enum" type="checkbox" data-key="' + key + '" value="' + o + '" id="' + safeId + '">' +
+            '<label class="form-check-label" for="' + safeId + '">' + I18n.t(o) + '</label></div>';
         });
         html += '</div>';
         div.innerHTML += html;
@@ -635,7 +964,8 @@
       opt.className = 'bi-ms-option' + (selectedDims.includes(key) ? ' selected' : '');
       opt.dataset.key = key;
       opt.innerHTML = '<span class="bi-ms-check dim-check"><i class="bi bi-check2"></i></span><span>' + I18n.t(dd.label) + '</span>';
-      opt.addEventListener('click', function() {
+      opt.addEventListener('click', function(e) {
+        e.stopPropagation();
         const k = this.dataset.key;
         if (selectedDims.includes(k)) {
           selectedDims = selectedDims.filter(x => x !== k);
@@ -710,7 +1040,8 @@
       opt.className = 'bi-ms-option' + (selectedMets.includes(key) ? ' selected' : '');
       opt.dataset.key = key;
       opt.innerHTML = '<span class="bi-ms-check met-check"><i class="bi bi-check2"></i></span><span>' + I18n.t(md.label) + '</span>';
-      opt.addEventListener('click', function() {
+      opt.addEventListener('click', function(e) {
+        e.stopPropagation();
         const k = this.dataset.key;
         if (selectedMets.includes(k)) {
           selectedMets = selectedMets.filter(x => x !== k);
@@ -813,7 +1144,8 @@
       opt.className = 'bi-ms-option' + (chartSelectedMets.includes(col.key) ? ' selected' : '');
       opt.dataset.key = col.key;
       opt.innerHTML = '<span class="bi-ms-check met-check"><i class="bi bi-check2"></i></span><span>' + I18n.t(col.label) + '</span>';
-      opt.addEventListener('click', function() {
+      opt.addEventListener('click', function(e) {
+        e.stopPropagation();
         const k = this.dataset.key;
         if (chartSelectedMets.includes(k)) {
           chartSelectedMets = chartSelectedMets.filter(x => x !== k);
@@ -995,7 +1327,6 @@
         return;
       }
       renderResults(data);
-      collapseBuilder();
 
       // Encode query state to URL hash
       try {
@@ -1020,6 +1351,7 @@
   function hideResults() {
     document.getElementById('biResults').style.display = 'none';
     document.getElementById('biSummary').style.display = 'none';
+    document.getElementById('biInsightPanel').style.display = 'none';
     document.getElementById('biChartWrap').style.display = 'none';
     document.getElementById('biError').style.display = 'none';
     document.getElementById('btnExportCsv').style.display = 'none';
@@ -1044,6 +1376,8 @@
       });
       summaryEl.style.display = '';
     }
+
+    renderInsightSummary(columns, rows, total_rows);
 
     // Store for sorting
     lastColumns = columns;
@@ -1103,6 +1437,35 @@
     } else {
       document.getElementById('biChartWrap').style.display = 'none';
     }
+  }
+
+  function renderInsightSummary(columns, rows, totalRows) {
+    const panel = document.getElementById('biInsightPanel');
+    if (!panel || !rows.length) {
+      if (panel) panel.style.display = 'none';
+      return;
+    }
+
+    const dimCol = columns.find(c => c.format === 'text');
+    const metricCols = columns.filter(c => c.format !== 'text');
+    const activePresetConfig = PRESETS[activePreset];
+    const primaryMetric = (activePresetConfig && metricCols.find(c => c.key === activePresetConfig.primaryMetric)) ||
+      metricCols.find(c => c.format !== 'percent_val') ||
+      metricCols[0];
+    const activeQuestion = activePresetConfig ? activePresetConfig.question : 'Custom analysis';
+
+    let topText = I18n.t('No comparable metric');
+    if (primaryMetric) {
+      const rankedRows = [...rows].sort((a, b) => Number(b[primaryMetric.key] || 0) - Number(a[primaryMetric.key] || 0));
+      const topRow = rankedRows[0];
+      const label = dimCol ? String(topRow[dimCol.key] || '') : I18n.t(primaryMetric.label);
+      topText = (label ? I18n.t(label) + ': ' : '') + formatValue(topRow[primaryMetric.key], primaryMetric.format);
+    }
+
+    document.getElementById('biInsightQuestion').textContent = I18n.t(activeQuestion);
+    document.getElementById('biInsightTop').textContent = topText;
+    document.getElementById('biInsightScope').textContent = totalRows + (totalRows === 1 ? ' row' : ' rows') + ' | ' + metricCols.length + (metricCols.length === 1 ? ' metric' : ' metrics');
+    panel.style.display = '';
   }
 
   function formatValue(val, fmt) {
