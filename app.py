@@ -24,6 +24,7 @@ def create_app():
     from blueprints.events import events_bp
     from blueprints.finance import finance_bp
     from blueprints.bi import bi_bp
+    from blueprints.agent import agent_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
@@ -33,6 +34,7 @@ def create_app():
     app.register_blueprint(events_bp)
     app.register_blueprint(finance_bp)
     app.register_blueprint(bi_bp)
+    app.register_blueprint(agent_bp)
 
     @login_manager.user_loader
     def load_user(user_id):

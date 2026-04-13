@@ -1,0 +1,354 @@
+{% extends "base.html" %}
+{% block title %}AI Agent - Elder Care MIS{% endblock %}
+{% block breadcrumb %}<span data-i18n="AI Agent">AI Agent</span>{% endblock %}
+
+{% block head %}
+<style>
+  .agent-workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+    gap: 1rem;
+    align-items: start;
+  }
+  .agent-hero {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: flex-end;
+    margin-bottom: 1rem;
+  }
+  .agent-hero h2 {
+    margin: 0;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .agent-hero p {
+    margin: .35rem 0 0;
+    color: var(--text-secondary);
+    max-width: 660px;
+  }
+  .agent-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .45rem .7rem;
+    border-radius: 8px;
+    background: rgba(90,138,106,.1);
+    color: #3d6b4e;
+    font-size: .8rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .agent-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-warm);
+    border-radius: 8px;
+    box-shadow: var(--shadow-sm);
+  }
+  .agent-main {
+    min-height: 620px;
+    display: flex;
+    flex-direction: column;
+  }
+  .agent-answer {
+    flex: 1;
+    padding: 1rem;
+  }
+  .agent-empty {
+    height: 100%;
+    min-height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--text-secondary);
+    border: 1px dashed var(--border-warm);
+    border-radius: 8px;
+    background: rgba(255,253,249,.55);
+  }
+  .agent-answer-text {
+    white-space: pre-wrap;
+    line-height: 1.65;
+    color: var(--text-primary);
+  }
+  .agent-result-table {
+    margin-top: 1rem;
+    border-top: 1px solid var(--border-light);
+    padding-top: 1rem;
+  }
+  .agent-result-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: .65rem;
+  }
+  .agent-result-heading h5 {
+    margin: 0;
+    font-size: .9rem;
+    font-weight: 800;
+    color: var(--text-primary);
+  }
+  .agent-result-count {
+    color: var(--text-muted);
+    font-size: .78rem;
+    font-weight: 700;
+  }
+  .agent-result-scroll {
+    max-height: 320px;
+    overflow: auto;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+  }
+  .agent-result-scroll table {
+    margin: 0;
+    font-size: .78rem;
+  }
+  .agent-form {
+    border-top: 1px solid var(--border-light);
+    padding: 1rem;
+    background: rgba(246,243,238,.72);
+    border-radius: 0 0 8px 8px;
+  }
+  .agent-form textarea {
+    resize: vertical;
+    min-height: 92px;
+    border-radius: 8px;
+  }
+  .agent-prompts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-bottom: .75rem;
+  }
+  .agent-prompt {
+    border: 1px solid var(--border-warm);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    border-radius: 8px;
+    padding: .42rem .65rem;
+    font-size: .78rem;
+    font-weight: 600;
+    transition: all .2s var(--ease);
+  }
+  .agent-prompt:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .agent-side {
+    display: grid;
+    gap: 1rem;
+  }
+  .agent-side-section {
+    padding: 1rem;
+  }
+  .agent-side-section h5 {
+    font-size: .9rem;
+    font-weight: 800;
+    margin-bottom: .75rem;
+    color: var(--text-primary);
+  }
+  .agent-meta-list {
+    display: grid;
+    gap: .65rem;
+    margin: 0;
+  }
+  .agent-meta-row {
+    display: flex;
+    justify-content: space-between;
+    gap: .75rem;
+    font-size: .83rem;
+  }
+  .agent-meta-row span:first-child {
+    color: var(--text-muted);
+  }
+  .agent-meta-row span:last-child {
+    color: var(--text-primary);
+    font-weight: 700;
+    text-align: right;
+  }
+  .agent-sql-trace {
+    min-height: 120px;
+    padding: .75rem;
+    border-radius: 8px;
+    background: #26332b;
+    color: #edf4ee;
+    font-size: .78rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .agent-loading {
+    display: none;
+    color: var(--text-secondary);
+    font-weight: 700;
+  }
+  .agent-loading.show {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+  }
+  @media (max-width: 991.98px) {
+    .agent-workspace {
+      grid-template-columns: 1fr;
+    }
+    .agent-hero {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="agent-hero fade-in">
+  <div>
+    <h2 data-i18n="AI Agent">AI Agent</h2>
+    <p data-i18n="Ask questions across the full database.">Ask questions across the full database.</p>
+  </div>
+  <div class="agent-status-pill">
+    <i class="bi bi-shield-check"></i>
+    <span data-i18n="Read-only SQL">Read-only SQL</span>
+  </div>
+</div>
+
+<div class="agent-workspace fade-in fade-in-d1">
+  <section class="agent-panel agent-main">
+    <div class="agent-answer" id="agentAnswer">
+      <div class="agent-empty" id="agentEmpty">
+        <div>
+          <i class="bi bi-robot" style="font-size:2rem;color:var(--accent);"></i>
+          <div class="mt-2 fw-bold" data-i18n="Ask a database question to begin.">Ask a database question to begin.</div>
+          <div class="small mt-1" data-i18n="The Agent creates a read-only lookup and answers from the returned data.">The Agent creates a read-only lookup and answers from the returned data.</div>
+        </div>
+      </div>
+      <div class="agent-answer-text d-none" id="agentAnswerText"></div>
+      <div class="agent-result-table d-none" id="agentResultTable">
+        <div class="agent-result-heading">
+          <h5><i class="bi bi-table me-1"></i><span data-i18n="Result Table">Result Table</span></h5>
+          <span class="agent-result-count" id="agentRowCount"></span>
+        </div>
+        <div class="agent-result-scroll" id="agentResultRows"></div>
+      </div>
+    </div>
+    <form class="agent-form" id="agentQuestionForm">
+      <div class="agent-prompts" aria-label="Starter prompts">
+        <button type="button" class="agent-prompt" data-i18n="High-value donors" data-prompt="Which donors gave more than $500, and what gifts did they receive?" data-prompt-zh="哪些捐款人捐赠超过 500 美元，他们收到了哪些礼品？">High-value donors</button>
+        <button type="button" class="agent-prompt" data-i18n="Upcoming schedules" data-prompt="Show upcoming schedules with person names and event names." data-prompt-zh="显示即将到来的排班，包括人员姓名和活动名称。">Upcoming schedules</button>
+        <button type="button" class="agent-prompt" data-i18n="Low-stock gifts" data-prompt="Which gifts have the lowest current stock?" data-prompt-zh="哪些礼品当前库存最低？">Low-stock gifts</button>
+      </div>
+      <label for="agentQuestion" class="form-label fw-semibold" data-i18n="Question">Question</label>
+      <textarea id="agentQuestion" class="form-control" placeholder="Ask about donors, events, gifts, finance, schedules, or personnel..." data-i18n-placeholder="Ask about donors, events, gifts, finance, schedules, or personnel..."></textarea>
+      <div class="d-flex align-items-center justify-content-between gap-3 mt-3">
+        <span class="agent-loading" id="agentLoading">
+          <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+          <span data-i18n="Analyzing database">Analyzing database</span>
+        </span>
+        <button type="submit" class="btn btn-primary ms-auto">
+          <i class="bi bi-send me-1"></i><span data-i18n="Ask Agent">Ask Agent</span>
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <aside class="agent-side">
+    <section class="agent-panel agent-side-section">
+      <h5><i class="bi bi-cpu me-1"></i><span data-i18n="Agent Context">Agent Context</span></h5>
+      <div class="agent-meta-list">
+        <div class="agent-meta-row"><span data-i18n="Model">Model</span><span>{{ model_name }}</span></div>
+        <div class="agent-meta-row"><span data-i18n="Database scope">Database scope</span><span data-i18n="All tables">All tables</span></div>
+        <div class="agent-meta-row"><span data-i18n="Execution">Execution</span><span data-i18n="Read-only">Read-only</span></div>
+        <div class="agent-meta-row"><span data-i18n="Row limit">Row limit</span><span>{{ row_limit }}</span></div>
+      </div>
+    </section>
+
+    <section class="agent-panel agent-side-section">
+      <h5><i class="bi bi-terminal me-1"></i><span data-i18n="Latest SQL">Latest SQL</span></h5>
+      <pre class="agent-sql-trace" id="agentSqlTrace" data-i18n="No query yet.">No query yet.</pre>
+    </section>
+  </aside>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+  const form = document.getElementById('agentQuestionForm');
+  const question = document.getElementById('agentQuestion');
+  const loading = document.getElementById('agentLoading');
+  const empty = document.getElementById('agentEmpty');
+  const answerText = document.getElementById('agentAnswerText');
+  const resultTable = document.getElementById('agentResultTable');
+  const resultRows = document.getElementById('agentResultRows');
+  const rowCount = document.getElementById('agentRowCount');
+  const sqlTrace = document.getElementById('agentSqlTrace');
+
+  sqlTrace.textContent = I18n.t('No query yet.');
+
+  document.querySelectorAll('.agent-prompt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      question.value = I18n.getLang() === 'zh' ? btn.dataset.promptZh : btn.dataset.prompt;
+      question.focus();
+    });
+  });
+
+  function setBusy(isBusy) {
+    loading.classList.toggle('show', isBusy);
+    form.querySelector('button[type="submit"]').disabled = isBusy;
+  }
+
+  function renderRows(columns, rows) {
+    resultTable.classList.remove('d-none');
+    rowCount.textContent = `${rows.length} ${rows.length === 1 ? I18n.t('row shown') : I18n.t('rows shown')}`;
+    if (!rows.length || !columns.length) {
+      resultRows.innerHTML = `<div class="p-3 text-muted small">${I18n.t('No rows returned.')}</div>`;
+      return;
+    }
+    const head = columns.map(col => `<th>${escapeHtml(col)}</th>`).join('');
+    const body = rows.map(row => '<tr>' + columns.map(col => `<td>${escapeHtml(row[col])}</td>`).join('') + '</tr>').join('');
+    resultRows.innerHTML = `<table class="table table-sm table-hover"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[char]));
+  }
+
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    const text = question.value.trim();
+    if (!text) return;
+
+    setBusy(true);
+    empty.classList.add('d-none');
+    answerText.classList.remove('d-none');
+    answerText.textContent = I18n.t('Analyzing database...');
+    resultTable.classList.add('d-none');
+    resultRows.innerHTML = '';
+    rowCount.textContent = '';
+    sqlTrace.textContent = I18n.t('Waiting for generated SQL...');
+
+    try {
+      const response = await fetch('{{ url_for("agent.agent_query") }}', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({question: text})
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || I18n.t('Agent request failed.'));
+
+      answerText.textContent = data.answer || I18n.t('No answer returned.');
+      sqlTrace.textContent = data.sql || I18n.t('No SQL returned.');
+      renderRows(data.columns || [], data.rows || []);
+    } catch (err) {
+      answerText.textContent = err.message;
+      resultTable.classList.add('d-none');
+      sqlTrace.textContent = I18n.t('Query was not executed.');
+    } finally {
+      setBusy(false);
+    }
+  });
+})();
+</script>
+{% endblock %}
