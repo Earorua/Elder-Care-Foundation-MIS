@@ -122,6 +122,16 @@ class BiUiTemplateTests(unittest.TestCase):
         self.assertIn("if (includeDefault) {", text)
         self.assertIn("renderAll({ includeDefaultMetric: false });", text)
 
+    def test_domain_change_does_not_restore_default_metric(self):
+        text = _template_text()
+
+        self.assertIn(
+            "currentDomain = this.value;\n"
+            "      activeFilterKeys = [];\n"
+            "      renderAll({ includeDefaultMetric: false });",
+            text,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
