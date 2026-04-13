@@ -132,6 +132,14 @@ class BiUiTemplateTests(unittest.TestCase):
             text,
         )
 
+    def test_initial_load_does_not_restore_default_metric(self):
+        text = _template_text()
+        restore_index = text.index("Restore state from URL hash")
+        init_render_index = text.rfind("renderAll", 0, restore_index)
+        init_render_line = text[init_render_index:].splitlines()[0]
+
+        self.assertEqual("renderAll({ includeDefaultMetric: false });", init_render_line)
+
 
 if __name__ == "__main__":
     unittest.main()
