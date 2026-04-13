@@ -396,25 +396,140 @@
     overflow-x: auto;
   }
   .bi-insight-panel {
-    border: 1.5px solid var(--border-warm);
-    background: linear-gradient(135deg, rgba(255,253,249,.98), rgba(246,243,238,.92));
+    width: 100%;
+  }
+  .bi-insight-strip {
+    border: 1px solid rgba(90, 138, 106, .18);
+    border-radius: 8px;
+    background: rgba(255, 253, 249, .94);
     box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .bi-insight-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(180px, .95fr) minmax(150px, .7fr);
+    gap: 0;
+  }
+  .bi-insight-item {
+    min-width: 0;
+    padding: .85rem 1rem;
+    border-left: 1px solid rgba(90, 138, 106, .12);
+  }
+  .bi-insight-item:first-child {
+    border-left: 0;
+  }
+  .bi-insight-question {
+    background: rgba(90, 138, 106, .055);
   }
   .bi-insight-kicker {
     color: var(--text-secondary);
-    font-size: .75rem;
-    font-weight: 700;
+    font-size: .72rem;
+    font-weight: 800;
     text-transform: uppercase;
     letter-spacing: .04em;
   }
+  .bi-insight-title {
+    color: var(--text-primary);
+    font-weight: 750;
+    line-height: 1.35;
+    margin-top: .2rem;
+  }
   .bi-insight-value {
     color: var(--accent);
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     font-weight: 800;
+    line-height: 1.25;
+    margin-top: .2rem;
+    overflow-wrap: anywhere;
   }
   .bi-insight-note {
     color: var(--text-muted);
-    font-size: .78rem;
+    font-size: .82rem;
+    font-weight: 650;
+    margin-top: .25rem;
+  }
+  .bi-chart-workspace {
+    border: 1px solid rgba(90, 138, 106, .16) !important;
+    border-radius: 8px;
+    background: var(--bg-card) !important;
+    box-shadow: var(--shadow-sm) !important;
+    overflow: visible;
+  }
+  .bi-chart-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .85rem;
+    padding: .8rem 1rem;
+    border-bottom: 1px solid rgba(90, 138, 106, .14);
+    background: rgba(255, 253, 249, .88);
+  }
+  .bi-chart-title {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    color: var(--text-primary);
+    font-weight: 800;
+    min-width: max-content;
+  }
+  .bi-chart-title i {
+    color: var(--terracotta);
+  }
+  .bi-chart-controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: .5rem;
+    min-width: 0;
+  }
+  .bi-chart-canvas-shell {
+    height: 340px;
+    position: relative;
+    padding: 1rem;
+  }
+  .bi-table-shell {
+    border: 1px solid rgba(90, 138, 106, .13) !important;
+    border-radius: 8px;
+    background: var(--bg-card) !important;
+    box-shadow: none !important;
+    overflow: hidden;
+  }
+  .bi-table-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .7rem 1rem;
+    border-bottom: 1px solid rgba(90, 138, 106, .12);
+    background: rgba(246, 243, 238, .55);
+    color: var(--text-primary);
+    font-weight: 800;
+  }
+  .bi-table-head i {
+    color: var(--accent);
+  }
+  #resultCount {
+    background: rgba(90, 138, 106, .12);
+    color: var(--accent);
+    font-size: .7rem;
+    font-weight: 800;
+  }
+  .bi-table-scroll {
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  #biTable {
+    min-width: 680px;
+  }
+  #biTable th {
+    background: rgba(255, 253, 249, .96);
+    color: var(--text-secondary);
+    font-weight: 800;
+  }
+  #biTable td,
+  #biTable th {
+    vertical-align: middle;
+    padding: .6rem .75rem;
   }
   @media (max-width: 1099.98px) {
     .bi-analysis-shell {
@@ -446,6 +561,42 @@
     }
     .bi-action-bar .btn {
       flex: 1 1 auto;
+    }
+    .bi-insight-grid {
+      grid-template-columns: 1fr;
+    }
+    .bi-insight-item {
+      border-left: 0;
+      border-top: 1px solid rgba(90, 138, 106, .12);
+    }
+    .bi-insight-item:first-child {
+      border-top: 0;
+    }
+    .bi-chart-toolbar {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+    .bi-chart-controls,
+    #chartMetricSelector {
+      width: 100%;
+      max-width: none !important;
+    }
+    .bi-chart-canvas-shell {
+      height: 300px;
+      padding: .75rem;
+    }
+    .bi-table-shell {
+      position: relative;
+    }
+    .bi-table-shell::after {
+      content: "";
+      position: absolute;
+      top: 3.05rem;
+      right: 0;
+      bottom: 0;
+      width: 22px;
+      pointer-events: none;
+      background: linear-gradient(90deg, rgba(255,253,249,0), rgba(255,253,249,.95));
     }
   }
 </style>
@@ -621,17 +772,17 @@
 <div id="biSummary" class="row g-3 mb-3" style="display:none;"></div>
 
 <!-- Insight Summary -->
-<div id="biInsightPanel" class="bi-insight-panel rounded p-3 mb-3" style="display:none;">
-  <div class="row g-3 align-items-center">
-    <div class="col-md-5">
+<div id="biInsightPanel" class="bi-insight-panel bi-insight-strip mb-3" style="display:none;">
+  <div class="bi-insight-grid">
+    <div class="bi-insight-item bi-insight-question">
       <div class="bi-insight-kicker" data-i18n="Current question">Current question</div>
-      <div id="biInsightQuestion" style="font-weight:700;color:var(--text-primary);"></div>
+      <div id="biInsightQuestion" class="bi-insight-title"></div>
     </div>
-    <div class="col-md-4">
+    <div class="bi-insight-item">
       <div class="bi-insight-kicker" data-i18n="Top result">Top result</div>
       <div id="biInsightTop" class="bi-insight-value"></div>
     </div>
-    <div class="col-md-3">
+    <div class="bi-insight-item">
       <div class="bi-insight-kicker" data-i18n="Result scope">Result scope</div>
       <div id="biInsightScope" class="bi-insight-note"></div>
     </div>
@@ -639,10 +790,13 @@
 </div>
 
 <!-- Chart -->
-<div id="biChartWrap" class="card mt-3" style="display:none;border:none;background:var(--bg-card);box-shadow:var(--shadow-md);">
-  <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2" style="background:var(--bg-card);border-bottom:2px solid var(--border-warm);">
-    <span><i class="bi bi-bar-chart-fill me-2" style="color:var(--terracotta);"></i><span data-i18n="Chart">Chart</span></span>
-    <div class="d-flex align-items-center gap-2 flex-wrap">
+<div id="biChartWrap" class="card mt-3 bi-chart-workspace" style="display:none;">
+  <div class="bi-chart-toolbar">
+    <div class="bi-chart-title">
+      <i class="bi bi-bar-chart-fill"></i>
+      <span data-i18n="Chart">Chart</span>
+    </div>
+    <div class="bi-chart-controls">
       <!-- Chart Metric Selector -->
       <div class="bi-multiselect" id="chartMetricSelector" style="min-width:180px;max-width:320px;">
         <div class="bi-multiselect-trigger" id="chartMetTrigger" style="min-height:32px;padding:2px 28px 2px 6px;font-size:.8rem;">
@@ -660,7 +814,7 @@
       </div>
     </div>
   </div>
-  <div class="card-body" style="height:320px;position:relative;">
+  <div class="card-body bi-chart-canvas-shell">
     <canvas id="biChart"></canvas>
   </div>
   <!-- Doughnut pagination nav -->
@@ -669,13 +823,13 @@
 
 <!-- Results Table -->
 <div id="biResults" class="mt-3" style="display:none;">
-  <div class="card" style="border:none;background:var(--bg-card);box-shadow:var(--shadow-md);">
-    <div class="card-header d-flex align-items-center justify-content-between" style="background:var(--bg-card);border-bottom:2px solid var(--border-warm);">
-      <span><i class="bi bi-table me-2" style="color:var(--accent);"></i><span data-i18n="Query Results">Query Results</span>
-        <span class="badge rounded-pill ms-2" id="resultCount" style="background:var(--accent);color:#fff;font-size:.7rem;"></span>
+  <div class="card bi-table-shell">
+    <div class="bi-table-head">
+      <span><i class="bi bi-table me-2"></i><span data-i18n="Query Results">Query Results</span>
+        <span class="badge rounded-pill ms-2" id="resultCount"></span>
       </span>
     </div>
-    <div class="table-responsive">
+    <div class="table-responsive bi-table-scroll">
       <table class="table table-hover mb-0" id="biTable">
         <thead><tr id="biTableHead"></tr></thead>
         <tbody id="biTableBody"></tbody>
