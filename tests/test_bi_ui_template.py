@@ -112,6 +112,16 @@ class BiUiTemplateTests(unittest.TestCase):
         for css in expected_css:
             self.assertIn(css, text)
 
+    def test_clear_all_does_not_restore_default_metric(self):
+        text = _template_text()
+
+        self.assertIn("function renderAll(options = {})", text)
+        self.assertIn("const includeDefaultMetric = options.includeDefaultMetric !== false;", text)
+        self.assertIn("renderMetrics(includeDefaultMetric);", text)
+        self.assertIn("function renderMetrics(includeDefault = true)", text)
+        self.assertIn("if (includeDefault) {", text)
+        self.assertIn("renderAll({ includeDefaultMetric: false });", text)
+
 
 if __name__ == "__main__":
     unittest.main()

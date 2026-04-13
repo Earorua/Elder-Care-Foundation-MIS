@@ -925,12 +925,13 @@
     });
   });
 
-  function renderAll() {
+  function renderAll(options = {}) {
+    const includeDefaultMetric = options.includeDefaultMetric !== false;
     updateDomainGuidance();
     renderFilterDropdown();
     renderActiveFilters();
     renderDimensions();
-    renderMetrics();
+    renderMetrics(includeDefaultMetric);
     hideResults();
     activePreset = -1;
     renderPresets();
@@ -1146,11 +1147,13 @@
   // ── Metrics (multi-select dropdown) ──
   let selectedMets = [];
 
-  function renderMetrics() {
+  function renderMetrics(includeDefault = true) {
     selectedMets = [];
-    const defaults = { donor: 'donor_count', person: 'person_count', event: 'event_count', gift: 'gift_count', finance: 'income_count', schedule: 'shift_count' };
-    const defaultMet = defaults[currentDomain];
-    if (defaultMet && METRIC_DEFS[defaultMet]) selectedMets.push(defaultMet);
+    if (includeDefault) {
+      const defaults = { donor: 'donor_count', person: 'person_count', event: 'event_count', gift: 'gift_count', finance: 'income_count', schedule: 'shift_count' };
+      const defaultMet = defaults[currentDomain];
+      if (defaultMet && METRIC_DEFS[defaultMet]) selectedMets.push(defaultMet);
+    }
     renderMetTrigger();
     renderMetDropdown();
   }
@@ -1903,7 +1906,7 @@
   // ── Clear ──
   document.getElementById('btnClear').addEventListener('click', function() {
     activeFilterKeys = [];
-    renderAll();
+    renderAll({ includeDefaultMetric: false });
     expandBuilder();
     history.replaceState(null, '', location.pathname);
   });
