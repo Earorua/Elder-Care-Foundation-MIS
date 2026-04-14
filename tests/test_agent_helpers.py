@@ -1,3 +1,4 @@
+import json
 import os
 import sqlite3
 import tempfile
@@ -7,6 +8,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import config
+import blueprints.agent as agent_module
 from flask import Flask
 
 from blueprints.agent import (
@@ -76,6 +78,45 @@ class AgentHelperTests(unittest.TestCase):
         self.assertIn("donor_id INTEGER", schema)
         self.assertIn("name TEXT", schema)
 
+    def test_get_database_schema_includes_semantic_notes_and_enum_values(self):
+        app, db_path = self._make_temp_app()
+        try:
+            with app.app_context():
+                schema = _get_database_schema()
+        finally:
+            os.unlink(db_path)
+
+        self.assertIn("Business semantic notes", schema)
+        self.assertIn("staff members", schema)
+        self.assertIn("persons.person_type values: Employee, Volunteer", schema)
+        self.assertIn("LOWER(persons.email) = LOWER(donors.email)", schema)
+
+    def test_find_unknown_enum_filters_flags_invalid_aliased_enum_value(self):
+        enum_values = {"persons.person_type": ["Employee", "Volunteer"]}
+        self.assertTrue(hasattr(agent_module, "_find_unknown_enum_filters"))
+
+        issues = agent_module._find_unknown_enum_filters(
+            "SELECT COUNT(*) FROM persons p "
+            "JOIN donors d ON LOWER(p.email) = LOWER(d.email) "
+            "WHERE LOWER(p.person_type) = 'staff'",
+            enum_values,
+        )
+
+        self.assertEqual(
+            issues,
+            [
+                "persons.person_type uses unsupported value 'staff'; "
+                "valid values are Employee, Volunteer"
+            ],
+        )
+        self.assertEqual(
+            agent_module._find_unknown_enum_filters(
+                "SELECT COUNT(*) FROM persons p WHERE LOWER(p.person_type) = 'employee'",
+                enum_values,
+            ),
+            [],
+        )
+
     def test_agent_query_returns_setup_error_when_api_key_missing(self):
         app, db_path = self._make_temp_app()
         app.register_blueprint(agent_bp)
@@ -142,6 +183,52 @@ class AgentHelperTests(unittest.TestCase):
         self.assertEqual(payload["total_rows"], 1)
         self.assertEqual(payload["columns"], ["name", "amount"])
         self.assertEqual(payload["rows"], [{"name": "Ada", "amount": 100.0}])
+
+    def test_agent_query_repairs_generated_sql_with_unknown_enum_value(self):
+        app, db_path = self._make_temp_app()
+        app.register_blueprint(agent_bp)
+        app.config["SILICONFLOW_API_KEY"] = "test-key"
+        try:
+            with patch(
+                "blueprints.agent._call_siliconflow",
+                side_effect=[
+                    json.dumps(
+                        {
+                            "sql": (
+                                "SELECT COUNT(DISTINCT p.person_id) AS count "
+                                "FROM persons p JOIN donors d ON LOWER(p.email) = LOWER(d.email) "
+                                "WHERE LOWER(p.person_type) = 'staff'"
+                            ),
+                            "rationale": "Count staff members who are also donors.",
+                        }
+                    ),
+                    json.dumps(
+                        {
+                            "sql": (
+                                "SELECT COUNT(DISTINCT p.person_id) AS count "
+                                "FROM persons p JOIN donors d ON LOWER(p.email) = LOWER(d.email)"
+                            ),
+                            "rationale": "Treat staff members as personnel records.",
+                        }
+                    ),
+                    "1 staff member is also a donor.",
+                ],
+            ) as mock_call:
+                response = app.test_client().post(
+                    "/api/agent/query",
+                    json={"question": "How many staff members are also donors?"},
+                )
+        finally:
+            os.unlink(db_path)
+
+        payload = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(mock_call.call_count, 3)
+        self.assertNotIn("person_type", payload["sql"])
+        self.assertEqual(payload["rows"], [{"count": 1}])
+        repair_prompt = mock_call.call_args_list[1].args[0]
+        self.assertIn("unsupported enum values", repair_prompt)
+        self.assertIn("persons.person_type uses unsupported value 'staff'", repair_prompt)
 
     def test_agent_query_retries_sql_generation_when_model_returns_non_json(self):
         app, db_path = self._make_temp_app()
@@ -336,8 +423,29 @@ class AgentHelperTests(unittest.TestCase):
         db_path = handle.name
         handle.close()
         conn = sqlite3.connect(db_path)
-        conn.execute("CREATE TABLE donors (donor_id INTEGER PRIMARY KEY, name TEXT, amount REAL)")
-        conn.execute("INSERT INTO donors (name, amount) VALUES ('Ada', 100.0)")
+        conn.execute(
+            "CREATE TABLE donors ("
+            "donor_id INTEGER PRIMARY KEY, name TEXT, amount REAL, email TEXT)"
+        )
+        conn.execute(
+            "CREATE TABLE persons ("
+            "person_id INTEGER PRIMARY KEY, first_name TEXT, last_name TEXT, "
+            "email TEXT, person_type TEXT, role_name TEXT, status TEXT)"
+        )
+        conn.execute(
+            "INSERT INTO donors (name, amount, email) VALUES "
+            "('Ada', 100.0, 'ada@example.org')"
+        )
+        conn.execute(
+            "INSERT INTO persons "
+            "(first_name, last_name, email, person_type, role_name, status) VALUES "
+            "('Ada', 'Lovelace', 'ada@example.org', 'Employee', 'Coordinator', 'active')"
+        )
+        conn.execute(
+            "INSERT INTO persons "
+            "(first_name, last_name, email, person_type, role_name, status) VALUES "
+            "('Grace', 'Hopper', 'grace@example.org', 'Volunteer', 'Driver', 'active')"
+        )
         conn.commit()
         conn.close()
 

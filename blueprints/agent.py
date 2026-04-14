@@ -27,6 +27,34 @@ BLOCKED_SQL_WORDS = {
     "vacuum",
 }
 
+ENUM_CONTEXT_COLUMN_KEYWORDS = (
+    "category",
+    "gender",
+    "location",
+    "method",
+    "role",
+    "source",
+    "status",
+    "type",
+)
+
+MAX_ENUM_CONTEXT_VALUES = 20
+
+SQL_ALIAS_RESERVED_WORDS = {
+    "cross",
+    "full",
+    "group",
+    "inner",
+    "join",
+    "left",
+    "limit",
+    "on",
+    "order",
+    "outer",
+    "right",
+    "where",
+}
+
 
 @agent_bp.route("/agent")
 @login_required
@@ -58,6 +86,7 @@ def agent_query():
     try:
         schema = _get_database_schema()
         sql_payload = _generate_sql_payload(question, schema)
+        sql_payload = _repair_sql_semantics_if_needed(question, schema, sql_payload)
         stage = "executing SQL"
         sql = _ensure_limit(
             _validate_readonly_sql(sql_payload.get("sql", "")),
@@ -175,7 +204,164 @@ def _get_database_schema():
         columns = db.execute(f'PRAGMA table_info("{safe_table_name}")').fetchall()
         column_text = ", ".join(f"{col['name']} {col['type'] or 'TEXT'}" for col in columns)
         parts.append(f"{table_name}: {column_text}")
+    parts.append("")
+    parts.append(_get_business_semantic_context())
+    parts.append("")
+    parts.append(_format_enum_value_context(_get_enum_values_by_column(db)))
     return "\n".join(parts)
+
+
+def _get_business_semantic_context():
+    return "\n".join(
+        [
+            "Business semantic notes:",
+            "- In broad people questions, staff members, staff, and personnel refer to records in persons.",
+            "- Do not filter persons.person_type to Staff unless the database enum values include Staff.",
+            "- persons.person_type currently distinguishes employment/participation categories such as Employee and Volunteer.",
+            "- People/personnel/staff who are also donors are matched by email: LOWER(persons.email) = LOWER(donors.email).",
+            "- Donations belong to donors through donations.donor_id = donors.donor_id.",
+            "- Events and donors are linked through donors_events.",
+            "- Schedules belong to persons and events through schedules.person_id and schedules.event_id.",
+            "- Gifts are distributed through gift_batch and gift_distribution; gift_distribution.donation_id links back to donations.",
+        ]
+    )
+
+
+def _get_enum_values_by_column(db=None):
+    db = db or get_db()
+    enum_values = {}
+    table_rows = db.execute(
+        "SELECT name FROM sqlite_master "
+        "WHERE type = 'table' AND name NOT LIKE 'sqlite_%' "
+        "ORDER BY name"
+    ).fetchall()
+    for table_row in table_rows:
+        table_name = table_row["name"]
+        safe_table_name = table_name.replace('"', '""')
+        columns = db.execute(f'PRAGMA table_info("{safe_table_name}")').fetchall()
+        for col in columns:
+            column_name = col["name"]
+            if not _is_enum_context_column(column_name, col["type"] or ""):
+                continue
+            safe_column_name = column_name.replace('"', '""')
+            rows = db.execute(
+                f'SELECT DISTINCT "{safe_column_name}" AS value '
+                f'FROM "{safe_table_name}" '
+                f'WHERE "{safe_column_name}" IS NOT NULL '
+                f'AND TRIM(CAST("{safe_column_name}" AS TEXT)) != "" '
+                f'ORDER BY "{safe_column_name}" '
+                f"LIMIT {MAX_ENUM_CONTEXT_VALUES + 1}"
+            ).fetchall()
+            values = [str(row["value"]) for row in rows]
+            if values and len(values) <= MAX_ENUM_CONTEXT_VALUES:
+                enum_values[f"{table_name}.{column_name}"] = values
+    return enum_values
+
+
+def _is_enum_context_column(column_name, column_type):
+    name = column_name.lower()
+    sql_type = column_type.upper()
+    return (
+        any(keyword in name for keyword in ENUM_CONTEXT_COLUMN_KEYWORDS)
+        and ("TEXT" in sql_type or "CHAR" in sql_type or not sql_type)
+    )
+
+
+def _format_enum_value_context(enum_values):
+    lines = ["Observed enum-like values:"]
+    if not enum_values:
+        lines.append("- None detected.")
+        return "\n".join(lines)
+    for column_key, values in enum_values.items():
+        lines.append(f"- {column_key} values: {', '.join(values)}")
+    return "\n".join(lines)
+
+
+def _repair_sql_semantics_if_needed(question, schema, sql_payload):
+    issues = _find_unknown_enum_filters(
+        sql_payload.get("sql", ""),
+        _get_enum_values_by_column(),
+    )
+    if not issues:
+        return sql_payload
+
+    repair_response = _call_siliconflow(
+        _build_sql_semantic_repair_prompt(question, schema, sql_payload, issues),
+        max_tokens=700,
+        temperature=0,
+    )
+    return _extract_json_object(repair_response)
+
+
+def _find_unknown_enum_filters(sql, enum_values_by_column):
+    alias_map = _extract_table_aliases(sql)
+    issues = []
+    seen = set()
+    for column_key, valid_values in enum_values_by_column.items():
+        table_name, column_name = column_key.split(".", 1)
+        qualifiers = {
+            alias
+            for alias, table in alias_map.items()
+            if table.lower() == table_name.lower()
+        }
+        if not qualifiers:
+            qualifiers = {table_name.lower()}
+
+        for qualifier in qualifiers:
+            used_values = _extract_enum_filter_values(sql, qualifier, column_name)
+            for used_value in used_values:
+                if _is_known_enum_value(used_value, valid_values):
+                    continue
+                issue = (
+                    f"{table_name}.{column_name} uses unsupported value "
+                    f"'{used_value}'; valid values are {', '.join(valid_values)}"
+                )
+                if issue not in seen:
+                    seen.add(issue)
+                    issues.append(issue)
+    return issues
+
+
+def _extract_table_aliases(sql):
+    aliases = {}
+    for match in re.finditer(
+        r"\b(?:from|join)\s+([A-Za-z_][A-Za-z0-9_]*)"
+        r"(?:\s+(?:as\s+)?([A-Za-z_][A-Za-z0-9_]*))?",
+        sql or "",
+        flags=re.IGNORECASE,
+    ):
+        table_name = match.group(1)
+        alias = match.group(2)
+        aliases[table_name.lower()] = table_name
+        if alias and alias.lower() not in SQL_ALIAS_RESERVED_WORDS:
+            aliases[alias.lower()] = table_name
+    return aliases
+
+
+def _extract_enum_filter_values(sql, qualifier, column_name):
+    if not sql:
+        return []
+    qualified_column = rf"{re.escape(qualifier)}\s*\.\s*{re.escape(column_name)}"
+    column_expr = rf"(?:LOWER\(\s*)?{qualified_column}(?:\s*\))?"
+    values = []
+    for match in re.finditer(
+        rf"{column_expr}\s*=\s*'([^']*)'",
+        sql,
+        flags=re.IGNORECASE,
+    ):
+        values.append(match.group(1))
+    for match in re.finditer(
+        rf"{column_expr}\s+IN\s*\(([^)]*)\)",
+        sql,
+        flags=re.IGNORECASE,
+    ):
+        values.extend(re.findall(r"'([^']*)'", match.group(1)))
+    return values
+
+
+def _is_known_enum_value(value, valid_values):
+    normalized = value.strip().lower()
+    return normalized in {valid_value.strip().lower() for valid_value in valid_values}
 
 
 def _extract_json_object(text):
@@ -249,7 +435,10 @@ def _build_sql_prompt(question, schema):
         "You are a database analyst for an elder care foundation MIS.\n"
         "Return exactly one JSON object with keys sql and rationale. "
         "The sql must be a single read-only SQLite SELECT or WITH query. "
-        "Do not use PRAGMA or any mutation statement.\n\n"
+        "Do not use PRAGMA or any mutation statement. "
+        "Use the business semantic notes, observed enum-like values, and join paths in the schema context. "
+        "Do not invent enum values that are not listed in the schema context. "
+        "If a user term is a business synonym, map it to the documented table or valid enum values instead of filtering on the literal term.\n\n"
         f"Database schema:\n{schema}\n\n"
         f"Question: {question}"
     )
@@ -261,10 +450,29 @@ def _build_sql_repair_prompt(question, schema, raw_response):
         "Return exactly one JSON object with keys sql and rationale. "
         "Do not include markdown, prose, or any text outside the JSON object. "
         "The sql must be a single read-only SQLite SELECT or WITH query. "
-        "Do not use PRAGMA or any mutation statement.\n\n"
+        "Do not use PRAGMA or any mutation statement. "
+        "Use the business semantic notes, observed enum-like values, and join paths in the schema context. "
+        "Do not invent enum values that are not listed in the schema context.\n\n"
         f"Database schema:\n{schema}\n\n"
         f"Question: {question}\n\n"
         f"Previous model output:\n{raw_response}"
+    )
+
+
+def _build_sql_semantic_repair_prompt(question, schema, sql_payload, issues):
+    return (
+        "The previous SQL used unsupported enum values for this database.\n"
+        "Return exactly one JSON object with keys sql and rationale. "
+        "Do not include markdown, prose, or any text outside the JSON object. "
+        "The sql must be a single read-only SQLite SELECT or WITH query. "
+        "Do not use PRAGMA or any mutation statement. "
+        "Use the business semantic notes, observed enum-like values, and join paths in the schema context. "
+        "If the user used a documented business synonym, map it to the documented table or valid enum values. "
+        "If the user explicitly asked for a value that is not present and is not a synonym, keep the user's intent and return a query that reports no matching rows instead of dropping the filter.\n\n"
+        f"Database schema:\n{schema}\n\n"
+        f"Question: {question}\n\n"
+        f"Unsupported enum values:\n{json.dumps(issues, ensure_ascii=False)}\n\n"
+        f"Previous SQL payload:\n{json.dumps(sql_payload, ensure_ascii=False)}"
     )
 
 
