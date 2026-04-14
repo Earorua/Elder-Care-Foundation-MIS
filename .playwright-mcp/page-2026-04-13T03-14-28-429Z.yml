@@ -1,0 +1,262 @@
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - img "Logo" [ref=e7]
+          - generic [ref=e8]: Elder Care
+          - generic [ref=e9]: Foundation MIS
+        - generic [ref=e11]:
+          - generic [ref=e12]: 
+          - text: admin · admin
+      - navigation "Main navigation" [ref=e13]:
+        - link " Dashboard" [ref=e14] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=e15]: 
+          - text: Dashboard
+        - generic [ref=e16]: Donations
+        - link " Donation Records" [ref=e17] [cursor=pointer]:
+          - /url: /donations
+          - generic [ref=e18]: 
+          - text: Donation Records
+        - link " Donors" [ref=e19] [cursor=pointer]:
+          - /url: /donors
+          - generic [ref=e20]: 
+          - text: Donors
+        - link " Categories" [ref=e21] [cursor=pointer]:
+          - /url: /categories
+          - generic [ref=e22]: 
+          - text: Categories
+        - link " Donor Feedback" [ref=e23] [cursor=pointer]:
+          - /url: /feedback
+          - generic [ref=e24]: 
+          - text: Donor Feedback
+        - link " Tax Receipts" [ref=e25] [cursor=pointer]:
+          - /url: /receipts
+          - generic [ref=e26]: 
+          - text: Tax Receipts
+        - generic [ref=e27]: Personnel
+        - link " Persons" [ref=e28] [cursor=pointer]:
+          - /url: /persons
+          - generic [ref=e29]: 
+          - text: Persons
+        - link " Schedules" [ref=e30] [cursor=pointer]:
+          - /url: /schedules
+          - generic [ref=e31]: 
+          - text: Schedules
+        - link " Schedule Board" [ref=e32] [cursor=pointer]:
+          - /url: /schedule-board
+          - generic [ref=e33]: 
+          - text: Schedule Board
+        - link " Payments" [ref=e34] [cursor=pointer]:
+          - /url: /payments
+          - generic [ref=e35]: 
+          - text: Payments
+        - generic [ref=e36]: Gifts
+        - link " Gifts" [ref=e37] [cursor=pointer]:
+          - /url: /gifts
+          - generic [ref=e38]: 
+          - text: Gifts
+        - link " Batches" [ref=e39] [cursor=pointer]:
+          - /url: /batches
+          - generic [ref=e40]: 
+          - text: Batches
+        - link " Distribution" [ref=e41] [cursor=pointer]:
+          - /url: /distribution
+          - generic [ref=e42]: 
+          - text: Distribution
+        - link " Delivery" [ref=e43] [cursor=pointer]:
+          - /url: /delivery
+          - generic [ref=e44]: 
+          - text: Delivery
+        - link " Suppliers" [ref=e45] [cursor=pointer]:
+          - /url: /suppliers
+          - generic [ref=e46]: 
+          - text: Suppliers
+        - generic [ref=e47]: Events
+        - link " Events" [ref=e48] [cursor=pointer]:
+          - /url: /events
+          - generic [ref=e49]: 
+          - text: Events
+        - link " Donor Participation" [ref=e50] [cursor=pointer]:
+          - /url: /donors-events
+          - generic [ref=e51]: 
+          - text: Donor Participation
+        - generic [ref=e52]: Finance
+        - link " Grants" [ref=e53] [cursor=pointer]:
+          - /url: /grants
+          - generic [ref=e54]: 
+          - text: Grants
+        - link " Other Income" [ref=e55] [cursor=pointer]:
+          - /url: /other-income
+          - generic [ref=e56]: 
+          - text: Other Income
+        - link " Financial Reports" [ref=e57] [cursor=pointer]:
+          - /url: /reports
+          - generic [ref=e58]: 
+          - text: Financial Reports
+        - generic [ref=e59]: Analytics
+        - link " BI Explorer" [ref=e60] [cursor=pointer]:
+          - /url: /bi
+          - generic [ref=e61]: 
+          - text: BI Explorer
+        - generic [ref=e62]: Administration
+        - link " User Management" [ref=e63] [cursor=pointer]:
+          - /url: /users
+          - generic [ref=e64]: 
+          - text: User Management
+        - link " Logout" [ref=e66] [cursor=pointer]:
+          - /url: /logout
+          - generic [ref=e67]: 
+          - text: Logout
+    - generic [ref=e68]:
+      - generic [ref=e69]:
+        - text: 
+        - navigation "breadcrumb" [ref=e70]:
+          - list [ref=e71]:
+            - listitem [ref=e72]:
+              - link "" [ref=e73] [cursor=pointer]:
+                - /url: /dashboard
+                - generic [ref=e74]: 
+            - listitem [ref=e75]: / BI Explorer
+        - generic [ref=e76]:
+          - generic [ref=e77]: Mon, Apr 13 11:14 AM
+          - button " 中文" [ref=e78] [cursor=pointer]:
+            - generic [ref=e79]: 
+            - text: 中文
+          - generic [ref=e80]:
+            - generic [ref=e81]: A
+            - generic [ref=e82]:
+              - generic [ref=e83]: admin
+              - generic [ref=e84]: admin
+      - main [ref=e85]:
+        - generic [ref=e86]:
+          - generic [ref=e87]:
+            - generic [ref=e88]:
+              - generic [ref=e90]: 
+              - generic [ref=e91]:
+                - generic [ref=e92]: Analytics Workspace
+                - heading "BI Explorer" [level=4] [ref=e93]
+            - paragraph [ref=e94]: Build custom queries to analyze data across all foundation modules
+          - generic [ref=e95]: Question-led analysis across 6 domains
+        - generic [ref=e96]:
+          - complementary [ref=e97]:
+            - generic [ref=e98]:
+              - generic [ref=e99]: Business Questions
+              - combobox "Business Questions" [ref=e100]:
+                - option "Select a business question"
+                - option "Donation Value - Which donation channel brings the most value?" [selected]
+                - option "Donor Geography - Where are donors concentrated?"
+                - option "Donor Profile - Which donor groups are most engaged?"
+                - option "Giving Trend - How are donations changing by month?"
+                - option "Staff Cost - Which personnel roles drive payment cost?"
+                - option "Event Performance - Which events are closest to target?"
+                - option "Gift Movement - Which gifts are moving fastest?"
+                - option "Gift Inventory - Which gift types hold the most inventory value?"
+                - option "Income Mix - Which income source contributes the most?"
+                - option "Schedule Health - How is attendance trending?"
+            - text: 
+            - generic [ref=e101]:
+              - generic [ref=e103]:
+                - generic [ref=e104]: Data Domain
+                - generic [ref=e105]:
+                  - generic [ref=e106]:
+                    - radio " Donors" [checked]
+                    - generic [ref=e107] [cursor=pointer]:
+                      - generic [ref=e108]: 
+                      - text: Donors
+                  - generic [ref=e109]:
+                    - radio " Personnel"
+                    - generic [ref=e110] [cursor=pointer]:
+                      - generic [ref=e111]: 
+                      - text: Personnel
+                  - generic [ref=e112]:
+                    - radio " Events"
+                    - generic [ref=e113] [cursor=pointer]:
+                      - generic [ref=e114]: 
+                      - text: Events
+                  - generic [ref=e115]:
+                    - radio " Gifts"
+                    - generic [ref=e116] [cursor=pointer]:
+                      - generic [ref=e117]: 
+                      - text: Gifts
+                  - generic [ref=e118]:
+                    - radio " Finance"
+                    - generic [ref=e119] [cursor=pointer]:
+                      - generic [ref=e120]: 
+                      - text: Finance
+                  - generic [ref=e121]:
+                    - radio " Schedules"
+                    - generic [ref=e122] [cursor=pointer]:
+                      - generic [ref=e123]: 
+                      - text: Schedules
+              - generic [ref=e124]:
+                - generic [ref=e126]:
+                  - generic [ref=e127]:
+                    - generic [ref=e128]: 
+                    - text: Filters
+                    - generic [ref=e129]: Choose donor and donation records
+                  - generic [ref=e130]:
+                    - combobox [ref=e132]:
+                      - option "+ Add filter..." [selected]
+                      - option "Donation Amount"
+                      - option "Donation Date"
+                      - option "Donation Type"
+                      - option "Donor Age"
+                      - option "Donor Gender"
+                      - option "Donor Location"
+                      - option "Tax Deductible"
+                    - generic [ref=e133]:
+                      - generic [ref=e134]: 
+                      - generic [ref=e135]: No filters applied — all records included
+                - generic [ref=e137]:
+                  - generic [ref=e138]:
+                    - generic [ref=e139]: 
+                    - text: Dimensions
+                    - generic [ref=e140]: Group by donor traits or giving activity
+                  - generic [ref=e142]:
+                    - generic [ref=e143] [cursor=pointer]:
+                      - generic [ref=e164]:
+                        - text: Donation Type
+                        - generic [ref=e166]: 
+                      - generic [ref=e145]: 
+                    - text:        
+                - generic [ref=e147]:
+                  - generic [ref=e148]:
+                    - generic [ref=e149]: 
+                    - text: Metrics
+                    - generic [ref=e150]: Compare donor counts and donation value
+                  - generic [ref=e152]:
+                    - generic [ref=e153] [cursor=pointer]:
+                      - generic [ref=e167]:
+                        - text: Donor Count
+                        - generic [ref=e169]: 
+                      - generic [ref=e170]:
+                        - text: Total Donation Amount
+                        - generic [ref=e172]: 
+                      - generic [ref=e173]:
+                        - text: Avg Donation Amount
+                        - generic [ref=e175]: 
+                      - generic [ref=e176]:
+                        - text: Donation Count
+                        - generic [ref=e178]: 
+                      - generic [ref=e157]: 
+                    - text:       
+            - generic [ref=e158]:
+              - button " Run Query" [ref=e159] [cursor=pointer]:
+                - generic [ref=e160]: 
+                - text: Run Query
+              - button " Clear All" [ref=e161] [cursor=pointer]:
+                - generic [ref=e162]: 
+                - text: Clear All
+              - text: 
+          - generic [ref=e179]:
+            - generic [ref=e180]:
+              - status [ref=e181]
+              - generic [ref=e182]: Running query...
+            - generic:       
+        - generic [ref=e163]:
+          - img "Elder Care Foundation"
+  - text:   

@@ -1,0 +1,327 @@
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - img "Logo" [ref=e7]
+          - generic [ref=e8]: Elder Care
+          - generic [ref=e9]: Foundation MIS
+        - generic [ref=e11]:
+          - generic [ref=e12]: 
+          - text: admin · admin
+      - navigation "Main navigation" [ref=e13]:
+        - link " Dashboard" [ref=e14] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=e15]: 
+          - text: Dashboard
+        - generic [ref=e16]: Donations
+        - link " Donation Records" [ref=e17] [cursor=pointer]:
+          - /url: /donations
+          - generic [ref=e18]: 
+          - text: Donation Records
+        - link " Donors" [ref=e19] [cursor=pointer]:
+          - /url: /donors
+          - generic [ref=e20]: 
+          - text: Donors
+        - link " Categories" [ref=e21] [cursor=pointer]:
+          - /url: /categories
+          - generic [ref=e22]: 
+          - text: Categories
+        - link " Donor Feedback" [ref=e23] [cursor=pointer]:
+          - /url: /feedback
+          - generic [ref=e24]: 
+          - text: Donor Feedback
+        - link " Tax Receipts" [ref=e25] [cursor=pointer]:
+          - /url: /receipts
+          - generic [ref=e26]: 
+          - text: Tax Receipts
+        - generic [ref=e27]: Personnel
+        - link " Persons" [ref=e28] [cursor=pointer]:
+          - /url: /persons
+          - generic [ref=e29]: 
+          - text: Persons
+        - link " Schedules" [ref=e30] [cursor=pointer]:
+          - /url: /schedules
+          - generic [ref=e31]: 
+          - text: Schedules
+        - link " Schedule Board" [ref=e32] [cursor=pointer]:
+          - /url: /schedule-board
+          - generic [ref=e33]: 
+          - text: Schedule Board
+        - link " Payments" [ref=e34] [cursor=pointer]:
+          - /url: /payments
+          - generic [ref=e35]: 
+          - text: Payments
+        - generic [ref=e36]: Gifts
+        - link " Gifts" [ref=e37] [cursor=pointer]:
+          - /url: /gifts
+          - generic [ref=e38]: 
+          - text: Gifts
+        - link " Batches" [ref=e39] [cursor=pointer]:
+          - /url: /batches
+          - generic [ref=e40]: 
+          - text: Batches
+        - link " Distribution" [ref=e41] [cursor=pointer]:
+          - /url: /distribution
+          - generic [ref=e42]: 
+          - text: Distribution
+        - link " Delivery" [ref=e43] [cursor=pointer]:
+          - /url: /delivery
+          - generic [ref=e44]: 
+          - text: Delivery
+        - link " Suppliers" [ref=e45] [cursor=pointer]:
+          - /url: /suppliers
+          - generic [ref=e46]: 
+          - text: Suppliers
+        - generic [ref=e47]: Events
+        - link " Events" [ref=e48] [cursor=pointer]:
+          - /url: /events
+          - generic [ref=e49]: 
+          - text: Events
+        - link " Donor Participation" [ref=e50] [cursor=pointer]:
+          - /url: /donors-events
+          - generic [ref=e51]: 
+          - text: Donor Participation
+        - generic [ref=e52]: Finance
+        - link " Grants" [ref=e53] [cursor=pointer]:
+          - /url: /grants
+          - generic [ref=e54]: 
+          - text: Grants
+        - link " Other Income" [ref=e55] [cursor=pointer]:
+          - /url: /other-income
+          - generic [ref=e56]: 
+          - text: Other Income
+        - link " Financial Reports" [ref=e57] [cursor=pointer]:
+          - /url: /reports
+          - generic [ref=e58]: 
+          - text: Financial Reports
+        - generic [ref=e59]: Analytics
+        - link " BI Explorer" [ref=e60] [cursor=pointer]:
+          - /url: /bi
+          - generic [ref=e61]: 
+          - text: BI Explorer
+        - generic [ref=e62]: Administration
+        - link " User Management" [ref=e63] [cursor=pointer]:
+          - /url: /users
+          - generic [ref=e64]: 
+          - text: User Management
+        - link " Logout" [ref=e66] [cursor=pointer]:
+          - /url: /logout
+          - generic [ref=e67]: 
+          - text: Logout
+    - generic [ref=e68]:
+      - generic [ref=e69]:
+        - button "Toggle navigation" [ref=e70] [cursor=pointer]:
+          - generic [ref=e71]: 
+        - navigation "breadcrumb" [ref=e72]:
+          - list [ref=e73]:
+            - listitem [ref=e74]:
+              - link "" [ref=e75] [cursor=pointer]:
+                - /url: /dashboard
+                - generic [ref=e76]: 
+            - listitem [ref=e77]: / BI Explorer
+        - generic [ref=e78]:
+          - button " 中文" [ref=e79] [cursor=pointer]:
+            - generic [ref=e80]: 
+            - text: 中文
+          - generic [ref=e82]: A
+      - main [ref=e83]:
+        - generic [ref=e84]:
+          - generic [ref=e85]:
+            - generic [ref=e86]:
+              - generic [ref=e88]: 
+              - generic [ref=e89]:
+                - generic [ref=e90]: Analytics Workspace
+                - heading "BI Explorer" [level=4] [ref=e91]
+            - paragraph [ref=e92]: Build custom queries to analyze data across all foundation modules
+          - generic [ref=e93]: Question-led analysis across 6 domains
+        - generic [ref=e94]:
+          - complementary [ref=e95]:
+            - generic [ref=e96]:
+              - generic [ref=e97]: Business Questions
+              - combobox "Business Questions" [ref=e98]:
+                - option "Select a business question"
+                - option "Donation Value - Which donation channel brings the most value?" [selected]
+                - option "Donor Geography - Where are donors concentrated?"
+                - option "Donor Profile - Which donor groups are most engaged?"
+                - option "Giving Trend - How are donations changing by month?"
+                - option "Staff Cost - Which personnel roles drive payment cost?"
+                - option "Event Performance - Which events are closest to target?"
+                - option "Gift Movement - Which gifts are moving fastest?"
+                - option "Gift Inventory - Which gift types hold the most inventory value?"
+                - option "Income Mix - Which income source contributes the most?"
+                - option "Schedule Health - How is attendance trending?"
+            - text: 
+            - generic [ref=e99]:
+              - generic [ref=e101]:
+                - generic [ref=e102]: Data Domain
+                - generic [ref=e103]:
+                  - generic [ref=e104]:
+                    - radio " Donors" [checked]
+                    - generic [ref=e105] [cursor=pointer]:
+                      - generic [ref=e106]: 
+                      - text: Donors
+                  - generic [ref=e107]:
+                    - radio " Personnel"
+                    - generic [ref=e108] [cursor=pointer]:
+                      - generic [ref=e109]: 
+                      - text: Personnel
+                  - generic [ref=e110]:
+                    - radio " Events"
+                    - generic [ref=e111] [cursor=pointer]:
+                      - generic [ref=e112]: 
+                      - text: Events
+                  - generic [ref=e113]:
+                    - radio " Gifts"
+                    - generic [ref=e114] [cursor=pointer]:
+                      - generic [ref=e115]: 
+                      - text: Gifts
+                  - generic [ref=e116]:
+                    - radio " Finance"
+                    - generic [ref=e117] [cursor=pointer]:
+                      - generic [ref=e118]: 
+                      - text: Finance
+                  - generic [ref=e119]:
+                    - radio " Schedules"
+                    - generic [ref=e120] [cursor=pointer]:
+                      - generic [ref=e121]: 
+                      - text: Schedules
+              - generic [ref=e122]:
+                - generic [ref=e124]:
+                  - generic [ref=e125]:
+                    - generic [ref=e126]: 
+                    - text: Filters
+                    - generic [ref=e127]: Choose donor and donation records
+                  - generic [ref=e128]:
+                    - combobox [ref=e130]:
+                      - option "+ Add filter..." [selected]
+                      - option "Donation Amount"
+                      - option "Donation Date"
+                      - option "Donation Type"
+                      - option "Donor Age"
+                      - option "Donor Gender"
+                      - option "Donor Location"
+                      - option "Tax Deductible"
+                    - generic [ref=e131]:
+                      - generic [ref=e132]: 
+                      - generic [ref=e133]: No filters applied — all records included
+                - generic [ref=e135]:
+                  - generic [ref=e136]:
+                    - generic [ref=e137]: 
+                    - text: Dimensions
+                    - generic [ref=e138]: Group by donor traits or giving activity
+                  - generic [ref=e140]:
+                    - generic [ref=e141] [cursor=pointer]:
+                      - generic [ref=e162]:
+                        - text: Donation Type
+                        - generic [ref=e164]: 
+                      - generic [ref=e143]: 
+                    - text:        
+                - generic [ref=e145]:
+                  - generic [ref=e146]:
+                    - generic [ref=e147]: 
+                    - text: Metrics
+                    - generic [ref=e148]: Compare donor counts and donation value
+                  - generic [ref=e150]:
+                    - generic [ref=e151] [cursor=pointer]:
+                      - generic [ref=e165]:
+                        - text: Donor Count
+                        - generic [ref=e167]: 
+                      - generic [ref=e168]:
+                        - text: Total Donation Amount
+                        - generic [ref=e170]: 
+                      - generic [ref=e171]:
+                        - text: Avg Donation Amount
+                        - generic [ref=e173]: 
+                      - generic [ref=e174]:
+                        - text: Donation Count
+                        - generic [ref=e176]: 
+                      - generic [ref=e155]: 
+                    - text:       
+            - generic [ref=e156]:
+              - button " Run Query" [ref=e157] [cursor=pointer]:
+                - generic [ref=e158]: 
+                - text: Run Query
+              - button " Clear All" [ref=e159] [cursor=pointer]:
+                - generic [ref=e160]: 
+                - text: Clear All
+              - button " Export CSV" [ref=e181] [cursor=pointer]:
+                - generic [ref=e182]: 
+                - text: Export CSV
+          - generic [ref=e183]:
+            - generic [ref=e185]:
+              - generic [ref=e186]:
+                - generic [ref=e187]: Current question
+                - generic [ref=e188]: Which donation channel brings the most value?
+              - generic [ref=e189]:
+                - generic [ref=e190]: Top result
+                - generic [ref=e191]: "Wire Transfer: $23,000.00"
+              - generic [ref=e192]:
+                - generic [ref=e193]: Result scope
+                - generic [ref=e194]: 3 rows | 4 metrics
+            - generic [ref=e196]:
+              - generic [ref=e197]:
+                - generic [ref=e198]: 
+                - generic [ref=e199]: Chart
+              - generic [ref=e200]:
+                - generic [ref=e201]:
+                  - generic [ref=e202] [cursor=pointer]:
+                    - generic [ref=e203]: All metrics
+                    - generic [ref=e204]: 
+                  - text:    
+                - generic [ref=e205]:
+                  - button "" [ref=e206] [cursor=pointer]:
+                    - generic [ref=e207]: 
+                  - button "" [ref=e208] [cursor=pointer]:
+                    - generic [ref=e209]: 
+                  - button "" [ref=e210] [cursor=pointer]:
+                    - generic [ref=e211]: 
+                  - button "" [ref=e212] [cursor=pointer]:
+                    - generic [ref=e213]: 
+            - generic [ref=e217]:
+              - generic [ref=e219]:
+                - generic [ref=e220]: 
+                - text: Query Results
+                - generic [ref=e221]: 3 rows
+              - table [ref=e223]:
+                - rowgroup [ref=e224]:
+                  - row "Donation Type  Donor Count  Total Donation Amount  Avg Donation Amount  Donation Count " [ref=e225]:
+                    - columnheader "Donation Type " [ref=e226] [cursor=pointer]:
+                      - text: Donation Type
+                      - generic [ref=e227]: 
+                    - columnheader "Donor Count " [ref=e228] [cursor=pointer]:
+                      - text: Donor Count
+                      - generic [ref=e229]: 
+                    - columnheader "Total Donation Amount " [ref=e230] [cursor=pointer]:
+                      - text: Total Donation Amount
+                      - generic [ref=e231]: 
+                    - columnheader "Avg Donation Amount " [ref=e232] [cursor=pointer]:
+                      - text: Avg Donation Amount
+                      - generic [ref=e233]: 
+                    - columnheader "Donation Count " [ref=e234] [cursor=pointer]:
+                      - text: Donation Count
+                      - generic [ref=e235]: 
+                - rowgroup [ref=e236]:
+                  - row "Cash 7 $21,550.00 $2,155.00 10" [ref=e237]:
+                    - cell "Cash" [ref=e238]
+                    - cell "7" [ref=e239]
+                    - cell "$21,550.00" [ref=e240]
+                    - cell "$2,155.00" [ref=e241]
+                    - cell "10" [ref=e242]
+                  - row "Check 4 $11,000.00 $2,750.00 4" [ref=e243]:
+                    - cell "Check" [ref=e244]
+                    - cell "4" [ref=e245]
+                    - cell "$11,000.00" [ref=e246]
+                    - cell "$2,750.00" [ref=e247]
+                    - cell "4" [ref=e248]
+                  - row "Wire Transfer 3 $23,000.00 $7,666.67 3" [ref=e249]:
+                    - cell "Wire Transfer" [ref=e250]
+                    - cell "3" [ref=e251]
+                    - cell "$23,000.00" [ref=e252]
+                    - cell "$7,666.67" [ref=e253]
+                    - cell "3" [ref=e254]
+        - generic [ref=e161]:
+          - img "Elder Care Foundation"
+  - text:   

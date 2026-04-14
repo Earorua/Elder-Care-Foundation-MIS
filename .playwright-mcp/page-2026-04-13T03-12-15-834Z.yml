@@ -1,0 +1,50 @@
+- generic [ref=e1]:
+  - alert [ref=e3]:
+    - generic [ref=e4]: 
+    - generic [ref=e5]: Please log in first
+    - button "Close" [ref=e6] [cursor=pointer]: ×
+  - generic [ref=e7]:
+    - button " 中文" [ref=e8] [cursor=pointer]:
+      - generic [ref=e9]: 
+      - text: 中文
+    - generic [ref=e10]:
+      - generic: 🍃
+      - generic: 🍂
+      - generic: 🍃
+      - generic: 🍂
+      - generic: 🍃
+      - generic [ref=e14]:
+        - img "Logo" [ref=e15]
+        - generic [ref=e16]:
+          - text: Elder Care
+          - text: Foundation
+        - heading "Elder Care Foundation" [level=2] [ref=e17]
+        - paragraph [ref=e18]: Management Information System for tracking donations, personnel, events, and financial reporting.
+    - generic [ref=e21]:
+      - generic [ref=e22]:
+        - paragraph [ref=e23]: Welcome back
+        - heading "Sign In" [level=3] [ref=e24]
+        - paragraph [ref=e25]: Enter your credentials to continue
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - generic [ref=e28]: Username
+          - generic [ref=e29]:
+            - generic [ref=e31]: 
+            - textbox "Enter username" [active] [ref=e32]
+        - generic [ref=e33]:
+          - generic [ref=e34]: Password
+          - generic [ref=e35]:
+            - generic [ref=e37]: 
+            - textbox "Enter password" [ref=e38]
+            - button "Toggle password visibility" [ref=e39] [cursor=pointer]:
+              - generic [ref=e40]: 
+        - generic [ref=e42]:
+          - checkbox "Remember me" [ref=e43]
+          - generic [ref=e44]: Remember me
+        - button " Sign In" [ref=e45] [cursor=pointer]:
+          - generic [ref=e46]: 
+          - text: Sign In
+      - generic [ref=e47]: Secure Access
+      - paragraph [ref=e48]:
+        - generic [ref=e49]: 
+        - text: Protected by role-based access control

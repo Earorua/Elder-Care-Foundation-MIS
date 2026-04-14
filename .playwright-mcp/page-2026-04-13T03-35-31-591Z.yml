@@ -1,0 +1,80 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - heading "Superpowers Brainstorming" [level=1] [ref=e3]:
+      - link "Superpowers Brainstorming" [ref=e4] [cursor=pointer]:
+        - /url: https://github.com/obra/superpowers
+    - generic [ref=e5]: Connected
+  - generic [ref=e7]:
+    - heading "BI 分析器平衡美化方案" [level=2] [ref=e8]
+    - paragraph [ref=e9]: 目标：保留当前「业务问题 + 左侧控制栏 + 右侧结果区」结构，同时提升专业感、图表阅读效率、移动端可用性。请选择你更想推进的力度。
+    - generic [ref=e10]:
+      - generic [ref=e11]: 当前观察
+      - generic [ref=e12]:
+        - generic [ref=e13]: 现有页面已经完成的基础
+        - generic [ref=e14]:
+          - generic [ref=e15]:
+            - generic [ref=e16]: 业务问题下拉
+            - generic [ref=e17]: 6 个数据域
+            - generic [ref=e18]: 图表先于表格
+            - generic [ref=e19]: 查询状态可分享
+          - generic [ref=e20]:
+            - generic [ref=e21]: 还可加强：图表工作区的视觉主次
+            - generic [ref=e22]: 还可加强：移动端表格和操作栏
+    - generic [ref=e23]:
+      - generic [ref=e24] [cursor=pointer]:
+        - generic [ref=e26]:
+          - generic [ref=e27]: A. Low-risk polish
+          - generic [ref=e28]:
+            - generic [ref=e29]: BI Explorer | Business Questions | Run
+            - generic [ref=e30]:
+              - generic [ref=e31]:
+                - generic [ref=e32]: 清爽控制栏
+                - generic [ref=e33]: 更紧凑的字段选择
+                - generic [ref=e34]: 固定底部操作区
+              - generic [ref=e35]:
+                - generic [ref=e36]: 图表卡片更轻、更稳
+                - generic [ref=e37]: 结果摘要
+                - generic [ref=e38]: 表格细节微调
+        - generic [ref=e39]:
+          - heading "A. 小步快跑式精修" [level=3] [ref=e40]
+          - paragraph [ref=e41]: 主要改间距、边框、按钮状态、表格密度、移动端换行和空状态。风险最低，效果稳，但视觉记忆点不强。
+      - generic [ref=e42] [cursor=pointer]:
+        - generic [ref=e44]:
+          - generic [ref=e45]: B. Balanced BI workspace
+          - generic [ref=e46]:
+            - generic [ref=e47]: Question | Domain | Date scope | Run
+            - generic [ref=e48]:
+              - generic [ref=e49]:
+                - generic [ref=e50]: 问题模板 + 说明
+                - generic [ref=e51]: 数据域做成紧凑分段按钮
+                - generic [ref=e52]: 筛选 / 维度 / 指标分层折叠
+              - generic [ref=e53]:
+                - generic [ref=e54]:
+                  - generic [ref=e55]: 当前问题
+                  - generic [ref=e56]: Top result
+                  - generic [ref=e57]: 数据范围
+                - generic [ref=e58]: Chart workspace
+                - generic [ref=e59]: 表格作为 detail layer
+        - generic [ref=e60]:
+          - heading "B. 推荐：平衡型 BI 工作台" [level=3] [ref=e61]
+          - paragraph [ref=e62]: 保留现有结构，重点强化结果区：摘要条、图表标题/图例、表格层级、移动端控制流。改动中等，最符合你选的 C。
+      - generic [ref=e63] [cursor=pointer]:
+        - generic [ref=e65]:
+          - generic [ref=e66]: C. Presentation cockpit
+          - generic [ref=e67]:
+            - generic [ref=e68]: BI Explorer | Saved view | Export | Share
+            - generic [ref=e69]: 大号结论条 + KPI strip
+            - generic [ref=e70]:
+              - generic [ref=e71]: 沉浸式图表主舞台
+              - generic [ref=e72]:
+                - generic [ref=e73]: 解释面板
+                - generic [ref=e74]: 下一步建议
+                - generic [ref=e75]: 异常提示
+            - generic [ref=e76]: 表格收起到下方抽屉
+        - generic [ref=e77]:
+          - heading "C. 演示驾驶舱式升级" [level=3] [ref=e78]
+          - paragraph [ref=e79]: 更适合答辩展示，视觉冲击强，但会改变当前页面节奏，工作量和回归风险都更高。
+    - generic [ref=e80]:
+      - generic [ref=e81]: 我的建议
+      - paragraph [ref=e82]: 选 B。它不会重写 BI 查询逻辑，也不会把页面变成全新的产品形态；主要把现有功能重新排布得更像一个成熟分析工作台。
+  - generic [ref=e83]: Click an option above, then return to the terminal
