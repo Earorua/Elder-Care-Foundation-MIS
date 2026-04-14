@@ -17,13 +17,26 @@ def persons_list():
     return render_template('personnel/persons.html', persons=persons)
 
 
+def _sync_matching_donor_marital_status(first_name, last_name, email, marital_status):
+    if not email:
+        return
+    execute_db(
+        'UPDATE donors SET marital_status=? '
+        'WHERE lower(trim(first_name)) = lower(trim(?)) '
+        'AND lower(trim(last_name)) = lower(trim(?)) '
+        'AND lower(trim(email)) = lower(trim(?))',
+        [marital_status, first_name, last_name, email]
+    )
+
+
 @personnel_bp.route('/persons/add', methods=['POST'])
 @login_required
 @role_required('event_coordinator')
 def persons_add():
+    marital_status = request.form.get('marital_status', 'Unknown')
     execute_db(
-        'INSERT INTO persons (first_name, last_name, email, phone, person_type, role_name, hire_date, status, birthday, gender, created_date) '
-        'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, date("now"))',
+        'INSERT INTO persons (first_name, last_name, email, phone, person_type, role_name, hire_date, status, birthday, gender, marital_status, created_date) '
+        'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, date("now"))',
         [
             request.form['first_name'],
             request.form['last_name'],
@@ -35,7 +48,14 @@ def persons_add():
             request.form['status'],
             request.form.get('birthday', ''),
             request.form.get('gender', ''),
+            marital_status,
         ]
+    )
+    _sync_matching_donor_marital_status(
+        request.form['first_name'],
+        request.form['last_name'],
+        request.form['email'],
+        marital_status,
     )
     flash('Person added successfully', 'success')
     return redirect(url_for('personnel.persons_list'))
@@ -45,8 +65,9 @@ def persons_add():
 @login_required
 @role_required('event_coordinator')
 def persons_edit(id):
+    marital_status = request.form.get('marital_status', 'Unknown')
     execute_db(
-        'UPDATE persons SET first_name=?, last_name=?, email=?, phone=?, person_type=?, role_name=?, hire_date=?, status=?, birthday=?, gender=? '
+        'UPDATE persons SET first_name=?, last_name=?, email=?, phone=?, person_type=?, role_name=?, hire_date=?, status=?, birthday=?, gender=?, marital_status=? '
         'WHERE person_id=?',
         [
             request.form['first_name'],
@@ -59,8 +80,15 @@ def persons_edit(id):
             request.form['status'],
             request.form.get('birthday', ''),
             request.form.get('gender', ''),
+            marital_status,
             id,
         ]
+    )
+    _sync_matching_donor_marital_status(
+        request.form['first_name'],
+        request.form['last_name'],
+        request.form['email'],
+        marital_status,
     )
     flash('Person updated successfully', 'success')
     return redirect(url_for('personnel.persons_list'))

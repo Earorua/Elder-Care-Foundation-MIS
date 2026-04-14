@@ -86,17 +86,37 @@ def donors_list():
                            us_states=sorted_states, us_states_map=US_STATES)
 
 
+def _sync_matching_person_marital_status(first_name, last_name, email, marital_status):
+    if not email:
+        return
+    execute_db(
+        'UPDATE persons SET marital_status=? '
+        'WHERE lower(trim(first_name)) = lower(trim(?)) '
+        'AND lower(trim(last_name)) = lower(trim(?)) '
+        'AND lower(trim(email)) = lower(trim(?))',
+        [marital_status, first_name, last_name, email]
+    )
+
+
 @donations_bp.route('/donors/add', methods=['POST'])
 @login_required
 @role_required('finance')
 def donors_add():
     try:
+        marital_status = request.form.get('marital_status', 'Unknown')
         execute_db(
-            'INSERT INTO donors (first_name, last_name, email, age, gender, location, created_date) '
-            'VALUES (?, ?, ?, ?, ?, ?, date("now"))',
+            'INSERT INTO donors (first_name, last_name, email, age, gender, location, marital_status, created_date) '
+            'VALUES (?, ?, ?, ?, ?, ?, ?, date("now"))',
             [request.form['first_name'], request.form['last_name'],
              request.form.get('email', ''), request.form.get('age', 0),
-             request.form.get('gender', ''), request.form.get('location', '')]
+             request.form.get('gender', ''), request.form.get('location', ''),
+             marital_status]
+        )
+        _sync_matching_person_marital_status(
+            request.form['first_name'],
+            request.form['last_name'],
+            request.form.get('email', ''),
+            marital_status,
         )
         flash('Donor added successfully', 'success')
     except Exception as e:
@@ -109,12 +129,20 @@ def donors_add():
 @role_required('finance')
 def donors_edit(id):
     try:
+        marital_status = request.form.get('marital_status', 'Unknown')
         execute_db(
-            'UPDATE donors SET first_name=?, last_name=?, email=?, age=?, gender=?, location=? '
+            'UPDATE donors SET first_name=?, last_name=?, email=?, age=?, gender=?, location=?, marital_status=? '
             'WHERE donor_id=?',
             [request.form['first_name'], request.form['last_name'],
              request.form.get('email', ''), request.form.get('age', 0),
-             request.form.get('gender', ''), request.form.get('location', ''), id]
+             request.form.get('gender', ''), request.form.get('location', ''),
+             marital_status, id]
+        )
+        _sync_matching_person_marital_status(
+            request.form['first_name'],
+            request.form['last_name'],
+            request.form.get('email', ''),
+            marital_status,
         )
         flash('Donor updated successfully', 'success')
     except Exception as e:

@@ -25,7 +25,7 @@
     <thead class="table-header">
       <tr>
         <th data-i18n="Person ID">Person ID</th><th data-i18n="First Name">First Name</th><th data-i18n="Last Name">Last Name</th><th data-i18n="Email">Email</th><th data-i18n="Phone">Phone</th>
-        <th data-i18n="Type">Type</th><th data-i18n="Role">Role</th><th data-i18n="Hire Date">Hire Date</th><th data-i18n="Birthday">Birthday</th><th data-i18n="Gender">Gender</th><th data-i18n="Status">Status</th><th data-i18n="Actions">Actions</th>
+        <th data-i18n="Type">Type</th><th data-i18n="Role">Role</th><th data-i18n="Hire Date">Hire Date</th><th data-i18n="Birthday">Birthday</th><th data-i18n="Gender">Gender</th><th data-i18n="Marital Status">Marital Status</th><th data-i18n="Status">Status</th><th data-i18n="Actions">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -41,9 +41,10 @@
         <td>{{ p['hire_date'] }}</td>
         <td>{{ p['birthday'] }}</td>
         <td>{{ p['gender'] }}</td>
+        <td><span data-i18n="{{ p['marital_status'] }}">{{ p['marital_status'] }}</span></td>
         <td>{{ p['status'] }}</td>
         <td class="text-nowrap">
-          <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" data-i18n-title="Edit" title="Edit" onclick="openEdit({{ p['person_id'] }}, '{{ p['first_name'] }}', '{{ p['last_name'] }}', '{{ p['email'] }}', '{{ p['phone'] }}', '{{ p['person_type'] }}', '{{ p['role_name'] }}', '{{ p['hire_date'] }}', '{{ p['status'] }}', '{{ p['birthday'] }}', '{{ p['gender'] }}')"><i class="bi bi-pencil"></i></button>
+          <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" data-i18n-title="Edit" title="Edit" onclick="openEdit({{ p['person_id'] }}, '{{ p['first_name'] }}', '{{ p['last_name'] }}', '{{ p['email'] }}', '{{ p['phone'] }}', '{{ p['person_type'] }}', '{{ p['role_name'] }}', '{{ p['hire_date'] }}', '{{ p['status'] }}', '{{ p['birthday'] }}', '{{ p['gender'] }}', '{{ p['marital_status'] }}')"><i class="bi bi-pencil"></i></button>
           <button class="btn btn-sm btn-danger" aria-label="Delete" data-bs-toggle="tooltip" data-i18n-title="Delete" title="Delete" onclick="confirmDelete('{{ url_for('personnel.persons_delete', id=p['person_id']) }}', '{{ p['first_name'] }} {{ p['last_name'] }}')"><i class="bi bi-trash"></i></button>
         </td>
       </tr>
@@ -85,6 +86,15 @@
               <option value="Other" data-i18n="Other">Other</option>
             </select>
           </div>
+          <div class="mb-3"><label class="form-label" data-i18n="Marital Status">Marital Status</label>
+            <select class="form-select" name="marital_status" id="marital_status">
+              <option value="Unknown" data-i18n="Unknown">Unknown</option>
+              <option value="Single" data-i18n="Single">Single</option>
+              <option value="Married" data-i18n="Married">Married</option>
+              <option value="Divorced" data-i18n="Divorced">Divorced</option>
+              <option value="Widowed" data-i18n="Widowed">Widowed</option>
+            </select>
+          </div>
           <div class="mb-3"><label class="form-label" data-i18n="Status">Status</label><input type="text" class="form-control" name="status" id="status" value="active"></div>
         </div>
         <div class="modal-footer">
@@ -107,7 +117,7 @@ function openAdd() {
   document.getElementById('status').value = 'active';
   modal.show();
 }
-function openEdit(id, first_name, last_name, email, phone, person_type, role_name, hire_date, status, birthday, gender) {
+function openEdit(id, first_name, last_name, email, phone, person_type, role_name, hire_date, status, birthday, gender, marital_status) {
   document.getElementById('modalTitle').textContent = I18n.t('Edit Person');
   document.getElementById('personForm').action = "/persons/edit/" + id;
   document.getElementById('first_name').value = first_name;
@@ -120,6 +130,7 @@ function openEdit(id, first_name, last_name, email, phone, person_type, role_nam
   document.getElementById('status').value = status;
   document.getElementById('birthday').value = birthday;
   document.getElementById('gender').value = gender;
+  document.getElementById('marital_status').value = marital_status;
   modal.show();
 }
 </script>

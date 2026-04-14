@@ -23,7 +23,7 @@
     <thead class="table-header">
       <tr>
         <th data-i18n="Donor ID">Donor ID</th><th data-i18n="Last Name">Last Name</th><th data-i18n="First Name">First Name</th><th data-i18n="Email">Email</th>
-        <th data-i18n="Age">Age</th><th data-i18n="Gender">Gender</th><th data-i18n="Location">Location</th><th data-i18n="Created Date">Created Date</th><th data-i18n="Actions">Actions</th>
+        <th data-i18n="Age">Age</th><th data-i18n="Gender">Gender</th><th data-i18n="Marital Status">Marital Status</th><th data-i18n="Location">Location</th><th data-i18n="Created Date">Created Date</th><th data-i18n="Actions">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -35,10 +35,11 @@
         <td>{{ d.email }}</td>
         <td>{{ d.age }}</td>
         <td>{{ d.gender }}</td>
+        <td><span data-i18n="{{ d.marital_status }}">{{ d.marital_status }}</span></td>
         <td>{% for code, name in us_states %}{% if code == d.location %}{{ name }} ({{ code }}){% endif %}{% endfor %}</td>
         <td>{{ d.created_date }}</td>
         <td>
-          <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" data-i18n-title="Edit" title="Edit" onclick="openEditModal({{ d.donor_id }}, '{{ d.first_name }}', '{{ d.last_name }}', '{{ d.email }}', {{ d.age }}, '{{ d.gender }}', '{{ d.location }}')"><i class="bi bi-pencil"></i></button>
+          <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" data-i18n-title="Edit" title="Edit" onclick="openEditModal({{ d.donor_id }}, '{{ d.first_name }}', '{{ d.last_name }}', '{{ d.email }}', {{ d.age }}, '{{ d.gender }}', '{{ d.location }}', '{{ d.marital_status }}')"><i class="bi bi-pencil"></i></button>
           <button class="btn btn-sm btn-danger" aria-label="Delete" data-bs-toggle="tooltip" data-i18n-title="Delete" title="Delete" onclick="confirmDelete('{{ url_for('donations.donors_delete', id=d.donor_id) }}', '{{ d.first_name }} {{ d.last_name }}')"><i class="bi bi-trash"></i></button>
         </td>
       </tr>
@@ -77,6 +78,16 @@
             </select>
           </div>
           <div class="mb-3">
+            <label class="form-label" data-i18n="Marital Status">Marital Status</label>
+            <select class="form-select" name="marital_status" id="marital_status">
+              <option value="Unknown" data-i18n="Unknown">Unknown</option>
+              <option value="Single" data-i18n="Single">Single</option>
+              <option value="Married" data-i18n="Married">Married</option>
+              <option value="Divorced" data-i18n="Divorced">Divorced</option>
+              <option value="Widowed" data-i18n="Widowed">Widowed</option>
+            </select>
+          </div>
+          <div class="mb-3">
             <label class="form-label" data-i18n="Location">Location (U.S. State)</label>
             <select class="form-select" name="location" id="location">
               <option value="" data-i18n="Select...">Select state...</option>
@@ -104,7 +115,7 @@ function openAddModal() {
   document.getElementById('mainForm').reset();
   modal.show();
 }
-function openEditModal(id, firstName, lastName, email, age, gender, location) {
+function openEditModal(id, firstName, lastName, email, age, gender, location, maritalStatus) {
   document.getElementById('mainForm').action = '/donors/edit/' + id;
   document.getElementById('modalTitle').textContent = I18n.t('Edit Donor');
   document.getElementById('first_name').value = firstName;
@@ -113,6 +124,7 @@ function openEditModal(id, firstName, lastName, email, age, gender, location) {
   document.getElementById('age').value = age;
   document.getElementById('gender').value = gender;
   document.getElementById('location').value = location;
+  document.getElementById('marital_status').value = maritalStatus;
   modal.show();
 }
 </script>

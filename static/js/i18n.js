@@ -232,12 +232,18 @@
     'Hire Date': '入职日期',
     'Birthday': '生日',
     'Gender': '性别',
+    'Marital Status': '婚姻状态',
     'Status': '状态',
     'Add Person': '添加人员',
     'Edit Person': '编辑人员',
     'Male': '男',
     'Female': '女',
     'Other': '其他',
+    'Unknown': '未知',
+    'Single': '未婚',
+    'Married': '已婚',
+    'Divorced': '离异',
+    'Widowed': '丧偶',
 
     // ── Schedules ──
     'Schedule Management': '排班管理',
