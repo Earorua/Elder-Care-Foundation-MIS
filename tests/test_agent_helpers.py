@@ -91,6 +91,33 @@ class AgentHelperTests(unittest.TestCase):
         self.assertIn("persons.person_type values: Employee, Volunteer", schema)
         self.assertIn("LOWER(persons.email) = LOWER(donors.email)", schema)
 
+    def test_get_database_schema_includes_business_concept_aliases(self):
+        app, db_path = self._make_temp_app()
+        try:
+            with app.app_context():
+                schema = _get_database_schema()
+        finally:
+            os.unlink(db_path)
+
+        self.assertIn("Business concept aliases", schema)
+        self.assertIn("staff member/staff/personnel -> persons records", schema)
+        self.assertIn("employee -> persons.person_type = Employee", schema)
+        self.assertIn("volunteer -> persons.person_type = Volunteer", schema)
+
+    def test_get_database_schema_includes_compact_bi_metadata_context(self):
+        app, db_path = self._make_temp_app()
+        try:
+            with app.app_context():
+                schema = _get_database_schema()
+        finally:
+            os.unlink(db_path)
+
+        self.assertIn("BI metadata context", schema)
+        self.assertIn("Domains: donor, person, event, gift, finance, schedule", schema)
+        self.assertIn("Filter donor_age: Donor Age -> dn.age", schema)
+        self.assertIn("Metric total_donation: Total Donation Amount -> SUM(d.amount)", schema)
+        self.assertIn("Domain person base: FROM persons p LEFT JOIN payments pay ON p.person_id = pay.person_id", schema)
+
     def test_find_unknown_enum_filters_flags_invalid_aliased_enum_value(self):
         enum_values = {"persons.person_type": ["Employee", "Volunteer"]}
         self.assertTrue(hasattr(agent_module, "_find_unknown_enum_filters"))
@@ -105,8 +132,8 @@ class AgentHelperTests(unittest.TestCase):
         self.assertEqual(
             issues,
             [
-                "persons.person_type uses unsupported value 'staff'; "
-                "valid values are Employee, Volunteer"
+                "persons.person_type uses entity synonym 'staff'; "
+                "interpret it as persons records instead of an enum filter"
             ],
         )
         self.assertEqual(
@@ -115,6 +142,22 @@ class AgentHelperTests(unittest.TestCase):
                 enum_values,
             ),
             [],
+        )
+
+    def test_find_unknown_enum_filters_flags_entity_synonym_enum_misuse(self):
+        enum_values = {"persons.person_type": ["Employee", "Volunteer"]}
+
+        issues = agent_module._find_unknown_enum_filters(
+            "SELECT COUNT(*) FROM persons p WHERE LOWER(p.person_type) = 'personnel'",
+            enum_values,
+        )
+
+        self.assertEqual(
+            issues,
+            [
+                "persons.person_type uses entity synonym 'personnel'; "
+                "interpret it as persons records instead of an enum filter"
+            ],
         )
 
     def test_agent_query_returns_setup_error_when_api_key_missing(self):
@@ -228,7 +271,50 @@ class AgentHelperTests(unittest.TestCase):
         self.assertEqual(payload["rows"], [{"count": 1}])
         repair_prompt = mock_call.call_args_list[1].args[0]
         self.assertIn("unsupported enum values", repair_prompt)
-        self.assertIn("persons.person_type uses unsupported value 'staff'", repair_prompt)
+        self.assertIn("entity synonym 'staff'", repair_prompt)
+        self.assertIn("interpret it as persons records", repair_prompt)
+
+    def test_agent_query_repairs_personnel_entity_synonym_enum_filter(self):
+        app, db_path = self._make_temp_app()
+        app.register_blueprint(agent_bp)
+        app.config["SILICONFLOW_API_KEY"] = "test-key"
+        try:
+            with patch(
+                "blueprints.agent._call_siliconflow",
+                side_effect=[
+                    json.dumps(
+                        {
+                            "sql": (
+                                "SELECT COUNT(*) AS count "
+                                "FROM persons p WHERE LOWER(p.person_type) = 'personnel'"
+                            ),
+                            "rationale": "Count personnel.",
+                        }
+                    ),
+                    json.dumps(
+                        {
+                            "sql": "SELECT COUNT(*) AS count FROM persons p",
+                            "rationale": "Treat personnel as all person records.",
+                        }
+                    ),
+                    "There are 2 personnel records.",
+                ],
+            ) as mock_call:
+                response = app.test_client().post(
+                    "/api/agent/query",
+                    json={"question": "How many personnel records are there?"},
+                )
+        finally:
+            os.unlink(db_path)
+
+        payload = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(mock_call.call_count, 3)
+        self.assertNotIn("person_type", payload["sql"])
+        self.assertEqual(payload["rows"], [{"count": 2}])
+        repair_prompt = mock_call.call_args_list[1].args[0]
+        self.assertIn("entity synonym 'personnel'", repair_prompt)
+        self.assertIn("interpret it as persons records", repair_prompt)
 
     def test_agent_query_retries_sql_generation_when_model_returns_non_json(self):
         app, db_path = self._make_temp_app()

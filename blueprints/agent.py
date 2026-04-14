@@ -9,6 +9,13 @@ from flask_login import current_user, login_required
 
 from db import get_db
 from blueprints.auth import role_required
+from blueprints.bi import (
+    DIMENSION_DEFS,
+    DOMAIN_BASES,
+    FILTER_DEFS,
+    METRIC_DEFS,
+    VALID_DOMAINS,
+)
 
 
 agent_bp = Blueprint("agent", __name__)
@@ -39,6 +46,19 @@ ENUM_CONTEXT_COLUMN_KEYWORDS = (
 )
 
 MAX_ENUM_CONTEXT_VALUES = 20
+
+ENTITY_SYNONYMS_BY_COLUMN = {
+    "persons.person_type": {
+        "staff",
+        "staff member",
+        "staff members",
+        "personnel",
+        "team member",
+        "team members",
+        "worker",
+        "workers",
+    },
+}
 
 SQL_ALIAS_RESERVED_WORDS = {
     "cross",
@@ -207,6 +227,10 @@ def _get_database_schema():
     parts.append("")
     parts.append(_get_business_semantic_context())
     parts.append("")
+    parts.append(_get_business_concept_alias_context())
+    parts.append("")
+    parts.append(_get_bi_metadata_context())
+    parts.append("")
     parts.append(_format_enum_value_context(_get_enum_values_by_column(db)))
     return "\n".join(parts)
 
@@ -225,6 +249,45 @@ def _get_business_semantic_context():
             "- Gifts are distributed through gift_batch and gift_distribution; gift_distribution.donation_id links back to donations.",
         ]
     )
+
+
+def _get_business_concept_alias_context():
+    return "\n".join(
+        [
+            "Business concept aliases:",
+            "- staff member/staff/personnel -> persons records, not persons.person_type = Staff.",
+            "- team member/worker -> persons records unless the user explicitly asks for a narrower category.",
+            "- employee -> persons.person_type = Employee.",
+            "- volunteer -> persons.person_type = Volunteer.",
+            "- donor/contributor/supporter -> donors records.",
+            "- gift/inventory/stock -> gifts records; stock questions use gifts.current_stock and gifts.min_stock_level.",
+            "- income/revenue/funding -> grants plus other_income for finance income questions.",
+        ]
+    )
+
+
+def _get_bi_metadata_context():
+    lines = [
+        "BI metadata context:",
+        f"Domains: {', '.join(VALID_DOMAINS)}",
+    ]
+    lines.extend(_format_bi_definitions("Filter", FILTER_DEFS))
+    lines.extend(_format_bi_definitions("Dimension", DIMENSION_DEFS))
+    lines.extend(_format_bi_definitions("Metric", METRIC_DEFS))
+    for domain in VALID_DOMAINS:
+        base_sql = " ".join(DOMAIN_BASES[domain].split())
+        lines.append(f"Domain {domain} base: {base_sql}")
+    return "\n".join(lines)
+
+
+def _format_bi_definitions(kind, definitions):
+    lines = []
+    for key, definition in definitions.items():
+        sql = definition.get("sql")
+        label = definition.get("label")
+        if sql and label:
+            lines.append(f"{kind} {key}: {label} -> {sql}")
+    return lines
 
 
 def _get_enum_values_by_column(db=None):
@@ -310,12 +373,16 @@ def _find_unknown_enum_filters(sql, enum_values_by_column):
         for qualifier in qualifiers:
             used_values = _extract_enum_filter_values(sql, qualifier, column_name)
             for used_value in used_values:
-                if _is_known_enum_value(used_value, valid_values):
+                entity_issue = _entity_synonym_enum_issue(column_key, used_value)
+                if entity_issue:
+                    issue = entity_issue
+                elif _is_known_enum_value(used_value, valid_values):
                     continue
-                issue = (
-                    f"{table_name}.{column_name} uses unsupported value "
-                    f"'{used_value}'; valid values are {', '.join(valid_values)}"
-                )
+                else:
+                    issue = (
+                        f"{table_name}.{column_name} uses unsupported value "
+                        f"'{used_value}'; valid values are {', '.join(valid_values)}"
+                    )
                 if issue not in seen:
                     seen.add(issue)
                     issues.append(issue)
@@ -357,6 +424,22 @@ def _extract_enum_filter_values(sql, qualifier, column_name):
     ):
         values.extend(re.findall(r"'([^']*)'", match.group(1)))
     return values
+
+
+def _entity_synonym_enum_issue(column_key, value):
+    normalized = value.strip().lower()
+    synonyms = ENTITY_SYNONYMS_BY_COLUMN.get(column_key, set())
+    if normalized not in synonyms:
+        return ""
+    if column_key == "persons.person_type":
+        return (
+            f"{column_key} uses entity synonym '{value}'; "
+            "interpret it as persons records instead of an enum filter"
+        )
+    return (
+        f"{column_key} uses entity synonym '{value}'; "
+        "interpret it as the documented business entity instead of an enum filter"
+    )
 
 
 def _is_known_enum_value(value, valid_values):
@@ -461,7 +544,7 @@ def _build_sql_repair_prompt(question, schema, raw_response):
 
 def _build_sql_semantic_repair_prompt(question, schema, sql_payload, issues):
     return (
-        "The previous SQL used unsupported enum values for this database.\n"
+        "The previous SQL used unsupported enum values or treated business entity synonyms as enum values for this database.\n"
         "Return exactly one JSON object with keys sql and rationale. "
         "Do not include markdown, prose, or any text outside the JSON object. "
         "The sql must be a single read-only SQLite SELECT or WITH query. "
