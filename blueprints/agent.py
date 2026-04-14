@@ -593,6 +593,13 @@ def _call_siliconflow(prompt, max_tokens=800, temperature=0.2):
         method="POST",
     )
     timeout = current_app.config.get("SILICONFLOW_TIMEOUT", 120)
-    with urlrequest.urlopen(req, timeout=timeout) as response:
+    with _open_siliconflow_request(req, timeout) as response:
         data = json.loads(response.read().decode("utf-8"))
     return data["choices"][0]["message"]["content"].strip()
+
+
+def _open_siliconflow_request(req, timeout):
+    if current_app.config.get("SILICONFLOW_DISABLE_ENV_PROXY", True):
+        opener = urlrequest.build_opener(urlrequest.ProxyHandler({}))
+        return opener.open(req, timeout=timeout)
+    return urlrequest.urlopen(req, timeout=timeout)

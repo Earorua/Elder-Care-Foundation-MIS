@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from http.client import RemoteDisconnected
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import config
 import blueprints.agent as agent_module
@@ -188,6 +188,42 @@ class AgentHelperTests(unittest.TestCase):
         rows = conn.execute("SELECT * FROM sample").fetchall()
 
         self.assertEqual(_rows_to_dicts(rows), [{"id": 1, "name": "Ada"}])
+
+    def test_call_siliconflow_disables_environment_proxy_by_default(self):
+        app, db_path = self._make_temp_app()
+        app.config["SILICONFLOW_API_KEY"] = "test-key"
+        response = MagicMock()
+        response.__enter__.return_value = response
+        response.read.return_value = json.dumps(
+            {"choices": [{"message": {"content": " ok "}}]}
+        ).encode("utf-8")
+        opener = MagicMock()
+        opener.open.return_value = response
+        proxy_handler = object()
+
+        try:
+            with app.app_context():
+                with patch(
+                    "blueprints.agent.urlrequest.ProxyHandler",
+                    return_value=proxy_handler,
+                ) as mock_proxy_handler:
+                    with patch(
+                        "blueprints.agent.urlrequest.build_opener",
+                        return_value=opener,
+                    ) as mock_build_opener:
+                        with patch(
+                            "blueprints.agent.urlrequest.urlopen",
+                            side_effect=AssertionError("urlopen should not be used"),
+                        ):
+                            result = agent_module._call_siliconflow("hello")
+        finally:
+            os.unlink(db_path)
+
+        self.assertEqual(result, "ok")
+        mock_proxy_handler.assert_called_once_with({})
+        mock_build_opener.assert_called_once_with(proxy_handler)
+        opener.open.assert_called_once()
+        self.assertEqual(opener.open.call_args.kwargs["timeout"], 120)
 
     def test_answer_prompt_requires_direct_answer_in_user_language(self):
         prompt = _build_answer_prompt(

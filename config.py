@@ -10,4 +10,5 @@ SILICONFLOW_API_KEY = os.environ.get('SILICONFLOW_API_KEY', 'sk-wsvpjdsmrszihwng
 SILICONFLOW_BASE_URL = os.environ.get('SILICONFLOW_BASE_URL', 'https://api.siliconflow.cn/v1')
 SILICONFLOW_MODEL = os.environ.get('SILICONFLOW_MODEL', 'Pro/zai-org/GLM-5.1')
 SILICONFLOW_TIMEOUT = int(os.environ.get('SILICONFLOW_TIMEOUT', '120'))
+SILICONFLOW_DISABLE_ENV_PROXY = os.environ.get('SILICONFLOW_DISABLE_ENV_PROXY', '1').lower() not in ('0', 'false', 'no')
 AGENT_ROW_LIMIT = int(os.environ.get('AGENT_ROW_LIMIT', '200'))
