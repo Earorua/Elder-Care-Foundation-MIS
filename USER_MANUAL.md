@@ -105,9 +105,11 @@ python app.py
 
 ### 6.2 捐赠者（/donors）
 
-管理捐赠者基本信息（姓名、邮箱、年龄、性别、地区）。操作方式同上。
+管理捐赠者基本信息（姓名、邮箱、年龄、性别、婚姻状态、地区）。操作方式同上。
 
-当前示例数据库包含 21 名捐赠者，其中 6 名同时也是组织人员：3 名员工（Alice Chen、Bob Garcia、Frank Wang）和 3 名志愿者（Daniel Kim、Eva Martinez、Grace Patel）。这些记录通过姓名和邮箱与人员表对应。
+新增或编辑捐赠者时，可在「Marital Status / 婚姻状态」下拉框中选择 Unknown、Single、Married、Divorced 或 Widowed。若该捐赠者同时也是人员记录，并且姓名与邮箱匹配，系统会同步更新对应人员的婚姻状态。
+
+当前示例数据库包含 21 名捐赠者，其中 6 名同时也是组织人员：3 名员工（Alice Chen、Bob Garcia、Frank Wang）和 3 名志愿者（Daniel Kim、Eva Martinez、Grace Patel）。这些记录通过姓名和邮箱与人员表对应，并会共享婚姻状态更新。
 
 ### 6.3 捐赠分类（/categories）
 
@@ -129,7 +131,9 @@ python app.py
 
 ### 7.1 人员（/persons）
 
-管理基金会所有人员信息，包括：姓名、邮箱、电话、人员类型（员工/志愿者）、角色名称、入职日期、状态、生日、性别。
+管理基金会所有人员信息，包括：姓名、邮箱、电话、人员类型（员工/志愿者）、角色名称、入职日期、状态、生日、性别、婚姻状态。
+
+新增或编辑人员时，可在「Marital Status / 婚姻状态」下拉框中选择 Unknown、Single、Married、Divorced 或 Widowed。若该人员同时也是捐赠者记录，并且姓名与邮箱匹配，系统会同步更新对应捐赠者的婚姻状态。
 
 ### 7.2 排班（/schedules）
 
@@ -536,6 +540,7 @@ AI Agent 只允许执行只读查询。系统会拒绝 `INSERT`、`UPDATE`、`DE
 | 表格列标题 | Amount ↔ 金额、Date ↔ 日期 |
 | 按钮与操作 | Add ↔ 添加、Edit ↔ 编辑、Delete ↔ 删除 |
 | 表单标签与占位符 | Search donors... ↔ 搜索捐款人... |
+| 枚举字段 | Marital Status ↔ 婚姻状态、Married ↔ 已婚、Single ↔ 未婚 |
 | 图表图例与数据标签 | Cash ↔ 现金、Male ↔ 男 |
 | 图表坐标轴与提示 | Donations ($) ↔ 捐款（$） |
 | 统计卡片 | Total Donations ↔ 捐款总额 |

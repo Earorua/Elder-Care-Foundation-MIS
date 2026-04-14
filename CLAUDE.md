@@ -18,12 +18,14 @@ Flask-based Management Information System for an elder care foundation. Connects
 - `schedules.is_absent` column has a trailing tab character; use `"is_absent\t"` in SQL
 - Misspelled column names preserved as-is: `events.decription`, `other_income.recevied_date`, `schedules.availibile_time`
 - `grants.grant_id` is a non-autoincrement primary key (pk=0); CRUD uses `rowid` instead
-- `persons` table has extra `birthday`, `gender` columns
+- `persons` table has extra `birthday`, `gender`, `marital_status` columns
+- `donors` table has extra `marital_status` column
 - `suppliers` table has extra `contact_name` column
 - On startup, automatically adds `role` column to User table and creates/updates admin user (admin / admin123)
 - On startup, automatically creates 4 seed users: admin, finance_user, coordinator, viewer
 - Bundled sample data currently includes 21 donors, 27 donations, 8 persons, 8 gifts, 9 gift batches, 20 gift distribution rows, 9 delivery rows, 4 suppliers, 10 donor feedback rows, 17 tax receipts, and 16 donor-event rows
 - Six people are intentionally modeled as both personnel and donors by matching `persons` and `donors` on first name, last name, and email: 3 employees and 3 volunteers
+- Donor/person marital status is synchronized on add/edit when first name, last name, and email match exactly after case-insensitive trimming
 
 ## RBAC Access Control
 - `role_required(*roles)` decorator defined in `blueprints/auth.py`, stacked after `@login_required`
@@ -107,6 +109,7 @@ C:\Users\XF\Desktop\elder_care_gui\
 - `I18n.applyAll()` runs on DOMContentLoaded, translating all `[data-i18n*]` elements
 - Language toggle button (`#langToggleBtn`) in topbar and login page, styled via `.lang-toggle-btn` in CSS
 - Chart data labels from API (e.g. "Cash", "Male") translated via `d.labels.map(l=>I18n.t(l))` in dashboard JS
+- Donor/person marital status labels and values are translated (`Marital Status`, `Unknown`, `Single`, `Married`, `Divorced`, `Widowed`)
 - Topbar clock and dashboard timestamp use `I18n.getLang()` to switch locale between `en-US` and `zh-CN`
 - Flash messages use `data-i18n="{{ message }}"` in base.html for client-side translation of server-side messages
 - Adding new translations: add English key + Chinese value to the `ZH` dict in `i18n.js`
@@ -189,3 +192,7 @@ python app.py
     - Access control: available to finance and event coordinator roles; admin inherits access through `User.has_role`
     - Config: `SILICONFLOW_API_KEY`, `SILICONFLOW_BASE_URL`, `SILICONFLOW_MODEL`, `SILICONFLOW_TIMEOUT`, `AGENT_ROW_LIMIT`
 24. Sample data expansion: donors increased to 21 and donations to 27 while keeping the gift catalog at 8 existing gifts; added more linked gift distribution, delivery, feedback, receipt, and event participation records; 3 employees and 3 volunteers are also donors
+25. Marital status support for persons and donors
+    - Backend: `persons` and `donors` CRUD reads/writes `marital_status`; matching records are synchronized between the two tables by first name, last name, and email
+    - Frontend: `/persons` and `/donors` tables and add/edit modals include a Marital Status field with Unknown / Single / Married / Divorced / Widowed values
+    - i18n/tests: English/Chinese translations added for marital status labels and values; `tests/test_marital_status_ui.py` covers template hooks, CRUD SQL hooks, and i18n keys
