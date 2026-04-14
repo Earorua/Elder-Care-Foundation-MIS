@@ -235,6 +235,37 @@ class AgentHelperTests(unittest.TestCase):
         self.assertIn("from blueprints.agent import agent_bp", app_py)
         self.assertIn("app.register_blueprint(agent_bp)", app_py)
 
+    def test_agent_recent_history_panel_hooks_exist(self):
+        template = (ROOT / "templates" / "agent" / "index.html").read_text(encoding="utf-8")
+
+        for hook in [
+            "agent-history-list",
+            "agentHistoryList",
+            "agentHistoryEmpty",
+            "agentQuestionDisplay",
+            "agent-question-display",
+            "Recent Questions",
+            "No recent questions yet.",
+            "data-history-index",
+        ]:
+            with self.subTest(hook=hook):
+                self.assertIn(hook, template)
+
+    def test_agent_recent_history_uses_local_storage_and_limits_to_ten(self):
+        template = (ROOT / "templates" / "agent" / "index.html").read_text(encoding="utf-8")
+
+        for hook in [
+            "AGENT_HISTORY_KEY",
+            "localStorage.getItem(AGENT_HISTORY_KEY)",
+            "localStorage.setItem(AGENT_HISTORY_KEY",
+            "historyEntries.slice(0, 10)",
+            "saveHistoryEntry({",
+            "renderHistory()",
+            "showHistoryEntry(index)",
+        ]:
+            with self.subTest(hook=hook):
+                self.assertIn(hook, template)
+
     def test_agent_starter_prompts_use_current_language(self):
         template = (ROOT / "templates" / "agent" / "index.html").read_text(encoding="utf-8")
 
@@ -277,6 +308,10 @@ class AgentHelperTests(unittest.TestCase):
             "No answer returned.",
             "No SQL returned.",
             "Query was not executed.",
+            "Recent Questions",
+            "No recent questions yet.",
+            "Saved questions appear here after the Agent returns an answer.",
+            "Saved",
         ]
 
         for key in expected_keys:
