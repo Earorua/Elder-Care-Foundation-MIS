@@ -1,13 +1,14 @@
 # Elder Care Foundation MIS
 
 ## Overview
-Flask-based Management Information System for an elder care foundation. Connects to an SQLite database (19 tables), providing CRUD management across 7 modules: Dashboard, Donations, Personnel, Gifts, Events, Finance, and BI Explorer. Features RBAC access control, GAAS-compliant financial reports, and a dynamic BI query builder.
+Flask-based Management Information System for an elder care foundation. Connects to an SQLite database (19 tables), providing CRUD management across 8 modules: Dashboard, Donations, Personnel, Gifts, Events, Finance, BI Explorer, and AI Agent. Features RBAC access control, GAAS-compliant financial reports, a dynamic BI query builder, and read-only natural-language database analysis through SiliconFlow.
 
 ## Tech Stack
 - Flask + Jinja2 + Flask-Login
 - Bootstrap 5 + Bootstrap Icons + Chart.js (all via CDN)
 - Google Fonts: Playfair Display (headings) + Outfit (body)
 - SQLite3 direct connection, no ORM
+- SiliconFlow chat-completions API via Python `urllib` for the AI Agent
 - Git version control (local)
 
 ## Database
@@ -21,13 +22,15 @@ Flask-based Management Information System for an elder care foundation. Connects
 - `suppliers` table has extra `contact_name` column
 - On startup, automatically adds `role` column to User table and creates/updates admin user (admin / admin123)
 - On startup, automatically creates 4 seed users: admin, finance_user, coordinator, viewer
+- Bundled sample data currently includes 21 donors, 27 donations, 8 persons, 8 gifts, 9 gift batches, 20 gift distribution rows, 9 delivery rows, 4 suppliers, 10 donor feedback rows, 17 tax receipts, and 16 donor-event rows
+- Six people are intentionally modeled as both personnel and donors by matching `persons` and `donors` on first name, last name, and email: 3 employees and 3 volunteers
 
 ## RBAC Access Control
 - `role_required(*roles)` decorator defined in `blueprints/auth.py`, stacked after `@login_required`
 - `User.has_role(*roles)` method auto-grants access to admin role
 - Role definitions: admin (all), finance (donations + finance), event_coordinator (personnel + gifts + events), viewer (dashboard only)
 - Sidebar in `base.html` uses `{% if current_user.has_role(...) %}` for role-conditional navigation rendering
-- Blueprint route permissions: donations/finance -> `finance`, events/personnel/gifts -> `event_coordinator`, dashboard -> all roles, bi -> all roles
+- Blueprint route permissions: donations/finance -> `finance`, events/personnel/gifts -> `event_coordinator`, dashboard -> all roles, bi -> all roles, agent -> `finance` or `event_coordinator`
 - User management page `/users` (admin only): add/edit role/reset password/enable-disable/delete users
 
 ## Seed Users
@@ -42,7 +45,7 @@ Flask-based Management Information System for an elder care foundation. Connects
 ```
 C:\Users\XF\Desktop\elder_care_gui\
 ├── app.py                  # Entry point + Flask-Login + seed users (4)
-├── config.py               # DB path, secret key
+├── config.py               # DB path, secret key, SiliconFlow AI Agent config
 ├── db.py                   # get_db / query_db / execute_db
 ├── elder_care.db           # SQLite database file (bundled)
 ├── elder_care_logo.png     # Original logo source image
@@ -50,24 +53,26 @@ C:\Users\XF\Desktop\elder_care_gui\
 ├── USER_MANUAL.md          # User manual
 ├── blueprints/
 │   ├── auth.py             # Login/logout + role_required decorator + user management CRUD
-│   ├── dashboard.py        # Dashboard + 6 chart APIs
+│   ├── dashboard.py        # Dashboard + 7 chart APIs
 │   ├── donations.py        # Donations/donors/categories/feedback/tax receipts (finance role)
 │   ├── personnel.py        # Persons/schedules/payments (event_coordinator role)
 │   ├── gifts.py            # Gifts/batches/distribution/delivery/suppliers (event_coordinator role)
 │   ├── events.py           # Events/donor participation (event_coordinator role)
 │   ├── finance.py          # Grants/other income/reports overview + 3 sub-reports (finance role)
-│   └── bi.py               # BI Explorer: whitelist defs (46 dims, 30+ metrics, 6 domains) + query builder + API
+│   ├── bi.py               # BI Explorer: whitelist defs (46 dims, 30+ metrics, 6 domains) + query builder + API
+│   └── agent.py            # AI Agent: schema extraction, SQL generation, read-only validation, answer synthesis
 ├── templates/
 │   ├── base.html           # Layout: sidebar + sticky topbar (breadcrumb + clock) + watermark footer
 │   ├── auth/login.html     # Split-panel login: left branding + right form
 │   ├── auth/users.html     # User management page (admin only)
-│   ├── dashboard/index.html # Dashboard with animated stat cards + 6 chart cards
+│   ├── dashboard/index.html # Dashboard with animated stat cards + chart cards
 │   ├── donations/          # donations, donors, categories, feedback, receipts
 │   ├── personnel/          # persons, schedules, payments
 │   ├── gifts/              # gifts, batches, distribution, delivery, suppliers
 │   ├── events/             # events, donors_events
 │   ├── finance/            # grants, other_income, reports, income_statement, balance_sheet, expenditure
-│   └── bi/index.html       # BI Explorer: domain selector, filter/dimension/metric panels, chart + table
+│   ├── bi/index.html       # BI Explorer: domain selector, filter/dimension/metric panels, chart + table
+│   └── agent/index.html    # AI Agent page: prompt form, answer panel, SQL trace, result table
 └── static/
     ├── css/style.css       # "Botanical Warmth" theme — Playfair Display + Outfit, sage/terracotta/gold palette
     ├── js/i18n.js          # Bilingual i18n engine (EN/ZH): translation dict + DOM auto-apply + language toggle
@@ -114,12 +119,19 @@ python app.py
 # Open http://127.0.0.1:5000 in browser, login with admin / admin123
 ```
 
+## AI Agent Configuration
+- `/agent` is available to admin, finance, and event coordinator users.
+- `config.py` defines `SILICONFLOW_API_KEY`, `SILICONFLOW_BASE_URL`, `SILICONFLOW_MODEL`, `SILICONFLOW_TIMEOUT`, and `AGENT_ROW_LIMIT`.
+- The default model is `Pro/zai-org/GLM-5.1`; the default base URL is `https://api.siliconflow.cn/v1`.
+- `SILICONFLOW_API_KEY` may be set directly in `config.py` for this private project or provided through the environment.
+- The agent sends database schema and user questions to SiliconFlow, validates that generated SQL is a single read-only SQLite `SELECT` or `WITH` statement, applies a row limit, executes it against `elder_care.db`, then asks the model to summarize the returned rows.
+
 ## Completed Work
-1. Built complete Flask project framework (8 blueprints, 20+ template pages)
-2. Dashboard with 4 stat cards + 6 Chart.js charts (doughnut + bar)
+1. Built complete Flask project framework (9 blueprints, 20+ template pages)
+2. Dashboard with 4 stat cards + 7 Chart.js charts (doughnut + bar + SVG map)
 3. Full CRUD for all 19 tables, each page with data table + Bootstrap Modal forms
 4. Database path set to `elder_care.db`, added birthday/gender/contact_name field support
-5. Populated complete sample data for all 19 tables
+5. Populated complete sample data for all 19 tables, including cross-role donor/person examples
 6. RBAC access control: `role_required` decorator + sidebar role-conditional rendering + 4 roles (admin/finance/event_coordinator/viewer)
 7. User management page (/users): admin-only, supports add/edit role/reset password/enable-disable/delete users
 8. 4 seed users auto-created (admin, finance_user, coordinator, viewer)
@@ -148,7 +160,7 @@ python app.py
     - US Map Donor Visualization: replaced location bar chart with inline SVG US state map; states colored by donor density (sage green gradient); hover tooltips showing state name + donor count; legend showing total donors/states
     - Donor Location Dropdown: replaced free-text location input with US state dropdown (`<select>`) in donors add/edit form; migrated existing city-name data to state codes (NY, CA, TX, etc.); table displays full state name with code
     - Gift Distribution Chart: new horizontal bar chart on Dashboard showing distribution by gift type, split by Free Distribution vs Donor Gifts; data from `gift_distribution` table aggregated by `is_free` flag
-    - New Gift Types Seeded: Picture Book (Education, $10, stock 120) and Postcard (Stationery, $2.50, stock 500) auto-seeded on startup
+    - Gift catalog remains the 8 Chao Feng & Maui campaign gifts; later sample-data expansion reuses existing gifts rather than introducing new gift types
     - Schedule Monitor on Dashboard: stat cards showing upcoming events count + scheduled shifts count; link to Schedule Board page; visible to event_coordinator/admin roles
     - Schedule Board (`/schedule-board`): new Kanban-style page with event selector dropdown; selecting an event loads shifts via AJAX API and displays them in 4 columns (Scheduled / In Progress / Completed / Absent); each card shows person name, role, date, time range, overtime, notes
     - Sidebar: added Schedule Board link under Personnel section
@@ -171,3 +183,9 @@ python app.py
     - CSS: doughnut pagination styles (nav buttons, dot indicators, labels), multi-select dropdown styles
     - i18n: all BI UI text, preset labels, and 50+ dimension/metric value translations added to `i18n.js`
 22. Database fix: removed broken foreign key constraint on `donations.donation_type` that referenced empty table name `""`, causing "no such table: main." error when `PRAGMA foreign_keys = ON`
+23. AI Agent module (`/agent`)
+    - Backend (`blueprints/agent.py`): SiliconFlow chat-completions integration, SQLite schema extraction, SQL JSON parsing and repair prompt, read-only SQL validation, automatic row limit, stage-specific timeout/connection errors
+    - Frontend (`templates/agent/index.html`): prompt form, starter prompts, answer panel, read-only status, latest SQL trace, result table, model/context sidebar
+    - Access control: available to finance and event coordinator roles; admin inherits access through `User.has_role`
+    - Config: `SILICONFLOW_API_KEY`, `SILICONFLOW_BASE_URL`, `SILICONFLOW_MODEL`, `SILICONFLOW_TIMEOUT`, `AGENT_ROW_LIMIT`
+24. Sample data expansion: donors increased to 21 and donations to 27 while keeping the gift catalog at 8 existing gifts; added more linked gift distribution, delivery, feedback, receipt, and event participation records; 3 employees and 3 volunteers are also donors

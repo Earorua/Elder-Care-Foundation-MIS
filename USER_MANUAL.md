@@ -2,9 +2,9 @@
 
 ## 1. 系统简介
 
-Elder Care MIS（养老关怀基金会管理信息系统）是一套基于 Web 的综合管理平台，涵盖捐赠管理、人员排班、礼品物流、活动策划、财务报表和 BI 数据分析六大业务模块，并通过基于角色的访问控制（RBAC）确保不同岗位的员工只能访问与其职责相关的功能。
+Elder Care MIS（养老关怀基金会管理信息系统）是一套基于 Web 的综合管理平台，涵盖捐赠管理、人员排班、礼品物流、活动策划、财务报表、BI 数据分析和 AI Agent 智能问答七大业务模块，并通过基于角色的访问控制（RBAC）确保不同岗位的员工只能访问与其职责相关的功能。
 
-**技术环境**：Flask + Bootstrap 5 + SQLite，浏览器访问 `http://127.0.0.1:5000`。
+**技术环境**：Flask + Bootstrap 5 + SQLite + SiliconFlow API，浏览器访问 `http://127.0.0.1:5000`。
 
 ---
 
@@ -20,6 +20,8 @@ python app.py
 
 启动后在浏览器打开 http://127.0.0.1:5000 即可进入登录页面。系统首次启动时会自动创建以下预置账户（见第 3 节）。
 
+如果需要使用 AI Agent，请先在 `config.py` 中配置 `SILICONFLOW_API_KEY`，或在启动 Flask 前设置同名环境变量。修改 `config.py` 后需要重启 `python app.py` 才会生效。
+
 ---
 
 ## 3. 账户与角色
@@ -29,15 +31,15 @@ python app.py
 | 用户名 | 密码 | 角色 | 可访问模块 |
 |--------|------|------|-----------|
 | `admin` | `admin123` | admin（管理员） | 全部模块 + 用户管理 |
-| `finance_user` | `finance123` | finance（财务） | 仪表盘、捐赠管理、财务管理 |
-| `coordinator` | `coord123` | event_coordinator（活动协调） | 仪表盘、人员管理、礼品管理、活动管理 |
+| `finance_user` | `finance123` | finance（财务） | 仪表盘、捐赠管理、财务管理、AI Agent |
+| `coordinator` | `coord123` | event_coordinator（活动协调） | 仪表盘、人员管理、礼品管理、活动管理、AI Agent |
 | `viewer` | `viewer123` | viewer（只读） | 仅仪表盘 |
 
 ### 3.1 角色权限说明
 
 - **admin**：拥有所有功能的完整访问权限，包括用户管理（添加/编辑/删除用户、分配角色）。
-- **finance**：可查看和操作捐赠记录、捐赠者、捐赠分类、捐赠反馈、税务收据，以及拨款、其他收入和全部财务报表。
-- **event_coordinator**：可查看和操作人员信息、排班、薪酬，礼品（礼品/批次/分发/配送/供应商），以及活动和捐赠者参与。
+- **finance**：可查看和操作捐赠记录、捐赠者、捐赠分类、捐赠反馈、税务收据，以及拨款、其他收入、全部财务报表和 AI Agent。
+- **event_coordinator**：可查看和操作人员信息、排班、薪酬，礼品（礼品/批次/分发/配送/供应商），以及活动、捐赠者参与和 AI Agent。
 - **viewer**：仅可查看仪表盘统计数据，无法进入任何管理页面。
 
 ### 3.2 权限控制机制
@@ -54,14 +56,14 @@ python app.py
 ### 4.1 登录
 
 1. 打开浏览器访问 http://127.0.0.1:5000
-2. 左侧面板展示系统品牌信息、浮动动画效果和系统规模统计（6 个模块 / 19 张表 / 4 种角色）
+2. 左侧面板展示系统品牌信息和浮动动画效果
 3. 在右侧面板输入用户名和密码
 4. 可点击密码输入框右侧的眼睛图标切换密码的显示/隐藏
 5. 可勾选「Remember me / 记住我」保持登录状态
 6. 点击「Sign In / 登录」按钮
 7. 登录成功后自动跳转到仪表盘
 
-登录页面右上角和顶部栏均提供语言切换按钮（详见第 15 节）。如果账户被管理员禁用，登录时会提示"账户已被禁用"。退出登录后会显示"已成功退出登录"提示，未登录时访问系统会显示"请先登录"提示——这些提示信息均支持中英文自动切换。
+登录页面右上角和顶部栏均提供语言切换按钮（详见第 17 节）。如果账户被管理员禁用，登录时会提示"账户已被禁用"。退出登录后会显示"已成功退出登录"提示，未登录时访问系统会显示"请先登录"提示——这些提示信息均支持中英文自动切换。
 
 ### 4.2 退出
 
@@ -82,7 +84,7 @@ python app.py
 - 活动数量（活动总数）
 - 人员数量（员工/志愿者）
 
-页面下方包含 6 个图表（Chart.js）：月度捐赠趋势、捐赠类型分布、性别分布、年龄分布、捐赠者地图（美国各州）、礼品分发概览、活动募资进度。所有图表的图例、数据标签和提示文字均支持中英文切换。
+页面下方包含 7 个图表（Chart.js）：月度捐赠趋势、捐赠类型分布、性别分布、年龄分布、捐赠者地图（美国各州）、礼品分发概览、活动募资进度。所有图表的图例、数据标签和提示文字均支持中英文切换。
 
 ---
 
@@ -104,6 +106,8 @@ python app.py
 ### 6.2 捐赠者（/donors）
 
 管理捐赠者基本信息（姓名、邮箱、年龄、性别、地区）。操作方式同上。
+
+当前示例数据库包含 21 名捐赠者，其中 6 名同时也是组织人员：3 名员工（Alice Chen、Bob Garcia、Frank Wang）和 3 名志愿者（Daniel Kim、Eva Martinez、Grace Patel）。这些记录通过姓名和邮箱与人员表对应。
 
 ### 6.3 捐赠分类（/categories）
 
@@ -468,18 +472,60 @@ BI Explorer 是一个灵活的自助查询分析工具，可对系统全部 6 �
 
 ---
 
-## 16. 中英文双语切换
+## 16. AI Agent 智能问答模块
+
+**路径**：`/agent`　　**所需角色**：`admin`、`finance` 或 `event_coordinator`
+
+AI Agent 用于通过自然语言查询 SQLite 数据库。用户输入问题后，系统会把数据库结构和问题发送给 SiliconFlow 模型，由模型生成只读 SQL；后端校验 SQL 只能是单条 `SELECT` 或 `WITH` 查询，并自动追加行数限制，再执行查询并让模型根据结果生成自然语言回答。
+
+### 16.1 使用前配置
+
+使用 AI Agent 前需要配置 SiliconFlow API：
+
+- 在 `config.py` 中设置 `SILICONFLOW_API_KEY`，或在启动 Flask 前设置环境变量 `SILICONFLOW_API_KEY`
+- 默认接口地址为 `https://api.siliconflow.cn/v1`
+- 默认模型为 `Pro/zai-org/GLM-5.1`
+- 默认超时时间为 120 秒
+- 默认结果行数限制为 200 行
+
+如果页面提示 `Set SILICONFLOW_API_KEY in config.py before using the AI Agent.`，说明当前 Flask 进程没有读到 API Key。配置后请重新启动 `python app.py`。
+
+### 16.2 提问流程
+
+1. 使用 `admin`、`finance_user` 或 `coordinator` 登录系统
+2. 在侧边栏点击「AI Agent」
+3. 在问题输入框中输入自然语言问题，例如：
+   - Which donors gave more than $500, and what gifts did they receive?
+   - Show upcoming schedules with person names and event names.
+   - Which gifts have the lowest current stock?
+4. 点击「Ask Agent」
+5. 页面会显示自然语言回答、最新生成的 SQL、结果表格和返回行数
+
+### 16.3 安全限制
+
+AI Agent 只允许执行只读查询。系统会拒绝 `INSERT`、`UPDATE`、`DELETE`、`DROP`、`ALTER`、`PRAGMA` 等会修改结构或数据的语句，也会拒绝多条 SQL 语句。这样可以避免模型生成的 SQL 意外修改数据库。
+
+### 16.4 常见错误
+
+- **未配置 API Key**：检查 `config.py` 或环境变量中的 `SILICONFLOW_API_KEY`，配置后重启 Flask。
+- **请求超时**：问题过宽或模型响应较慢时可能超时，可缩小问题范围，或在 `config.py` 中调大 `SILICONFLOW_TIMEOUT`。
+- **连接失败**：检查网络、代理、`SILICONFLOW_BASE_URL` 和 `SILICONFLOW_MODEL` 是否正确。
+- **SQL 被拒绝**：说明模型生成了非只读 SQL 或多条 SQL。换一种更明确的问题重试，例如指定要查询的对象和统计口径。
+
+---
+
+## 17. 中英文双语切换
 
 系统支持完整的中英文双语界面，所有界面文字均可一键切换。
 
-### 16.1 切换方式
+### 17.1 切换方式
 
 - **登录页**：右上角的语言切换按钮（显示「中文」或「EN」）
 - **系统内页**：顶部栏右侧的语言切换按钮
 
 点击按钮后页面立即刷新并切换为目标语言。语言偏好保存在浏览器本地存储中，下次访问时自动保持上次选择的语言。
 
-### 16.2 翻译覆盖范围
+### 17.2 翻译覆盖范围
 
 以下内容会随语言切换自动变更：
 
@@ -502,3 +548,4 @@ BI Explorer 是一个灵活的自助查询分析工具，可对系统全部 6 �
 | BI Explorer 界面 | Dimensions ↔ 维度、Metrics ↔ 指标、Filters ↔ 筛选 |
 | BI 预设标签 | Donation Analysis ↔ 捐款分析 |
 | BI 图表控件 | All metrics ↔ 所有指标 |
+| AI Agent 界面 | Ask Agent ↔ 询问助手、Read-only SQL ↔ 只读 SQL |
