@@ -68,9 +68,15 @@
     background: rgba(255,253,249,.55);
   }
   .agent-answer-text {
-    white-space: pre-wrap;
     line-height: 1.65;
     color: var(--text-primary);
+  }
+  .agent-answer-text ul {
+    margin: .35rem 0 .85rem 1.15rem;
+    padding-left: .75rem;
+  }
+  .agent-answer-text li {
+    margin: .22rem 0;
   }
   .agent-question-display {
     margin-bottom: 1rem;
@@ -168,6 +174,50 @@
     font-weight: 800;
     margin-bottom: .75rem;
     color: var(--text-primary);
+  }
+  .agent-collapsible-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    margin-bottom: .75rem;
+  }
+  .agent-collapsible-header h5 {
+    margin-bottom: 0;
+  }
+  .agent-history-toggle {
+    width: 2rem;
+    height: 2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    background: rgba(255,253,249,.9);
+    color: var(--text-secondary);
+    transition: border-color .2s var(--ease), color .2s var(--ease), background .2s var(--ease);
+  }
+  .agent-history-toggle:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(90,138,106,.08);
+  }
+  .agent-history-toggle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .agent-history-chevron {
+    transition: transform .2s var(--ease);
+  }
+  .agent-history-toggle[aria-expanded="false"] .agent-history-chevron {
+    transform: rotate(180deg);
+  }
+  .agent-history-body {
+    display: grid;
+    gap: .75rem;
+  }
+  .agent-history-body[hidden] {
+    display: none;
   }
   .agent-meta-list {
     display: grid;
@@ -328,12 +378,20 @@
 
   <aside class="agent-side">
     <section class="agent-panel agent-side-section">
-      <h5><i class="bi bi-clock-history me-1"></i><span data-i18n="Recent Questions">Recent Questions</span></h5>
-      <div class="agent-history-empty" id="agentHistoryEmpty">
-        <div data-i18n="No recent questions yet.">No recent questions yet.</div>
-        <small data-i18n="Saved questions appear here after the Agent returns an answer.">Saved questions appear here after the Agent returns an answer.</small>
+      <div class="agent-collapsible-header">
+        <h5><i class="bi bi-clock-history me-1"></i><span data-i18n="Recent Questions">Recent Questions</span></h5>
+        <button type="button" class="agent-history-toggle" id="agentHistoryToggle" aria-expanded="true" aria-controls="agentHistoryBody" title="Collapse recent questions" data-i18n-title="Collapse recent questions">
+          <i class="bi bi-chevron-up agent-history-chevron" aria-hidden="true"></i>
+          <span class="visually-hidden" id="agentHistoryToggleText" data-i18n="Collapse recent questions">Collapse recent questions</span>
+        </button>
       </div>
-      <div class="agent-history-list" id="agentHistoryList"></div>
+      <div class="agent-history-body" id="agentHistoryBody">
+        <div class="agent-history-empty" id="agentHistoryEmpty">
+          <div data-i18n="No recent questions yet.">No recent questions yet.</div>
+          <small data-i18n="Saved questions appear here after the Agent returns an answer.">Saved questions appear here after the Agent returns an answer.</small>
+        </div>
+        <div class="agent-history-list" id="agentHistoryList"></div>
+      </div>
     </section>
 
     <section class="agent-panel agent-side-section">
@@ -368,12 +426,18 @@
   const resultRows = document.getElementById('agentResultRows');
   const rowCount = document.getElementById('agentRowCount');
   const sqlTrace = document.getElementById('agentSqlTrace');
+  const historyToggle = document.getElementById('agentHistoryToggle');
+  const historyToggleText = document.getElementById('agentHistoryToggleText');
+  const historyBody = document.getElementById('agentHistoryBody');
   const historyList = document.getElementById('agentHistoryList');
   const historyEmpty = document.getElementById('agentHistoryEmpty');
   const AGENT_HISTORY_KEY = 'ecmis_agent_recent_questions';
+  const AGENT_HISTORY_COLLAPSED_KEY = 'ecmis_agent_recent_questions_collapsed';
   let historyEntries = loadHistory();
+  let historyCollapsed = loadHistoryCollapsed();
 
   sqlTrace.textContent = I18n.t('No query yet.');
+  applyHistoryCollapsed(historyCollapsed);
   renderHistory();
 
   document.querySelectorAll('.agent-prompt').forEach(btn => {
@@ -381,6 +445,12 @@
       question.value = I18n.getLang() === 'zh' ? btn.dataset.promptZh : btn.dataset.prompt;
       question.focus();
     });
+  });
+
+  historyToggle.addEventListener('click', () => {
+    historyCollapsed = !historyCollapsed;
+    applyHistoryCollapsed(historyCollapsed);
+    persistHistoryCollapsed();
   });
 
   function setBusy(isBusy) {
@@ -411,6 +481,36 @@
     }[char]));
   }
 
+  function renderMarkdownAnswer(text) {
+    const escaped = escapeHtml(text);
+    const withBold = escaped.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    const lines = withBold.split(/\r?\n/);
+    const html = [];
+    let inList = false;
+    lines.forEach(line => {
+      const bullet = line.match(/^\s*[-*]\s+(.+)$/);
+      if (bullet) {
+        if (!inList) {
+          html.push('<ul>');
+          inList = true;
+        }
+        html.push(`<li>${bullet[1]}</li>`);
+        return;
+      }
+      if (inList) {
+        html.push('</ul>');
+        inList = false;
+      }
+      html.push(line ? `${line}<br>` : '<br>');
+    });
+    if (inList) html.push('</ul>');
+    return html.join('');
+  }
+
+  function renderAnswer(text) {
+    answerText.innerHTML = renderMarkdownAnswer(text);
+  }
+
   function loadHistory() {
     try {
       const raw = localStorage.getItem(AGENT_HISTORY_KEY);
@@ -429,6 +529,30 @@
     } catch (err) {
       // Keep the in-memory list for this page load when browser storage is unavailable.
     }
+  }
+
+  function loadHistoryCollapsed() {
+    try {
+      return localStorage.getItem(AGENT_HISTORY_COLLAPSED_KEY) === '1';
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function persistHistoryCollapsed() {
+    try {
+      localStorage.setItem(AGENT_HISTORY_COLLAPSED_KEY, historyCollapsed ? '1' : '0');
+    } catch (err) {
+      // The visible state still changes when browser storage is unavailable.
+    }
+  }
+
+  function applyHistoryCollapsed(collapsed) {
+    historyBody.hidden = collapsed;
+    historyToggle.setAttribute('aria-expanded', String(!collapsed));
+    const label = collapsed ? I18n.t('Expand recent questions') : I18n.t('Collapse recent questions');
+    historyToggle.title = label;
+    historyToggleText.textContent = label;
   }
 
   function renderHistory() {
@@ -474,7 +598,7 @@
     empty.classList.add('d-none');
     renderQuestionDisplay(entry.question);
     answerText.classList.remove('d-none');
-    answerText.textContent = entry.answer || I18n.t('No answer returned.');
+    renderAnswer(entry.answer || I18n.t('No answer returned.'));
     sqlTrace.textContent = entry.sql || I18n.t('No SQL returned.');
     renderRows(entry.columns || [], entry.rows || []);
   }
@@ -506,7 +630,7 @@
     empty.classList.add('d-none');
     renderQuestionDisplay(text);
     answerText.classList.remove('d-none');
-    answerText.textContent = I18n.t('Analyzing database...');
+    renderAnswer(I18n.t('Analyzing database...'));
     resultTable.classList.add('d-none');
     resultRows.innerHTML = '';
     rowCount.textContent = '';
@@ -525,7 +649,7 @@
       const sql = data.sql || I18n.t('No SQL returned.');
       const columns = data.columns || [];
       const rows = data.rows || [];
-      answerText.textContent = answer;
+      renderAnswer(answer);
       sqlTrace.textContent = sql;
       renderRows(columns, rows);
       saveHistoryEntry({
@@ -538,7 +662,7 @@
         savedAt: new Date().toISOString()
       });
     } catch (err) {
-      answerText.textContent = err.message;
+      renderAnswer(err.message);
       resultTable.classList.add('d-none');
       sqlTrace.textContent = I18n.t('Query was not executed.');
     } finally {

@@ -4,7 +4,7 @@
 
 Elder Care MIS（养老关怀基金会管理信息系统）是一套基于 Web 的综合管理平台，涵盖捐赠管理、人员排班、礼品物流、活动策划、财务报表、BI 数据分析和 AI Agent 智能问答七大业务模块，并通过基于角色的访问控制（RBAC）确保不同岗位的员工只能访问与其职责相关的功能。
 
-**技术环境**：Flask + Bootstrap 5 + SQLite + SiliconFlow API，浏览器访问 `http://127.0.0.1:5000`。
+**技术环境**：Flask + Bootstrap 5 + SQLite + OpenRouter API，浏览器访问 `http://127.0.0.1:5000`。
 
 ---
 
@@ -20,7 +20,7 @@ python app.py
 
 启动后在浏览器打开 http://127.0.0.1:5000 即可进入登录页面。系统首次启动时会自动创建以下预置账户（见第 3 节）。
 
-如果需要使用 AI Agent，请先在 `config.py` 中配置 `SILICONFLOW_API_KEY`，或在启动 Flask 前设置同名环境变量。修改 `config.py` 后需要重启 `python app.py` 才会生效。
+如果需要使用 AI Agent，请先在 `config.py` 中配置 `OPENROUTER_API_KEY`，或在启动 Flask 前设置同名环境变量。修改 `config.py` 后需要重启 `python app.py` 才会生效。
 
 ---
 
@@ -480,19 +480,19 @@ BI Explorer 是一个灵活的自助查询分析工具，可对系统全部 6 �
 
 **路径**：`/agent`　　**所需角色**：`admin`、`finance` 或 `event_coordinator`
 
-AI Agent 用于通过自然语言查询 SQLite 数据库。用户输入问题后，系统会把数据库结构和问题发送给 SiliconFlow 模型，由模型生成只读 SQL；后端校验 SQL 只能是单条 `SELECT` 或 `WITH` 查询，并自动追加行数限制，再执行查询并让模型根据结果生成自然语言回答。
+AI Agent 用于通过自然语言查询 SQLite 数据库。用户输入问题后，系统会把数据库结构和问题发送给 OpenRouter 模型，由模型生成只读 SQL；后端校验 SQL 只能是单条 `SELECT` 或 `WITH` 查询，并自动追加行数限制，再执行查询并让模型根据结果生成自然语言回答。
 
 ### 16.1 使用前配置
 
-使用 AI Agent 前需要配置 SiliconFlow API：
+使用 AI Agent 前需要配置 OpenRouter API：
 
-- 在 `config.py` 中设置 `SILICONFLOW_API_KEY`，或在启动 Flask 前设置环境变量 `SILICONFLOW_API_KEY`
-- 默认接口地址为 `https://api.siliconflow.cn/v1`
-- 默认模型为 `Pro/zai-org/GLM-5`
+- 在 `config.py` 中设置 `OPENROUTER_API_KEY`，或在启动 Flask 前设置环境变量 `OPENROUTER_API_KEY`
+- 默认接口地址为 `https://openrouter.ai/api/v1`
+- 默认模型为 `anthropic/claude-sonnet-4.6`
 - 默认超时时间为 120 秒
 - 默认结果行数限制为 200 行
 
-如果页面提示 `Set SILICONFLOW_API_KEY in config.py before using the AI Agent.`，说明当前 Flask 进程没有读到 API Key。配置后请重新启动 `python app.py`。
+如果页面提示 `Set OPENROUTER_API_KEY in config.py before using the AI Agent.`，说明当前 Flask 进程没有读到 API Key。配置后请重新启动 `python app.py`。
 
 ### 16.2 提问流程
 
@@ -511,9 +511,9 @@ AI Agent 只允许执行只读查询。系统会拒绝 `INSERT`、`UPDATE`、`DE
 
 ### 16.4 常见错误
 
-- **未配置 API Key**：检查 `config.py` 或环境变量中的 `SILICONFLOW_API_KEY`，配置后重启 Flask。
-- **请求超时**：问题过宽或模型响应较慢时可能超时，可缩小问题范围，或在 `config.py` 中调大 `SILICONFLOW_TIMEOUT`。
-- **连接失败**：检查网络、代理、`SILICONFLOW_BASE_URL` 和 `SILICONFLOW_MODEL` 是否正确。
+- **未配置 API Key**：检查 `config.py` 或环境变量中的 `OPENROUTER_API_KEY`，配置后重启 Flask。
+- **请求超时**：问题过宽或模型响应较慢时可能超时，可缩小问题范围，或在 `config.py` 中调大 `OPENROUTER_TIMEOUT`。
+- **连接失败**：检查网络、代理、`OPENROUTER_BASE_URL` 和 `OPENROUTER_MODEL` 是否正确。
 - **SQL 被拒绝**：说明模型生成了非只读 SQL 或多条 SQL。换一种更明确的问题重试，例如指定要查询的对象和统计口径。
 
 ---

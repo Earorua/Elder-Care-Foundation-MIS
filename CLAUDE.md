@@ -1,14 +1,14 @@
 # Elder Care Foundation MIS
 
 ## Overview
-Flask-based Management Information System for an elder care foundation. Connects to an SQLite database (19 tables), providing CRUD management across 8 modules: Dashboard, Donations, Personnel, Gifts, Events, Finance, BI Explorer, and AI Agent. Features RBAC access control, GAAS-compliant financial reports, a dynamic BI query builder, and read-only natural-language database analysis through SiliconFlow.
+Flask-based Management Information System for an elder care foundation. Connects to an SQLite database (19 tables), providing CRUD management across 8 modules: Dashboard, Donations, Personnel, Gifts, Events, Finance, BI Explorer, and AI Agent. Features RBAC access control, GAAS-compliant financial reports, a dynamic BI query builder, and read-only natural-language database analysis through OpenRouter.
 
 ## Tech Stack
 - Flask + Jinja2 + Flask-Login
 - Bootstrap 5 + Bootstrap Icons + Chart.js (all via CDN)
 - Google Fonts: Playfair Display (headings) + Outfit (body)
 - SQLite3 direct connection, no ORM
-- SiliconFlow chat-completions API via Python `urllib` for the AI Agent
+- OpenRouter chat-completions API via Python `urllib` for the AI Agent
 - Git version control (local)
 
 ## Database
@@ -47,7 +47,7 @@ Flask-based Management Information System for an elder care foundation. Connects
 ```
 C:\Users\XF\Desktop\elder_care_gui\
 ├── app.py                  # Entry point + Flask-Login + seed users (4)
-├── config.py               # DB path, secret key, SiliconFlow AI Agent config
+├── config.py               # DB path, secret key, OpenRouter AI Agent config
 ├── db.py                   # get_db / query_db / execute_db
 ├── elder_care.db           # SQLite database file (bundled)
 ├── elder_care_logo.png     # Original logo source image
@@ -124,10 +124,10 @@ python app.py
 
 ## AI Agent Configuration
 - `/agent` is available to admin, finance, and event coordinator users.
-- `config.py` defines `SILICONFLOW_API_KEY`, `SILICONFLOW_BASE_URL`, `SILICONFLOW_MODEL`, `SILICONFLOW_TIMEOUT`, and `AGENT_ROW_LIMIT`.
-- The default model is `Pro/zai-org/GLM-5`; the default base URL is `https://api.siliconflow.cn/v1`.
-- `SILICONFLOW_API_KEY` may be set directly in `config.py` for this private project or provided through the environment.
-- The agent sends database schema and user questions to SiliconFlow, validates that generated SQL is a single read-only SQLite `SELECT` or `WITH` statement, applies a row limit, executes it against `elder_care.db`, then asks the model to summarize the returned rows.
+- `config.py` defines `OPENROUTER_API_KEY`, `OPENROUTER_BASE_URL`, `OPENROUTER_MODEL`, `OPENROUTER_TIMEOUT`, and `AGENT_ROW_LIMIT`.
+- The default model is `anthropic/claude-sonnet-4.6`; the default base URL is `https://openrouter.ai/api/v1`.
+- `OPENROUTER_API_KEY` is intentionally blank by default; set it directly in `config.py` for this private project or provide it through the environment.
+- The agent sends database schema and user questions to OpenRouter, validates that generated SQL is a single read-only SQLite `SELECT` or `WITH` statement, applies a row limit, executes it against `elder_care.db`, then asks the model to summarize the returned rows.
 
 ## Completed Work
 1. Built complete Flask project framework (9 blueprints, 20+ template pages)
@@ -187,10 +187,10 @@ python app.py
     - i18n: all BI UI text, preset labels, and 50+ dimension/metric value translations added to `i18n.js`
 22. Database fix: removed broken foreign key constraint on `donations.donation_type` that referenced empty table name `""`, causing "no such table: main." error when `PRAGMA foreign_keys = ON`
 23. AI Agent module (`/agent`)
-    - Backend (`blueprints/agent.py`): SiliconFlow chat-completions integration, SQLite schema extraction, SQL JSON parsing and repair prompt, read-only SQL validation, automatic row limit, stage-specific timeout/connection errors
+    - Backend (`blueprints/agent.py`): OpenRouter chat-completions integration, SQLite schema extraction, SQL JSON parsing and repair prompt, read-only SQL validation, automatic row limit, stage-specific timeout/connection errors
     - Frontend (`templates/agent/index.html`): prompt form, starter prompts, answer panel, read-only status, latest SQL trace, result table, model/context sidebar
     - Access control: available to finance and event coordinator roles; admin inherits access through `User.has_role`
-    - Config: `SILICONFLOW_API_KEY`, `SILICONFLOW_BASE_URL`, `SILICONFLOW_MODEL`, `SILICONFLOW_TIMEOUT`, `AGENT_ROW_LIMIT`
+    - Config: `OPENROUTER_API_KEY`, `OPENROUTER_BASE_URL`, `OPENROUTER_MODEL`, `OPENROUTER_TIMEOUT`, `AGENT_ROW_LIMIT`
 24. Sample data expansion: donors increased to 21 and donations to 27 while keeping the gift catalog at 8 existing gifts; added more linked gift distribution, delivery, feedback, receipt, and event participation records; 3 employees and 3 volunteers are also donors
 25. Marital status support for persons and donors
     - Backend: `persons` and `donors` CRUD reads/writes `marital_status`; matching records are synchronized between the two tables by first name, last name, and email

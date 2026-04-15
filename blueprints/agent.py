@@ -82,7 +82,7 @@ SQL_ALIAS_RESERVED_WORDS = {
 def agent_index():
     return render_template(
         "agent/index.html",
-        model_name=current_app.config.get("SILICONFLOW_MODEL", "Pro/zai-org/GLM-5"),
+        model_name=current_app.config.get("OPENROUTER_MODEL", "anthropic/claude-sonnet-4.6"),
         row_limit=current_app.config.get("AGENT_ROW_LIMIT", 200),
     )
 
@@ -93,9 +93,9 @@ def agent_query():
     if not current_app.config.get("LOGIN_DISABLED") and not current_user.has_role("finance", "event_coordinator"):
         return jsonify(error="Insufficient permissions to use the AI Agent."), 403
 
-    api_key = current_app.config.get("SILICONFLOW_API_KEY", "")
+    api_key = current_app.config.get("OPENROUTER_API_KEY", "")
     if not api_key:
-        return jsonify(error="Set SILICONFLOW_API_KEY in config.py before using the AI Agent."), 400
+        return jsonify(error="Set OPENROUTER_API_KEY in config.py before using the AI Agent."), 400
 
     body = request.get_json(silent=True) or {}
     question = body.get("question", "").strip()
@@ -118,7 +118,7 @@ def agent_query():
         cur.close()
         result_rows = _rows_to_dicts(rows)
         stage = "generating answer"
-        answer = _call_siliconflow(
+        answer = _call_openrouter(
             _build_answer_prompt(question, sql, columns, result_rows),
             max_tokens=900,
             temperature=0.2,
@@ -130,7 +130,7 @@ def agent_query():
     except urlerror.URLError as exc:
         if isinstance(exc.reason, TimeoutError):
             return jsonify(error=_timeout_message(stage)), 504
-        return jsonify(error=f"SiliconFlow request failed: {exc.reason}"), 502
+        return jsonify(error=f"OpenRouter request failed: {exc.reason}"), 502
     except TimeoutError:
         return jsonify(error=_timeout_message(stage)), 504
     except RemoteDisconnected:
@@ -350,7 +350,7 @@ def _repair_sql_semantics_if_needed(question, schema, sql_payload):
     if not issues:
         return sql_payload
 
-    repair_response = _call_siliconflow(
+    repair_response = _call_openrouter(
         _build_sql_semantic_repair_prompt(question, schema, sql_payload, issues),
         max_tokens=700,
         temperature=0,
@@ -465,7 +465,7 @@ def _extract_json_object(text):
 
 
 def _generate_sql_payload(question, schema):
-    raw_response = _call_siliconflow(
+    raw_response = _call_openrouter(
         _build_sql_prompt(question, schema),
         max_tokens=700,
         temperature=0.1,
@@ -475,7 +475,7 @@ def _generate_sql_payload(question, schema):
     except ValueError as first_error:
         _log_non_json_sql_response(raw_response, first_error)
 
-    repair_response = _call_siliconflow(
+    repair_response = _call_openrouter(
         _build_sql_repair_prompt(question, schema, raw_response),
         max_tokens=700,
         temperature=0,
@@ -489,7 +489,7 @@ def _generate_sql_payload(question, schema):
 def _log_non_json_sql_response(raw_response, error):
     if current_app.debug or current_app.config.get("AGENT_LOG_MODEL_OUTPUT"):
         current_app.logger.warning(
-            "SiliconFlow SQL generation returned non-JSON (%s). Raw response: %r",
+            "OpenRouter SQL generation returned non-JSON (%s). Raw response: %r",
             error,
             (raw_response or "")[:1000],
         )
@@ -500,18 +500,18 @@ def _rows_to_dicts(rows):
 
 
 def _timeout_message(stage):
-    timeout = current_app.config.get("SILICONFLOW_TIMEOUT", 120)
+    timeout = current_app.config.get("OPENROUTER_TIMEOUT", 120)
     return (
-        f"SiliconFlow request timed out while {stage} after {timeout} seconds. "
-        "Try again with a narrower question, or increase SILICONFLOW_TIMEOUT in config.py."
+        f"OpenRouter request timed out while {stage} after {timeout} seconds. "
+        "Try again with a narrower question, or increase OPENROUTER_TIMEOUT in config.py."
     )
 
 
 def _connection_message(stage):
     return (
-        f"SiliconFlow closed the connection while {stage}. "
+        f"OpenRouter closed the connection while {stage}. "
         "This usually means the remote API, network, proxy, or model endpoint dropped the request. "
-        "Try again, or verify SILICONFLOW_BASE_URL, SILICONFLOW_MODEL, and network access."
+        "Try again, or verify OPENROUTER_BASE_URL, OPENROUTER_MODEL, and network access."
     )
 
 
@@ -520,18 +520,18 @@ def _http_error_message(stage, exc):
     reason = getattr(exc, "reason", None) or getattr(exc, "msg", None) or "HTTP error"
     if status in (429, 500, 502, 503, 504):
         return (
-            f"SiliconFlow returned HTTP {status} ({reason}) while {stage}. "
+            f"OpenRouter returned HTTP {status} ({reason}) while {stage}. "
             "This is usually a temporary upstream or model availability issue. "
-            "Try again, ask a narrower question, or verify SILICONFLOW_BASE_URL and SILICONFLOW_MODEL in config.py."
+            "Try again, ask a narrower question, or verify OPENROUTER_BASE_URL and OPENROUTER_MODEL in config.py."
         )
     if status in (401, 403):
         return (
-            f"SiliconFlow returned HTTP {status} ({reason}) while {stage}. "
-            "Verify SILICONFLOW_API_KEY in config.py or your environment."
+            f"OpenRouter returned HTTP {status} ({reason}) while {stage}. "
+            "Verify OPENROUTER_API_KEY in config.py or your environment."
         )
     return (
-        f"SiliconFlow returned HTTP {status} ({reason}) while {stage}. "
-        "Verify SILICONFLOW_API_KEY, SILICONFLOW_BASE_URL, and SILICONFLOW_MODEL in config.py."
+        f"OpenRouter returned HTTP {status} ({reason}) while {stage}. "
+        "Verify OPENROUTER_API_KEY, OPENROUTER_BASE_URL, and OPENROUTER_MODEL in config.py."
     )
 
 
@@ -604,10 +604,10 @@ def _build_answer_prompt(question, sql, columns, rows):
     )
 
 
-def _call_siliconflow(prompt, max_tokens=800, temperature=0.2):
-    api_key = current_app.config.get("SILICONFLOW_API_KEY", "")
-    base_url = current_app.config.get("SILICONFLOW_BASE_URL", "https://api.siliconflow.cn/v1").rstrip("/")
-    model = current_app.config.get("SILICONFLOW_MODEL", "Pro/zai-org/GLM-5")
+def _call_openrouter(prompt, max_tokens=800, temperature=0.2):
+    api_key = current_app.config.get("OPENROUTER_API_KEY", "")
+    base_url = current_app.config.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1").rstrip("/")
+    model = current_app.config.get("OPENROUTER_MODEL", "anthropic/claude-sonnet-4.6")
     payload = {
         "model": model,
         "messages": [{"role": "user", "content": prompt}],
@@ -623,20 +623,20 @@ def _call_siliconflow(prompt, max_tokens=800, temperature=0.2):
         },
         method="POST",
     )
-    timeout = current_app.config.get("SILICONFLOW_TIMEOUT", 120)
-    max_retries = max(0, int(current_app.config.get("SILICONFLOW_MAX_RETRIES", 2)))
+    timeout = current_app.config.get("OPENROUTER_TIMEOUT", 120)
+    max_retries = max(0, int(current_app.config.get("OPENROUTER_MAX_RETRIES", 2)))
     for attempt in range(max_retries + 1):
         try:
-            with _open_siliconflow_request(req, timeout) as response:
+            with _open_openrouter_request(req, timeout) as response:
                 data = json.loads(response.read().decode("utf-8"))
             break
         except (RemoteDisconnected, urlerror.URLError) as exc:
-            if attempt >= max_retries or not _is_retryable_siliconflow_error(exc):
+            if attempt >= max_retries or not _is_retryable_openrouter_error(exc):
                 raise
     return data["choices"][0]["message"]["content"].strip()
 
 
-def _is_retryable_siliconflow_error(exc):
+def _is_retryable_openrouter_error(exc):
     if isinstance(exc, RemoteDisconnected):
         return True
     if isinstance(exc, urlerror.HTTPError):
@@ -646,8 +646,12 @@ def _is_retryable_siliconflow_error(exc):
     return False
 
 
-def _open_siliconflow_request(req, timeout):
-    if current_app.config.get("SILICONFLOW_DISABLE_ENV_PROXY", True):
+def _open_openrouter_request(req, timeout):
+    if current_app.config.get("OPENROUTER_DISABLE_ENV_PROXY", True):
         opener = urlrequest.build_opener(urlrequest.ProxyHandler({}))
         return opener.open(req, timeout=timeout)
     return urlrequest.urlopen(req, timeout=timeout)
+
+
+_call_siliconflow = _call_openrouter
+_open_siliconflow_request = _open_openrouter_request

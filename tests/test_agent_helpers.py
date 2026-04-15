@@ -7,7 +7,6 @@ from http.client import RemoteDisconnected
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import config
 import blueprints.agent as agent_module
 from flask import Flask
 
@@ -27,11 +26,17 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class AgentHelperTests(unittest.TestCase):
-    def test_default_siliconflow_model_is_requested_model(self):
-        expected_model = "Pro/zai-org/GLM-5"
+    def test_default_openrouter_provider_configuration_is_requested_model(self):
+        expected_model = "anthropic/claude-sonnet-4.6"
+        expected_base_url = "https://openrouter.ai/api/v1"
+        config_py = (ROOT / "config.py").read_text(encoding="utf-8")
         agent_py = (ROOT / "blueprints" / "agent.py").read_text(encoding="utf-8")
 
-        self.assertEqual(config.SILICONFLOW_MODEL, expected_model)
+        self.assertIn("OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY',", config_py)
+        self.assertIn(f"OPENROUTER_BASE_URL = os.environ.get('OPENROUTER_BASE_URL', '{expected_base_url}')", config_py)
+        self.assertIn(f"OPENROUTER_MODEL = os.environ.get('OPENROUTER_MODEL', '{expected_model}')", config_py)
+        self.assertIn("OPENROUTER_API_KEY", agent_py)
+        self.assertIn(expected_base_url, agent_py)
         self.assertIn(expected_model, agent_py)
 
     def test_validate_readonly_sql_accepts_select_and_with(self):
@@ -163,14 +168,14 @@ class AgentHelperTests(unittest.TestCase):
     def test_agent_query_returns_setup_error_when_api_key_missing(self):
         app, db_path = self._make_temp_app()
         app.register_blueprint(agent_bp)
-        app.config["SILICONFLOW_API_KEY"] = ""
+        app.config["OPENROUTER_API_KEY"] = ""
         try:
             response = app.test_client().post("/api/agent/query", json={"question": "How many donors?"})
         finally:
             os.unlink(db_path)
 
         self.assertEqual(response.status_code, 400)
-        self.assertIn("SILICONFLOW_API_KEY", response.get_json()["error"])
+        self.assertIn("OPENROUTER_API_KEY", response.get_json()["error"])
 
     def test_extract_json_object_accepts_fenced_model_output(self):
         parsed = _extract_json_object(
@@ -189,9 +194,9 @@ class AgentHelperTests(unittest.TestCase):
 
         self.assertEqual(_rows_to_dicts(rows), [{"id": 1, "name": "Ada"}])
 
-    def test_call_siliconflow_disables_environment_proxy_by_default(self):
+    def test_call_openrouter_disables_environment_proxy_by_default(self):
         app, db_path = self._make_temp_app()
-        app.config["SILICONFLOW_API_KEY"] = "test-key"
+        app.config["OPENROUTER_API_KEY"] = "test-key"
         response = MagicMock()
         response.__enter__.return_value = response
         response.read.return_value = json.dumps(
@@ -215,7 +220,7 @@ class AgentHelperTests(unittest.TestCase):
                             "blueprints.agent.urlrequest.urlopen",
                             side_effect=AssertionError("urlopen should not be used"),
                         ):
-                            result = agent_module._call_siliconflow("hello")
+                            result = agent_module._call_openrouter("hello")
         finally:
             os.unlink(db_path)
 
@@ -223,12 +228,14 @@ class AgentHelperTests(unittest.TestCase):
         mock_proxy_handler.assert_called_once_with({})
         mock_build_opener.assert_called_once_with(proxy_handler)
         opener.open.assert_called_once()
+        request = opener.open.call_args.args[0]
+        self.assertEqual(request.full_url, "https://openrouter.ai/api/v1/chat/completions")
         self.assertEqual(opener.open.call_args.kwargs["timeout"], 120)
 
-    def test_call_siliconflow_retries_remote_disconnect(self):
+    def test_call_openrouter_retries_remote_disconnect(self):
         app, db_path = self._make_temp_app()
-        app.config["SILICONFLOW_API_KEY"] = "test-key"
-        app.config["SILICONFLOW_MAX_RETRIES"] = 1
+        app.config["OPENROUTER_API_KEY"] = "test-key"
+        app.config["OPENROUTER_MAX_RETRIES"] = 1
         response = MagicMock()
         response.__enter__.return_value = response
         response.read.return_value = json.dumps(
@@ -238,13 +245,13 @@ class AgentHelperTests(unittest.TestCase):
         try:
             with app.app_context():
                 with patch(
-                    "blueprints.agent._open_siliconflow_request",
+                    "blueprints.agent._open_openrouter_request",
                     side_effect=[
                         RemoteDisconnected("Remote end closed connection without response"),
                         response,
                     ],
                 ) as mock_open:
-                    result = agent_module._call_siliconflow("hello")
+                    result = agent_module._call_openrouter("hello")
         finally:
             os.unlink(db_path)
 
@@ -266,10 +273,10 @@ class AgentHelperTests(unittest.TestCase):
     def test_agent_query_returns_answer_and_table_data(self):
         app, db_path = self._make_temp_app()
         app.register_blueprint(agent_bp)
-        app.config["SILICONFLOW_API_KEY"] = "test-key"
+        app.config["OPENROUTER_API_KEY"] = "test-key"
         try:
             with patch(
-                "blueprints.agent._call_siliconflow",
+                "blueprints.agent._call_openrouter",
                 side_effect=[
                     '{"sql": "SELECT name, amount FROM donors", "rationale": "Find matching donors."}',
                     "Ada donated $100.00.",
@@ -292,10 +299,10 @@ class AgentHelperTests(unittest.TestCase):
     def test_agent_query_repairs_generated_sql_with_unknown_enum_value(self):
         app, db_path = self._make_temp_app()
         app.register_blueprint(agent_bp)
-        app.config["SILICONFLOW_API_KEY"] = "test-key"
+        app.config["OPENROUTER_API_KEY"] = "test-key"
         try:
             with patch(
-                "blueprints.agent._call_siliconflow",
+                "blueprints.agent._call_openrouter",
                 side_effect=[
                     json.dumps(
                         {
@@ -339,10 +346,10 @@ class AgentHelperTests(unittest.TestCase):
     def test_agent_query_repairs_personnel_entity_synonym_enum_filter(self):
         app, db_path = self._make_temp_app()
         app.register_blueprint(agent_bp)
-        app.config["SILICONFLOW_API_KEY"] = "test-key"
+        app.config["OPENROUTER_API_KEY"] = "test-key"
         try:
             with patch(
-                "blueprints.agent._call_siliconflow",
+                "blueprints.agent._call_openrouter",
                 side_effect=[
                     json.dumps(
                         {
@@ -381,10 +388,10 @@ class AgentHelperTests(unittest.TestCase):
     def test_agent_query_retries_sql_generation_when_model_returns_non_json(self):
         app, db_path = self._make_temp_app()
         app.register_blueprint(agent_bp)
-        app.config["SILICONFLOW_API_KEY"] = "test-key"
+        app.config["OPENROUTER_API_KEY"] = "test-key"
         try:
             with patch(
-                "blueprints.agent._call_siliconflow",
+                "blueprints.agent._call_openrouter",
                 side_effect=[
                     "I would use SELECT name, amount FROM donors.",
                     '{"sql": "SELECT name, amount FROM donors", "rationale": "Find donor amounts."}',
@@ -409,10 +416,10 @@ class AgentHelperTests(unittest.TestCase):
     def test_agent_query_returns_stage_specific_timeout_error(self):
         app, db_path = self._make_temp_app()
         app.register_blueprint(agent_bp)
-        app.config["SILICONFLOW_API_KEY"] = "test-key"
+        app.config["OPENROUTER_API_KEY"] = "test-key"
         try:
             with patch(
-                "blueprints.agent._call_siliconflow",
+                "blueprints.agent._call_openrouter",
                 side_effect=TimeoutError("The read operation timed out"),
             ):
                 response = app.test_client().post(
@@ -431,10 +438,10 @@ class AgentHelperTests(unittest.TestCase):
     def test_agent_query_returns_stage_specific_remote_disconnect_error(self):
         app, db_path = self._make_temp_app()
         app.register_blueprint(agent_bp)
-        app.config["SILICONFLOW_API_KEY"] = "test-key"
+        app.config["OPENROUTER_API_KEY"] = "test-key"
         try:
             with patch(
-                "blueprints.agent._call_siliconflow",
+                "blueprints.agent._call_openrouter",
                 side_effect=RemoteDisconnected("Remote end closed connection without response"),
             ):
                 response = app.test_client().post(
@@ -450,15 +457,15 @@ class AgentHelperTests(unittest.TestCase):
         self.assertIn("generating SQL", payload["error"])
         self.assertNotIn("AI Agent failed", payload["error"])
 
-    def test_agent_query_returns_stage_specific_siliconflow_service_unavailable_error(self):
+    def test_agent_query_returns_stage_specific_openrouter_service_unavailable_error(self):
         app, db_path = self._make_temp_app()
         app.register_blueprint(agent_bp)
-        app.config["SILICONFLOW_API_KEY"] = "test-key"
+        app.config["OPENROUTER_API_KEY"] = "test-key"
         try:
             with patch(
-                "blueprints.agent._call_siliconflow",
+                "blueprints.agent._call_openrouter",
                 side_effect=agent_module.urlerror.HTTPError(
-                    "https://api.siliconflow.cn/v1/chat/completions",
+                    "https://openrouter.ai/api/v1/chat/completions",
                     503,
                     "Service Unavailable",
                     {},
@@ -478,7 +485,7 @@ class AgentHelperTests(unittest.TestCase):
         self.assertIn("Service Unavailable", payload["error"])
         self.assertIn("generating SQL", payload["error"])
         self.assertIn("temporary", payload["error"])
-        self.assertIn("SILICONFLOW_MODEL", payload["error"])
+        self.assertIn("OPENROUTER_MODEL", payload["error"])
         self.assertNotIn("AI Agent failed", payload["error"])
 
     def test_agent_template_and_registration_hooks_exist(self):
@@ -508,9 +515,16 @@ class AgentHelperTests(unittest.TestCase):
             "agent-history-list",
             "agentHistoryList",
             "agentHistoryEmpty",
+            "agentHistoryToggle",
+            "agentHistoryBody",
+            'aria-controls="agentHistoryBody"',
+            'aria-expanded="true"',
+            "agent-history-chevron",
             "agentQuestionDisplay",
             "agent-question-display",
             "Recent Questions",
+            "Collapse recent questions",
+            "Expand recent questions",
             "No recent questions yet.",
             "data-history-index",
         ]:
@@ -522,15 +536,41 @@ class AgentHelperTests(unittest.TestCase):
 
         for hook in [
             "AGENT_HISTORY_KEY",
+            "AGENT_HISTORY_COLLAPSED_KEY",
             "localStorage.getItem(AGENT_HISTORY_KEY)",
             "localStorage.setItem(AGENT_HISTORY_KEY",
+            "localStorage.getItem(AGENT_HISTORY_COLLAPSED_KEY)",
+            "localStorage.setItem(AGENT_HISTORY_COLLAPSED_KEY",
             "historyEntries.slice(0, 10)",
+            "applyHistoryCollapsed(historyCollapsed)",
+            "historyToggle.addEventListener('click'",
+            "historyBody.hidden = collapsed",
             "saveHistoryEntry({",
             "renderHistory()",
             "showHistoryEntry(index)",
         ]:
             with self.subTest(hook=hook):
                 self.assertIn(hook, template)
+
+    def test_agent_answer_uses_controlled_markdown_renderer(self):
+        template = (ROOT / "templates" / "agent" / "index.html").read_text(encoding="utf-8")
+
+        for hook in [
+            "function renderMarkdownAnswer(text)",
+            "const escaped = escapeHtml(text);",
+            ".replace(/\\*\\*([^*]+)\\*\\*/g, '<strong>$1</strong>')",
+            "function renderAnswer(text)",
+            "answerText.innerHTML = renderMarkdownAnswer(text);",
+            "renderAnswer(entry.answer || I18n.t('No answer returned.'))",
+            "renderAnswer(I18n.t('Analyzing database...'))",
+            "renderAnswer(answer)",
+            "renderAnswer(err.message)",
+        ]:
+            with self.subTest(hook=hook):
+                self.assertIn(hook, template)
+
+        self.assertNotIn("answerText.textContent = answer", template)
+        self.assertNotIn("answerText.textContent = err.message", template)
 
     def test_agent_starter_prompts_use_current_language(self):
         template = (ROOT / "templates" / "agent" / "index.html").read_text(encoding="utf-8")
@@ -575,6 +615,8 @@ class AgentHelperTests(unittest.TestCase):
             "No SQL returned.",
             "Query was not executed.",
             "Recent Questions",
+            "Collapse recent questions",
+            "Expand recent questions",
             "No recent questions yet.",
             "Saved questions appear here after the Agent returns an answer.",
             "Saved",
@@ -593,6 +635,8 @@ class AgentHelperTests(unittest.TestCase):
             "No answer returned.",
             "No SQL returned.",
             "Query was not executed.",
+            "Collapse recent questions",
+            "Expand recent questions",
         ]:
             with self.subTest(dynamic_key=dynamic_key):
                 self.assertIn(f"I18n.t('{dynamic_key}')", template)
@@ -632,9 +676,9 @@ class AgentHelperTests(unittest.TestCase):
         app.config.update(
             TESTING=True,
             DATABASE=db_path,
-            SILICONFLOW_API_KEY="",
-            SILICONFLOW_BASE_URL="https://api.siliconflow.cn/v1",
-            SILICONFLOW_MODEL="Pro/zai-org/GLM-5",
+            OPENROUTER_API_KEY="",
+            OPENROUTER_BASE_URL="https://openrouter.ai/api/v1",
+            OPENROUTER_MODEL="anthropic/claude-sonnet-4.6",
             AGENT_ROW_LIMIT=50,
             LOGIN_DISABLED=True,
         )

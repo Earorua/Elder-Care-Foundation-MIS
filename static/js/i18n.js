@@ -131,6 +131,8 @@
     'No SQL returned.': '未返回 SQL。',
     'Query was not executed.': '查询未执行。',
     'Recent Questions': '最近问题',
+    'Collapse recent questions': '折叠最近问题',
+    'Expand recent questions': '展开最近问题',
     'No recent questions yet.': '还没有最近问题。',
     'Saved questions appear here after the Agent returns an answer.': 'AI 助手返回回答后，保存的问题会显示在这里。',
     'Saved': '保存于',
