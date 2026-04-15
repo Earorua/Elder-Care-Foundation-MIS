@@ -33,7 +33,7 @@ class MaritalStatusUiTests(unittest.TestCase):
             "d.marital_status",
             'name="marital_status"',
             'id="marital_status"',
-            "function openEditModal(id, firstName, lastName, email, age, gender, location, maritalStatus)",
+            "function openEditModal(id, type, firstName, lastName, email, age, gender, location, maritalStatus)",
             "document.getElementById('marital_status').value = maritalStatus;",
         ]:
             with self.subTest(hook=hook):

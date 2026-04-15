@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros/i18n_values.html" import value as i18n_value %}
 {% block title %}Donation Records - Elder Care MIS{% endblock %}
 {% block breadcrumb %}<span data-i18n="Donation Records">Donation Records</span>{% endblock %}
 {% block content %}
@@ -31,10 +32,10 @@
       <tr>
         <td>{{ d.donation_id }}</td>
         <td>{{ d.last_name }}{{ d.first_name }}</td>
-        <td>{{ d.donation_type }}</td>
+        <td>{{ i18n_value(d.donation_type) }}</td>
         <td>{{ "%.2f"|format(d.amount) }}</td>
         <td>{{ d.donation_date }}</td>
-        <td>{{ "Yes" if d.is_tax_deductible else "No" }}</td>
+        <td>{{ i18n_value("Yes" if d.is_tax_deductible else "No") }}</td>
         <td>{{ d.gift_given }}</td>
         <td>{{ d.description }}</td>
         <td>

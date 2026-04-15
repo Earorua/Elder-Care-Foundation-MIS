@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros/i18n_values.html" import value as i18n_value %}
 {% block title %}Personnel Management - Elder Care MIS{% endblock %}
 {% block breadcrumb %}<span data-i18n="Personnel">Personnel</span>{% endblock %}
 
@@ -36,13 +37,13 @@
         <td>{{ p['last_name'] }}</td>
         <td>{{ p['email'] }}</td>
         <td>{{ p['phone'] }}</td>
-        <td>{{ p['person_type'] }}</td>
+        <td>{{ i18n_value(p['person_type']) }}</td>
         <td>{{ p['role_name'] }}</td>
         <td>{{ p['hire_date'] }}</td>
         <td>{{ p['birthday'] }}</td>
-        <td>{{ p['gender'] }}</td>
-        <td><span data-i18n="{{ p['marital_status'] }}">{{ p['marital_status'] }}</span></td>
-        <td>{{ p['status'] }}</td>
+        <td>{{ i18n_value(p['gender']) }}</td>
+        <td>{{ i18n_value(p['marital_status']) }}</td>
+        <td>{{ i18n_value(p['status']) }}</td>
         <td class="text-nowrap">
           <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" data-i18n-title="Edit" title="Edit" onclick="openEdit({{ p['person_id'] }}, '{{ p['first_name'] }}', '{{ p['last_name'] }}', '{{ p['email'] }}', '{{ p['phone'] }}', '{{ p['person_type'] }}', '{{ p['role_name'] }}', '{{ p['hire_date'] }}', '{{ p['status'] }}', '{{ p['birthday'] }}', '{{ p['gender'] }}', '{{ p['marital_status'] }}')"><i class="bi bi-pencil"></i></button>
           <button class="btn btn-sm btn-danger" aria-label="Delete" data-bs-toggle="tooltip" data-i18n-title="Delete" title="Delete" onclick="confirmDelete('{{ url_for('personnel.persons_delete', id=p['person_id']) }}', '{{ p['first_name'] }} {{ p['last_name'] }}')"><i class="bi bi-trash"></i></button>
@@ -74,7 +75,12 @@
           <div class="mb-3"><label class="form-label" data-i18n="Last Name">Last Name</label><input type="text" class="form-control" name="last_name" id="last_name" required></div>
           <div class="mb-3"><label class="form-label" data-i18n="Email">Email</label><input type="email" class="form-control" name="email" id="email"></div>
           <div class="mb-3"><label class="form-label" data-i18n="Phone">Phone</label><input type="text" class="form-control" name="phone" id="phone"></div>
-          <div class="mb-3"><label class="form-label" data-i18n="Type">Type</label><input type="text" class="form-control" name="person_type" id="person_type"></div>
+          <div class="mb-3"><label class="form-label" data-i18n="Type">Type</label>
+            <select class="form-select" name="person_type" id="person_type">
+              <option value="Employee" data-i18n="Employee">Employee</option>
+              <option value="Volunteer" data-i18n="Volunteer">Volunteer</option>
+            </select>
+          </div>
           <div class="mb-3"><label class="form-label" data-i18n="Role">Role</label><input type="text" class="form-control" name="role_name" id="role_name"></div>
           <div class="mb-3"><label class="form-label" data-i18n="Hire Date">Hire Date</label><input type="date" class="form-control" name="hire_date" id="hire_date"></div>
           <div class="mb-3"><label class="form-label" data-i18n="Birthday">Birthday</label><input type="date" class="form-control" name="birthday" id="birthday"></div>

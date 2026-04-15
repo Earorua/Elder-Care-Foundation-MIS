@@ -103,16 +103,17 @@ const dailyAccordion = document.getElementById('dailyAccordion');
 
 function attendanceBadge(item) {
   const absent = item.is_absent === 1 || (item.status || '').toLowerCase() === 'absent';
-  if (absent) return '<span class="att-badge att-absent"><i class="bi bi-x-circle-fill"></i> '+I18n.t('Absent')+'</span>';
+  if (absent) return '<span class="att-badge att-absent"><i class="bi bi-x-circle-fill"></i> '+I18n.value('Absent')+'</span>';
   const st = (item.status || '').toLowerCase();
-  if (st === 'completed') return '<span class="att-badge att-ontime"><i class="bi bi-check-circle-fill"></i> '+I18n.t('On Time')+'</span>';
-  if (st === 'in_progress') return '<span class="att-badge att-onduty"><i class="bi bi-play-circle-fill"></i> '+I18n.t('On Duty')+'</span>';
-  return '<span class="att-badge att-pending"><i class="bi bi-hourglass-split"></i> '+I18n.t('Pending')+'</span>';
+  if (st === 'completed') return '<span class="att-badge att-ontime"><i class="bi bi-check-circle-fill"></i> '+I18n.value('On Time')+'</span>';
+  if (st === 'in_progress') return '<span class="att-badge att-onduty"><i class="bi bi-play-circle-fill"></i> '+I18n.value('On Duty')+'</span>';
+  return '<span class="att-badge att-pending"><i class="bi bi-hourglass-split"></i> '+I18n.value('Pending')+'</span>';
 }
 
 function renderCard(item) {
   const name = (item.first_name || '') + ' ' + (item.last_name || '');
-  const role = item.role_name || 'Staff';
+  const role = I18n.value(item.role_name || 'Staff');
+  const scheduleType = I18n.value(item.schedule_type || '');
   const ot = item.overtime ? '<span class="kanban-tag ot">OT +' + item.overtime + 'h</span>' : '';
   const badge = attendanceBadge(item);
   return `
@@ -124,7 +125,7 @@ function renderCard(item) {
       <div class="kanban-card-body">
         <div class="kanban-detail"><i class="bi bi-calendar3"></i> ${item.shift_date || '—'}</div>
         <div class="kanban-detail"><i class="bi bi-clock"></i> ${item.start_time || '?'} – ${item.end_time || '?'}</div>
-        <div class="kanban-detail"><i class="bi bi-tag"></i> ${item.schedule_type || '—'}</div>
+        <div class="kanban-detail"><i class="bi bi-tag"></i> ${scheduleType || '-'}</div>
       </div>
       <div class="kanban-card-footer">
         ${badge}
@@ -188,7 +189,7 @@ function buildDailyAttendance(allItems) {
       html += `
               <tr>
                 <td style="padding:.5rem .75rem;"><i class="bi bi-person-circle me-1" style="color:var(--accent-gold);"></i>${name}</td>
-                <td style="padding:.5rem .75rem;">${item.role_name || '—'}</td>
+                <td style="padding:.5rem .75rem;">${I18n.value(item.role_name || '') || '-'}</td>
                 <td style="padding:.5rem .75rem;">${item.start_time || '?'} – ${item.end_time || '?'}</td>
                 <td style="padding:.5rem .75rem;">${ot}</td>
                 <td style="padding:.5rem .75rem;">${attendanceBadge(item)}</td>
@@ -227,7 +228,7 @@ function loadBoard(eventId) {
   };
   const st = opt.dataset.status || '';
   const [label, style] = statusMap[st] || [st, 'background:#9a938c;color:#fff;'];
-  document.getElementById('eventStatusBadge').textContent = label;
+  document.getElementById('eventStatusBadge').textContent = I18n.value(label);
   document.getElementById('eventStatusBadge').style.cssText = style + 'padding:.25rem .6rem;border-radius:.5rem;font-size:.75rem;';
   document.getElementById('eventDateLabel').innerHTML = '<i class="bi bi-calendar3 me-1"></i>' + (opt.dataset.date || '');
 

@@ -104,10 +104,13 @@ def _sync_matching_person_marital_status(first_name, last_name, email, marital_s
 def donors_add():
     try:
         marital_status = request.form.get('marital_status', 'Unknown')
+        donor_type = request.form.get('type', 'Person')
+        if donor_type not in ('Company', 'Person'):
+            donor_type = 'Person'
         execute_db(
-            'INSERT INTO donors (first_name, last_name, email, age, gender, location, marital_status, created_date) '
-            'VALUES (?, ?, ?, ?, ?, ?, ?, date("now"))',
-            [request.form['first_name'], request.form['last_name'],
+            'INSERT INTO donors (type, first_name, last_name, email, age, gender, location, marital_status, created_date) '
+            'VALUES (?, ?, ?, ?, ?, ?, ?, ?, date("now"))',
+            [donor_type, request.form['first_name'], request.form['last_name'],
              request.form.get('email', ''), request.form.get('age', 0),
              request.form.get('gender', ''), request.form.get('location', ''),
              marital_status]
@@ -130,10 +133,13 @@ def donors_add():
 def donors_edit(id):
     try:
         marital_status = request.form.get('marital_status', 'Unknown')
+        donor_type = request.form.get('type', 'Person')
+        if donor_type not in ('Company', 'Person'):
+            donor_type = 'Person'
         execute_db(
-            'UPDATE donors SET first_name=?, last_name=?, email=?, age=?, gender=?, location=?, marital_status=? '
+            'UPDATE donors SET type=?, first_name=?, last_name=?, email=?, age=?, gender=?, location=?, marital_status=? '
             'WHERE donor_id=?',
-            [request.form['first_name'], request.form['last_name'],
+            [donor_type, request.form['first_name'], request.form['last_name'],
              request.form.get('email', ''), request.form.get('age', 0),
              request.form.get('gender', ''), request.form.get('location', ''),
              marital_status, id]

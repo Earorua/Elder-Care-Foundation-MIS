@@ -174,6 +174,7 @@
     'Add Donor': '添加捐款人',
     'Search donors...': '搜索捐款人...',
     'Donor ID': '捐款人编号',
+    'Donor Type': '捐款人类型',
     'First Name': '名',
     'Last Name': '姓',
     'Email': '邮箱',
@@ -367,6 +368,7 @@
     'Supplier ID': '供应商编号',
     'Supplier Name': '供应商名称',
     'Contact Name': '联系人',
+    'Contact Email': '联系邮箱',
     'Address': '地址',
     'No suppliers found': '暂无供应商',
     'Add Supplier': '添加供应商',
@@ -956,6 +958,42 @@
     'Which gift types hold the most inventory value?': '哪些礼品类型库存价值最高？',
     'Which income source contributes the most?': '哪类收入来源贡献最高？',
     'How is attendance trending?': '出勤趋势如何？',
+
+    // Fixed option display values used in table cells
+    'Admin': '管理员',
+    'Event Coordinator': '活动协调员',
+    'Viewer': '查看者',
+    'Positive': '正面',
+    'Suggestion': '建议',
+    'Reviewed': '已审核',
+    'Delivered': '已送达',
+    'In Transit': '运输中',
+    'Donor Kit': '捐赠者套装',
+    'Media': '媒体',
+    'Promotional': '宣传品',
+    'Storybook': '故事书',
+    'Fundraising': '筹款',
+    'Investment': '投资',
+    'Rental': '租赁',
+    'Sales': '销售',
+  };
+
+  const VALUE_KEY_MAP = {
+    admin: 'Admin',
+    finance: 'Finance',
+    event_coordinator: 'Event Coordinator',
+    viewer: 'Viewer',
+    planned: 'Planned',
+    completed: 'Completed',
+    scheduled: 'Scheduled',
+    in_progress: 'In Progress',
+    absent: 'Absent',
+    cancelled: 'Cancelled',
+    delivered: 'Delivered',
+    in_transit: 'In Transit',
+    pending: 'Pending',
+    resolved: 'Resolved',
+    reviewed: 'Reviewed',
   };
 
   let currentLang = localStorage.getItem('ecmis_lang') || 'en';
@@ -963,6 +1001,12 @@
   function t(key) {
     if (currentLang === 'zh' && ZH[key] !== undefined) return ZH[key];
     return key;
+  }
+
+  function value(key) {
+    if (key === null || key === undefined || key === '') return '';
+    const normalized = VALUE_KEY_MAP[key] || key;
+    return t(normalized);
   }
 
   function setLang(lang) {
@@ -1030,5 +1074,5 @@
     init();
   }
 
-  global.I18n = { t, setLang, getLang, applyAll };
+  global.I18n = { t, value, setLang, getLang, applyAll };
 })(window);

@@ -56,12 +56,13 @@ def _seed_admin():
     from werkzeug.security import generate_password_hash
     from db import get_db, query_db
 
-    # Ensure role column exists
     db = get_db()
     cols = [r[1] for r in db.execute('PRAGMA table_info("User")').fetchall()]
     if 'role' not in cols:
         db.execute('ALTER TABLE "User" ADD COLUMN role TEXT DEFAULT "viewer"')
         db.commit()
+
+    _ensure_donor_supplier_fields(db)
 
     existing = query_db('SELECT user_id FROM "User" WHERE user_name = ?', ['admin'], one=True)
     if not existing:
@@ -72,12 +73,12 @@ def _seed_admin():
         )
         db.commit()
     else:
-        # Ensure admin has admin role and hashed password
-        db.execute('UPDATE "User" SET role = ?, password = ? WHERE user_name = ?',
-                   ['admin', generate_password_hash('admin123'), 'admin'])
+        db.execute(
+            'UPDATE "User" SET role = ?, password = ? WHERE user_name = ?',
+            ['admin', generate_password_hash('admin123'), 'admin']
+        )
         db.commit()
 
-    # Seed additional role users
     seed_users = [
         ('finance_user', 'finance123', 'finance@eldercare.org', 'finance'),
         ('coordinator', 'coord123', 'coordinator@eldercare.org', 'event_coordinator'),
@@ -93,7 +94,6 @@ def _seed_admin():
             )
     db.commit()
 
-    # Seed Chao Feng & Maui campaign gifts if table is empty
     gift_count = query_db('SELECT COUNT(*) as cnt FROM gifts', one=True)
     if gift_count['cnt'] == 0:
         seed_gifts = [
@@ -130,6 +130,36 @@ def _seed_admin():
                 [gname, gtype, cost, desc, stock, min_stock, active]
             )
         db.commit()
+
+
+def _table_columns(db, table_name):
+    return [row[1] for row in db.execute(f'PRAGMA table_info("{table_name}")').fetchall()]
+
+
+def _ensure_donor_supplier_fields(db):
+    donor_columns = _table_columns(db, 'donors')
+    if donor_columns and 'type' not in donor_columns:
+        db.execute("ALTER TABLE donors ADD COLUMN type TEXT DEFAULT 'Person'")
+    if donor_columns:
+        db.execute("UPDATE donors SET type = 'Person' WHERE type IS NULL OR type = ''")
+
+    supplier_columns = _table_columns(db, 'suppliers')
+    if supplier_columns and 'contact_email' not in supplier_columns:
+        db.execute("ALTER TABLE suppliers ADD COLUMN contact_email TEXT")
+    if supplier_columns:
+        supplier_emails = {
+            'Pacific Print House': 'keoni.nakamura@pacificprinthouse.org',
+            'Buck Steel Illustrations': 'buck.steel@steelartstudio.org',
+            'Sunrise Animation Studio': 'amy.chen@sunriseanimationstudio.org',
+            'Campus Copy & Design': 'jordan.lee@campuscopydesign.org',
+        }
+        for supplier_name, contact_email in supplier_emails.items():
+            db.execute(
+                'UPDATE suppliers SET contact_email = ? '
+                'WHERE supplier_name = ? AND (contact_email IS NULL OR contact_email = "")',
+                [contact_email, supplier_name]
+            )
+    db.commit()
 
 
 if __name__ == '__main__':

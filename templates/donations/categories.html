@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros/i18n_values.html" import value as i18n_value %}
 {% block title %}Donation Categories - Elder Care MIS{% endblock %}
 {% block breadcrumb %}<span data-i18n="Categories">Categories</span>{% endblock %}
 {% block content %}
@@ -30,7 +31,7 @@
       {% for c in categories %}
       <tr>
         <td>{{ c.category_id }}</td><td>{{ c.category_name }}</td><td>{{ c.parent_category_id or '-' }}</td>
-        <td>{{ c.description }}</td><td>{{ "Yes" if c.is_active else "No" }}</td><td>{{ c.created_date }}</td>
+        <td>{{ c.description }}</td><td>{{ i18n_value("Active" if c.is_active else "Inactive") }}</td><td>{{ c.created_date }}</td>
         <td>
           <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" data-i18n-title="Edit" title="Edit" onclick="openEditModal({{ c.category_id }}, '{{ c.parent_category_id or '' }}', '{{ c.category_name }}', '{{ c.description }}', {{ c.is_active }})"><i class="bi bi-pencil"></i></button>
           <button class="btn btn-sm btn-danger" aria-label="Delete" data-bs-toggle="tooltip" data-i18n-title="Delete" title="Delete" onclick="confirmDelete('{{ url_for('donations.categories_delete', id=c.category_id) }}', '{{ c.category_name }}')"><i class="bi bi-trash"></i></button>

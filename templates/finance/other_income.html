@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros/i18n_values.html" import value as i18n_value %}
 {% block title %}Other Income - Elder Care MIS{% endblock %}
 {% block breadcrumb %}<span data-i18n="Other Income">Other Income</span>{% endblock %}
 {% block content %}
@@ -30,7 +31,7 @@
     <tbody>
       {% for i in incomes %}
       <tr>
-        <td>{{ i.other_income_id }}</td><td>{{ i.income_name }}</td><td>{{ i.income_type }}</td>
+        <td>{{ i.other_income_id }}</td><td>{{ i.income_name }}</td><td>{{ i18n_value(i.income_type) }}</td>
         <td>{{ "%.2f"|format(i.amount) }}</td><td>{{ i.source_name }}</td><td>{{ i.recevied_date }}</td><td>{{ i.created_date }}</td>
         <td class="text-nowrap">
           <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" data-i18n-title="Edit" title="Edit" onclick="openEditModal({{ i.other_income_id }}, '{{ i.income_name }}', '{{ i.income_type }}', {{ i.amount }}, '{{ i.source_name }}', '{{ i.recevied_date }}')"><i class="bi bi-pencil"></i></button>

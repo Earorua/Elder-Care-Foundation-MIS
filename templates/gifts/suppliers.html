@@ -23,7 +23,7 @@
     <thead class="table-header">
       <tr>
         <th data-i18n="Supplier ID">Supplier ID</th><th data-i18n="Supplier Name">Name</th><th data-i18n="Address">Address</th>
-        <th data-i18n="Phone">Phone</th><th data-i18n="Company">Company</th><th data-i18n="Contact Name">Contact</th><th data-i18n="Accounts Payable">Accounts Payable</th><th data-i18n="Actions">Actions</th>
+        <th data-i18n="Phone">Phone</th><th data-i18n="Company">Company</th><th data-i18n="Contact Name">Contact</th><th data-i18n="Contact Email">Contact Email</th><th data-i18n="Accounts Payable">Accounts Payable</th><th data-i18n="Actions">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -35,6 +35,7 @@
         <td>{{ r.phone }}</td>
         <td>{{ r.company }}</td>
         <td>{{ r.contact_name }}</td>
+        <td>{{ r.contact_email }}</td>
         <td>
           {% if r.accounts_payable > 0 %}
           <span class="badge bg-warning text-dark">${{ '%.2f' % r.accounts_payable }}</span>
@@ -43,7 +44,7 @@
           {% endif %}
         </td>
         <td>
-          <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" data-i18n-title="Edit" title="Edit" onclick="openEdit({{ r.supplier_id }}, '{{ r.supplier_name }}', '{{ r.address }}', '{{ r.phone }}', '{{ r.company }}', '{{ r.contact_name }}')"><i class="bi bi-pencil"></i></button>
+          <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" data-i18n-title="Edit" title="Edit" onclick="openEdit({{ r.supplier_id }}, '{{ r.supplier_name }}', '{{ r.address }}', '{{ r.phone }}', '{{ r.company }}', '{{ r.contact_name }}', '{{ r.contact_email }}')"><i class="bi bi-pencil"></i></button>
           <button class="btn btn-sm btn-danger" aria-label="Delete" data-bs-toggle="tooltip" data-i18n-title="Delete" title="Delete" onclick="confirmDelete('{{ url_for('gifts.suppliers_delete', id=r.supplier_id) }}', '{{ r.supplier_name }}')"><i class="bi bi-trash"></i></button>
         </td>
       </tr>
@@ -192,6 +193,9 @@
         {% if r.phone %}
         <div class="mt-2 text-muted small"><i class="bi bi-telephone me-1"></i>{{ r.phone }}</div>
         {% endif %}
+        {% if r.contact_email %}
+        <div class="mt-2 text-muted small"><i class="bi bi-envelope me-1"></i>{{ r.contact_email }}</div>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -214,6 +218,7 @@
           <div class="mb-3"><label class="form-label" data-i18n="Phone">Phone</label><input type="text" class="form-control" name="phone" id="f_phone"></div>
           <div class="mb-3"><label class="form-label" data-i18n="Company">Company</label><input type="text" class="form-control" name="company" id="f_company"></div>
           <div class="mb-3"><label class="form-label" data-i18n="Contact Name">Contact Name</label><input type="text" class="form-control" name="contact_name" id="f_contact_name"></div>
+          <div class="mb-3"><label class="form-label" data-i18n="Contact Email">Contact Email</label><input type="email" class="form-control" name="contact_email" id="f_contact_email"></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="Cancel">Cancel</button>
@@ -233,7 +238,7 @@ function openAdd(){
   document.getElementById('mainForm').reset();
   modal.show();
 }
-function openEdit(id,name,address,phone,company,contact){
+function openEdit(id,name,address,phone,company,contact,email){
   document.getElementById('modalTitle').textContent=I18n.t('Edit Supplier');
   document.getElementById('mainForm').action='/suppliers/edit/'+id;
   document.getElementById('f_supplier_name').value=name;
@@ -241,6 +246,7 @@ function openEdit(id,name,address,phone,company,contact){
   document.getElementById('f_phone').value=phone;
   document.getElementById('f_company').value=company;
   document.getElementById('f_contact_name').value=contact;
+  document.getElementById('f_contact_email').value=email;
   modal.show();
 }
 

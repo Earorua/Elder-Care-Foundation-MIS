@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros/i18n_values.html" import value as i18n_value %}
 {% block title %}Schedule Management - Elder Care MIS{% endblock %}
 {% block breadcrumb %}<span data-i18n="Schedules">Schedules</span>{% endblock %}
 
@@ -38,10 +39,10 @@
         <td>{{ s['shift_date'] }}</td>
         <td>{{ s['start_time'] }}</td>
         <td>{{ s['end_time'] }}</td>
-        <td>{{ 'Yes' if s['is_absent'] else 'No' }}</td>
+        <td>{{ i18n_value('Yes' if s['is_absent'] else 'No') }}</td>
         <td>{{ s['overtime'] or 0 }}</td>
-        <td>{{ s['schedule_type'] }}</td>
-        <td>{{ s['status'] }}</td>
+        <td>{{ i18n_value(s['schedule_type']) }}</td>
+        <td>{{ i18n_value(s['status']) }}</td>
         <td>{{ s['notes'] or '' }}</td>
         <td class="text-nowrap">
           <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" data-i18n-title="Edit" title="Edit" onclick="openEdit({{ s['schedule_id'] }}, {{ s['person_id'] }}, '{{ s['event_id'] or '' }}', '{{ s['availibile_time'] or '' }}', '{{ s['shift_date'] }}', '{{ s['start_time'] }}', '{{ s['end_time'] }}', {{ s['is_absent'] or 0 }}, '{{ s['overtime'] or 0 }}', '{{ s['schedule_type'] }}', '{{ s['status'] }}', '{{ s['notes'] or '' }}')"><i class="bi bi-pencil"></i></button>

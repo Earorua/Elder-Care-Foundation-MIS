@@ -271,9 +271,10 @@ def suppliers_list():
 @role_required('event_coordinator')
 def suppliers_add():
     execute_db(
-        'INSERT INTO suppliers (supplier_name, address, phone, company, contact_name) VALUES (?,?,?,?,?)',
+        'INSERT INTO suppliers (supplier_name, address, phone, company, contact_name, contact_email) VALUES (?,?,?,?,?,?)',
         (request.form['supplier_name'], request.form['address'],
-         request.form['phone'], request.form['company'], request.form.get('contact_name', ''))
+         request.form['phone'], request.form['company'], request.form.get('contact_name', ''),
+         request.form.get('contact_email', ''))
     )
     flash('Supplier added successfully', 'success')
     return redirect(url_for('gifts.suppliers_list'))
@@ -284,9 +285,10 @@ def suppliers_add():
 @role_required('event_coordinator')
 def suppliers_edit(id):
     execute_db(
-        'UPDATE suppliers SET supplier_name=?, address=?, phone=?, company=?, contact_name=? WHERE supplier_id=?',
+        'UPDATE suppliers SET supplier_name=?, address=?, phone=?, company=?, contact_name=?, contact_email=? WHERE supplier_id=?',
         (request.form['supplier_name'], request.form['address'],
-         request.form['phone'], request.form['company'], request.form.get('contact_name', ''), id)
+         request.form['phone'], request.form['company'], request.form.get('contact_name', ''),
+         request.form.get('contact_email', ''), id)
     )
     flash('Supplier updated successfully', 'success')
     return redirect(url_for('gifts.suppliers_list'))

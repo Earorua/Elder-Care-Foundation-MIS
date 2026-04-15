@@ -365,6 +365,13 @@ a:hover { color: var(--accent-hover); }
   overflow: hidden;
 }
 .table-responsive .table { margin-bottom: 0; }
+.gift-inventory-table .gift-description-column {
+  width: 18rem;
+  min-width: 18rem;
+  max-width: 18rem;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
 
 /* ── Buttons ───────────────────────────────────── */
 .btn {

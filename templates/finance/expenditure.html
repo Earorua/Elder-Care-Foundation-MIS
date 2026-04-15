@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros/i18n_values.html" import value as i18n_value %}
 {% block title %}Statement of Functional Expenses - Elder Care MIS{% endblock %}
 {% block breadcrumb %}<span data-i18n="Functional Expenses">Functional Expenses</span>{% endblock %}
 {% block content %}
@@ -50,7 +51,7 @@
       <tbody>
         {% for r in payments_by_type %}
         <tr>
-          <td>{{ r.payment_type }} <small class="text-muted">({{ r.cnt }} <span data-i18n="payments">payments</span>)</small></td>
+          <td>{{ i18n_value(r.payment_type) }} <small class="text-muted">({{ r.cnt }} <span data-i18n="payments">payments</span>)</small></td>
           <td class="text-end">${{ "%.2f"|format(r.total) }}</td>
           <td class="text-end">$0.00</td>
           <td class="text-end fw-bold">${{ "%.2f"|format(r.total) }}</td>
@@ -98,7 +99,7 @@
       <thead class="table-light"><tr><th data-i18n="Name">Name</th><th data-i18n="Payment Type">Payment Type</th><th class="text-end" data-i18n="Amount">Total Amount</th></tr></thead>
       <tbody>
         {% for r in salary_detail %}
-        <tr><td>{{ r.name }}</td><td>{{ r.payment_type }}</td><td class="text-end">${{ "%.2f"|format(r.total) }}</td></tr>
+        <tr><td>{{ r.name }}</td><td>{{ i18n_value(r.payment_type) }}</td><td class="text-end">${{ "%.2f"|format(r.total) }}</td></tr>
         {% endfor %}
       </tbody>
     </table>

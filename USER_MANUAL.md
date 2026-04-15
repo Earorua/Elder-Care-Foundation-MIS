@@ -488,7 +488,7 @@ AI Agent 用于通过自然语言查询 SQLite 数据库。用户输入问题后
 
 - 在 `config.py` 中设置 `SILICONFLOW_API_KEY`，或在启动 Flask 前设置环境变量 `SILICONFLOW_API_KEY`
 - 默认接口地址为 `https://api.siliconflow.cn/v1`
-- 默认模型为 `Pro/zai-org/GLM-5.1`
+- 默认模型为 `Pro/zai-org/GLM-5`
 - 默认超时时间为 120 秒
 - 默认结果行数限制为 200 行
 

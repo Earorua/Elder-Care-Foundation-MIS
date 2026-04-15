@@ -82,7 +82,7 @@ SQL_ALIAS_RESERVED_WORDS = {
 def agent_index():
     return render_template(
         "agent/index.html",
-        model_name=current_app.config.get("SILICONFLOW_MODEL", "Pro/zai-org/GLM-5.1"),
+        model_name=current_app.config.get("SILICONFLOW_MODEL", "Pro/zai-org/GLM-5"),
         row_limit=current_app.config.get("AGENT_ROW_LIMIT", 200),
     )
 
@@ -125,6 +125,8 @@ def agent_query():
         )
     except ValueError as exc:
         return jsonify(error=str(exc)), 400
+    except urlerror.HTTPError as exc:
+        return jsonify(error=_http_error_message(stage, exc)), _http_status_code(exc)
     except urlerror.URLError as exc:
         if isinstance(exc.reason, TimeoutError):
             return jsonify(error=_timeout_message(stage)), 504
@@ -513,6 +515,35 @@ def _connection_message(stage):
     )
 
 
+def _http_error_message(stage, exc):
+    status = getattr(exc, "code", None)
+    reason = getattr(exc, "reason", None) or getattr(exc, "msg", None) or "HTTP error"
+    if status in (429, 500, 502, 503, 504):
+        return (
+            f"SiliconFlow returned HTTP {status} ({reason}) while {stage}. "
+            "This is usually a temporary upstream or model availability issue. "
+            "Try again, ask a narrower question, or verify SILICONFLOW_BASE_URL and SILICONFLOW_MODEL in config.py."
+        )
+    if status in (401, 403):
+        return (
+            f"SiliconFlow returned HTTP {status} ({reason}) while {stage}. "
+            "Verify SILICONFLOW_API_KEY in config.py or your environment."
+        )
+    return (
+        f"SiliconFlow returned HTTP {status} ({reason}) while {stage}. "
+        "Verify SILICONFLOW_API_KEY, SILICONFLOW_BASE_URL, and SILICONFLOW_MODEL in config.py."
+    )
+
+
+def _http_status_code(exc):
+    status = getattr(exc, "code", 502)
+    if status in (429, 503, 504):
+        return status
+    if status in (401, 403):
+        return 502
+    return 502
+
+
 def _build_sql_prompt(question, schema):
     return (
         "You are a database analyst for an elder care foundation MIS.\n"
@@ -576,7 +607,7 @@ def _build_answer_prompt(question, sql, columns, rows):
 def _call_siliconflow(prompt, max_tokens=800, temperature=0.2):
     api_key = current_app.config.get("SILICONFLOW_API_KEY", "")
     base_url = current_app.config.get("SILICONFLOW_BASE_URL", "https://api.siliconflow.cn/v1").rstrip("/")
-    model = current_app.config.get("SILICONFLOW_MODEL", "Pro/zai-org/GLM-5.1")
+    model = current_app.config.get("SILICONFLOW_MODEL", "Pro/zai-org/GLM-5")
     payload = {
         "model": model,
         "messages": [{"role": "user", "content": prompt}],
@@ -593,9 +624,26 @@ def _call_siliconflow(prompt, max_tokens=800, temperature=0.2):
         method="POST",
     )
     timeout = current_app.config.get("SILICONFLOW_TIMEOUT", 120)
-    with _open_siliconflow_request(req, timeout) as response:
-        data = json.loads(response.read().decode("utf-8"))
+    max_retries = max(0, int(current_app.config.get("SILICONFLOW_MAX_RETRIES", 2)))
+    for attempt in range(max_retries + 1):
+        try:
+            with _open_siliconflow_request(req, timeout) as response:
+                data = json.loads(response.read().decode("utf-8"))
+            break
+        except (RemoteDisconnected, urlerror.URLError) as exc:
+            if attempt >= max_retries or not _is_retryable_siliconflow_error(exc):
+                raise
     return data["choices"][0]["message"]["content"].strip()
+
+
+def _is_retryable_siliconflow_error(exc):
+    if isinstance(exc, RemoteDisconnected):
+        return True
+    if isinstance(exc, urlerror.HTTPError):
+        return getattr(exc, "code", None) in (429, 500, 502, 503, 504)
+    if isinstance(exc, urlerror.URLError):
+        return isinstance(getattr(exc, "reason", None), RemoteDisconnected)
+    return False
 
 
 def _open_siliconflow_request(req, timeout):

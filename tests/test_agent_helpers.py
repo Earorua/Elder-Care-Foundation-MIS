@@ -28,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class AgentHelperTests(unittest.TestCase):
     def test_default_siliconflow_model_is_requested_model(self):
-        expected_model = "Pro/zai-org/GLM-5.1"
+        expected_model = "Pro/zai-org/GLM-5"
         agent_py = (ROOT / "blueprints" / "agent.py").read_text(encoding="utf-8")
 
         self.assertEqual(config.SILICONFLOW_MODEL, expected_model)
@@ -224,6 +224,32 @@ class AgentHelperTests(unittest.TestCase):
         mock_build_opener.assert_called_once_with(proxy_handler)
         opener.open.assert_called_once()
         self.assertEqual(opener.open.call_args.kwargs["timeout"], 120)
+
+    def test_call_siliconflow_retries_remote_disconnect(self):
+        app, db_path = self._make_temp_app()
+        app.config["SILICONFLOW_API_KEY"] = "test-key"
+        app.config["SILICONFLOW_MAX_RETRIES"] = 1
+        response = MagicMock()
+        response.__enter__.return_value = response
+        response.read.return_value = json.dumps(
+            {"choices": [{"message": {"content": " recovered "}}]}
+        ).encode("utf-8")
+
+        try:
+            with app.app_context():
+                with patch(
+                    "blueprints.agent._open_siliconflow_request",
+                    side_effect=[
+                        RemoteDisconnected("Remote end closed connection without response"),
+                        response,
+                    ],
+                ) as mock_open:
+                    result = agent_module._call_siliconflow("hello")
+        finally:
+            os.unlink(db_path)
+
+        self.assertEqual(result, "recovered")
+        self.assertEqual(mock_open.call_count, 2)
 
     def test_answer_prompt_requires_direct_answer_in_user_language(self):
         prompt = _build_answer_prompt(
@@ -424,6 +450,37 @@ class AgentHelperTests(unittest.TestCase):
         self.assertIn("generating SQL", payload["error"])
         self.assertNotIn("AI Agent failed", payload["error"])
 
+    def test_agent_query_returns_stage_specific_siliconflow_service_unavailable_error(self):
+        app, db_path = self._make_temp_app()
+        app.register_blueprint(agent_bp)
+        app.config["SILICONFLOW_API_KEY"] = "test-key"
+        try:
+            with patch(
+                "blueprints.agent._call_siliconflow",
+                side_effect=agent_module.urlerror.HTTPError(
+                    "https://api.siliconflow.cn/v1/chat/completions",
+                    503,
+                    "Service Unavailable",
+                    {},
+                    None,
+                ),
+            ):
+                response = app.test_client().post(
+                    "/api/agent/query",
+                    json={"question": "Who donated $100?"},
+                )
+        finally:
+            os.unlink(db_path)
+
+        payload = response.get_json()
+        self.assertEqual(response.status_code, 503)
+        self.assertIn("HTTP 503", payload["error"])
+        self.assertIn("Service Unavailable", payload["error"])
+        self.assertIn("generating SQL", payload["error"])
+        self.assertIn("temporary", payload["error"])
+        self.assertIn("SILICONFLOW_MODEL", payload["error"])
+        self.assertNotIn("AI Agent failed", payload["error"])
+
     def test_agent_template_and_registration_hooks_exist(self):
         template = (ROOT / "templates" / "agent" / "index.html").read_text(encoding="utf-8")
         base = (ROOT / "templates" / "base.html").read_text(encoding="utf-8")
@@ -577,7 +634,7 @@ class AgentHelperTests(unittest.TestCase):
             DATABASE=db_path,
             SILICONFLOW_API_KEY="",
             SILICONFLOW_BASE_URL="https://api.siliconflow.cn/v1",
-            SILICONFLOW_MODEL="Pro/zai-org/GLM-5.1",
+            SILICONFLOW_MODEL="Pro/zai-org/GLM-5",
             AGENT_ROW_LIMIT=50,
             LOGIN_DISABLED=True,
         )

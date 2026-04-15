@@ -1,0 +1,5 @@
+{% macro value(key) -%}
+  {%- if key is not none and key|string -%}
+    <span data-i18n="{{ key }}">{{ key }}</span>
+  {%- endif -%}
+{%- endmacro %}

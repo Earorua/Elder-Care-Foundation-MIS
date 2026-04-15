@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros/i18n_values.html" import value as i18n_value %}
 {% block title %}Statement of Activities - Elder Care MIS{% endblock %}
 {% block breadcrumb %}<span data-i18n="Statement of Activities">Statement of Activities</span>{% endblock %}
 {% block content %}
@@ -45,7 +46,7 @@
       <thead class="table-light"><tr><th data-i18n="Donation Type">Donation Type</th><th class="text-end" data-i18n="Amount">Amount</th></tr></thead>
       <tbody>
         {% for r in donations_by_type %}
-        <tr><td>{{ r.donation_type }}</td><td class="text-end">${{ "%.2f"|format(r.total) }}</td></tr>
+        <tr><td>{{ i18n_value(r.donation_type) }}</td><td class="text-end">${{ "%.2f"|format(r.total) }}</td></tr>
         {% endfor %}
       </tbody>
       <tfoot><tr class="table-active"><td class="fw-bold" data-i18n="Subtotal — Donation Revenue">Subtotal — Donation Revenue</td><td class="text-end fw-bold">${{ "%.2f"|format(sum_donations) }}</td></tr></tfoot>
@@ -67,7 +68,7 @@
       <thead class="table-light"><tr><th data-i18n="Income Type">Income Type</th><th class="text-end" data-i18n="Amount">Amount</th></tr></thead>
       <tbody>
         {% for r in other_by_type %}
-        <tr><td>{{ r.income_type }}</td><td class="text-end">${{ "%.2f"|format(r.total) }}</td></tr>
+        <tr><td>{{ i18n_value(r.income_type) }}</td><td class="text-end">${{ "%.2f"|format(r.total) }}</td></tr>
         {% endfor %}
       </tbody>
       <tfoot><tr class="table-active"><td class="fw-bold" data-i18n="Subtotal — Other Revenue">Subtotal — Other Revenue</td><td class="text-end fw-bold">${{ "%.2f"|format(sum_other) }}</td></tr></tfoot>
@@ -90,7 +91,7 @@
       <thead class="table-light"><tr><th data-i18n="Payment Type">Payment Type</th><th class="text-end" data-i18n="Amount">Amount</th></tr></thead>
       <tbody>
         {% for r in payments_by_type %}
-        <tr><td>{{ r.payment_type }}</td><td class="text-end">${{ "%.2f"|format(r.total) }}</td></tr>
+        <tr><td>{{ i18n_value(r.payment_type) }}</td><td class="text-end">${{ "%.2f"|format(r.total) }}</td></tr>
         {% endfor %}
       </tbody>
       <tfoot><tr class="table-active"><td class="fw-bold" data-i18n="Subtotal — Personnel">Subtotal — Personnel</td><td class="text-end fw-bold">${{ "%.2f"|format(sum_payments) }}</td></tr></tfoot>

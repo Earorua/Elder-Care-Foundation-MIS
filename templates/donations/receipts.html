@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros/i18n_values.html" import value as i18n_value %}
 {% block title %}Tax Receipts - Elder Care MIS{% endblock %}
 {% block breadcrumb %}<span data-i18n="Tax Receipts">Tax Receipts</span>{% endblock %}
 {% block content %}
@@ -30,7 +31,7 @@
     <tbody>
       {% for r in receipts %}
       <tr>
-        <td>{{ r.receipt_id }}</td><td>{{ r.donation_id }}</td><td>{{ r.donation_type }}</td>
+        <td>{{ r.receipt_id }}</td><td>{{ r.donation_id }}</td><td>{{ i18n_value(r.donation_type) }}</td>
         <td>{{ r.receipt_date }}</td><td>{{ "%.2f"|format(r.amount) }}</td><td>{{ r.receipt_number }}</td>
         <td>{{ r.issued_by }}</td><td>{{ r.created_date }}</td>
         <td>

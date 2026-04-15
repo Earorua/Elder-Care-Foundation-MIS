@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros/i18n_values.html" import value as i18n_value %}
 {% block title %}Distribution Management - Elder Care MIS{% endblock %}
 {% block breadcrumb %}<span data-i18n="Distribution">Distribution</span>{% endblock %}
 {% block content %}
@@ -30,13 +31,13 @@
       {% for r in rows %}
       <tr>
         <td>{{ r.distribution_id }}</td>
-        <td>#{{ r.batch_id }} ({{ r.batch_type }})</td>
+        <td>#{{ r.batch_id }} ({{ i18n_value(r.batch_type) }})</td>
         <td>{{ r.donation_id or '-' }}</td>
         <td>{{ r.delivery_company or '-' }}</td>
         <td>{{ r.distribution_date }}</td>
         <td>{{ r.quantity }}</td>
-        <td>{{ 'Yes' if r.is_free == 1 else 'No' }}</td>
-        <td>{{ r.distribution_reason }}</td>
+        <td>{{ i18n_value('Yes' if r.is_free == 1 else 'No') }}</td>
+        <td>{{ i18n_value(r.distribution_reason) }}</td>
         <td>{{ r.distributed_by }}</td>
         <td>{{ r.notes }}</td>
         <td style="white-space:nowrap">

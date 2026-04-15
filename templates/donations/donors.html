@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros/i18n_values.html" import value as i18n_value %}
 {% block title %}Donors - Elder Care MIS{% endblock %}
 {% block breadcrumb %}<span data-i18n="Donors">Donors</span>{% endblock %}
 {% block content %}
@@ -22,7 +23,7 @@
   <table class="table table-striped table-hover">
     <thead class="table-header">
       <tr>
-        <th data-i18n="Donor ID">Donor ID</th><th data-i18n="Last Name">Last Name</th><th data-i18n="First Name">First Name</th><th data-i18n="Email">Email</th>
+        <th data-i18n="Donor ID">Donor ID</th><th data-i18n="Donor Type">Type</th><th data-i18n="Last Name">Last Name</th><th data-i18n="First Name">First Name</th><th data-i18n="Email">Email</th>
         <th data-i18n="Age">Age</th><th data-i18n="Gender">Gender</th><th data-i18n="Marital Status">Marital Status</th><th data-i18n="Location">Location</th><th data-i18n="Created Date">Created Date</th><th data-i18n="Actions">Actions</th>
       </tr>
     </thead>
@@ -30,16 +31,17 @@
       {% for d in donors %}
       <tr>
         <td>{{ d.donor_id }}</td>
+        <td>{{ i18n_value(d.type) }}</td>
         <td>{{ d.last_name }}</td>
         <td>{{ d.first_name }}</td>
         <td>{{ d.email }}</td>
         <td>{{ d.age }}</td>
-        <td>{{ d.gender }}</td>
-        <td><span data-i18n="{{ d.marital_status }}">{{ d.marital_status }}</span></td>
+        <td>{{ i18n_value(d.gender) }}</td>
+        <td>{{ i18n_value(d.marital_status) }}</td>
         <td>{% for code, name in us_states %}{% if code == d.location %}{{ name }} ({{ code }}){% endif %}{% endfor %}</td>
         <td>{{ d.created_date }}</td>
         <td>
-          <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" data-i18n-title="Edit" title="Edit" onclick="openEditModal({{ d.donor_id }}, '{{ d.first_name }}', '{{ d.last_name }}', '{{ d.email }}', {{ d.age }}, '{{ d.gender }}', '{{ d.location }}', '{{ d.marital_status }}')"><i class="bi bi-pencil"></i></button>
+          <button class="btn btn-sm btn-warning" aria-label="Edit" data-bs-toggle="tooltip" data-i18n-title="Edit" title="Edit" onclick="openEditModal({{ d.donor_id }}, '{{ d.type or 'Person' }}', '{{ d.first_name }}', '{{ d.last_name }}', '{{ d.email }}', {{ d.age }}, '{{ d.gender }}', '{{ d.location }}', '{{ d.marital_status }}')"><i class="bi bi-pencil"></i></button>
           <button class="btn btn-sm btn-danger" aria-label="Delete" data-bs-toggle="tooltip" data-i18n-title="Delete" title="Delete" onclick="confirmDelete('{{ url_for('donations.donors_delete', id=d.donor_id) }}', '{{ d.first_name }} {{ d.last_name }}')"><i class="bi bi-trash"></i></button>
         </td>
       </tr>
@@ -64,6 +66,12 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
+          <div class="mb-3"><label class="form-label" data-i18n="Donor Type">Type</label>
+            <select class="form-select" name="type" id="type">
+              <option value="Person" data-i18n="Person">Person</option>
+              <option value="Company" data-i18n="Company">Company</option>
+            </select>
+          </div>
           <div class="mb-3"><label class="form-label" data-i18n="First Name">First Name</label><input type="text" class="form-control" name="first_name" id="first_name" required></div>
           <div class="mb-3"><label class="form-label" data-i18n="Last Name">Last Name</label><input type="text" class="form-control" name="last_name" id="last_name" required></div>
           <div class="mb-3"><label class="form-label" data-i18n="Email">Email</label><input type="email" class="form-control" name="email" id="email"></div>
@@ -113,11 +121,13 @@ function openAddModal() {
   document.getElementById('mainForm').action = "{{ url_for('donations.donors_add') }}";
   document.getElementById('modalTitle').textContent = I18n.t('Add Donor');
   document.getElementById('mainForm').reset();
+  document.getElementById('type').value = 'Person';
   modal.show();
 }
-function openEditModal(id, firstName, lastName, email, age, gender, location, maritalStatus) {
+function openEditModal(id, type, firstName, lastName, email, age, gender, location, maritalStatus) {
   document.getElementById('mainForm').action = '/donors/edit/' + id;
   document.getElementById('modalTitle').textContent = I18n.t('Edit Donor');
+  document.getElementById('type').value = type;
   document.getElementById('first_name').value = firstName;
   document.getElementById('last_name').value = lastName;
   document.getElementById('email').value = email;

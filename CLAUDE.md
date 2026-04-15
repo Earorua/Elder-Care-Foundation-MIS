@@ -125,7 +125,7 @@ python app.py
 ## AI Agent Configuration
 - `/agent` is available to admin, finance, and event coordinator users.
 - `config.py` defines `SILICONFLOW_API_KEY`, `SILICONFLOW_BASE_URL`, `SILICONFLOW_MODEL`, `SILICONFLOW_TIMEOUT`, and `AGENT_ROW_LIMIT`.
-- The default model is `Pro/zai-org/GLM-5.1`; the default base URL is `https://api.siliconflow.cn/v1`.
+- The default model is `Pro/zai-org/GLM-5`; the default base URL is `https://api.siliconflow.cn/v1`.
 - `SILICONFLOW_API_KEY` may be set directly in `config.py` for this private project or provided through the environment.
 - The agent sends database schema and user questions to SiliconFlow, validates that generated SQL is a single read-only SQLite `SELECT` or `WITH` statement, applies a row limit, executes it against `elder_care.db`, then asks the model to summarize the returned rows.
 
