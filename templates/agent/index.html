@@ -233,10 +233,21 @@
   .agent-meta-row span:first-child {
     color: var(--text-muted);
   }
+  .agent-meta-row label:first-child {
+    color: var(--text-muted);
+  }
   .agent-meta-row span:last-child {
     color: var(--text-primary);
     font-weight: 700;
     text-align: right;
+  }
+  .agent-model-select {
+    min-width: 0;
+    max-width: 230px;
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: .75rem;
+    font-weight: 700;
   }
   .agent-sql-trace {
     min-height: 120px;
@@ -397,7 +408,14 @@
     <section class="agent-panel agent-side-section">
       <h5><i class="bi bi-cpu me-1"></i><span data-i18n="Agent Context">Agent Context</span></h5>
       <div class="agent-meta-list">
-        <div class="agent-meta-row"><span data-i18n="Model">Model</span><span>{{ model_name }}</span></div>
+        <div class="agent-meta-row">
+          <label for="agentModelSelect" data-i18n="Model">Model</label>
+          <select id="agentModelSelect" class="form-select form-select-sm agent-model-select" aria-label="Model">
+            {% for model_option in model_options %}
+              <option value="{{ model_option }}" {% if model_option == model_name %}selected{% endif %}>{{ model_option }}</option>
+            {% endfor %}
+          </select>
+        </div>
         <div class="agent-meta-row"><span data-i18n="Database scope">Database scope</span><span data-i18n="All tables">All tables</span></div>
         <div class="agent-meta-row"><span data-i18n="Execution">Execution</span><span data-i18n="Read-only">Read-only</span></div>
         <div class="agent-meta-row"><span data-i18n="Row limit">Row limit</span><span>{{ row_limit }}</span></div>
@@ -426,6 +444,7 @@
   const resultRows = document.getElementById('agentResultRows');
   const rowCount = document.getElementById('agentRowCount');
   const sqlTrace = document.getElementById('agentSqlTrace');
+  const modelSelect = document.getElementById('agentModelSelect');
   const historyToggle = document.getElementById('agentHistoryToggle');
   const historyToggleText = document.getElementById('agentHistoryToggleText');
   const historyBody = document.getElementById('agentHistoryBody');
@@ -456,6 +475,7 @@
   function setBusy(isBusy) {
     loading.classList.toggle('show', isBusy);
     form.querySelector('button[type="submit"]').disabled = isBusy;
+    if (modelSelect) modelSelect.disabled = isBusy;
   }
 
   function renderQuestionDisplay(text) {
@@ -625,6 +645,7 @@
     event.preventDefault();
     const text = question.value.trim();
     if (!text) return;
+    const selectedModel = modelSelect ? modelSelect.value : {{ model_name|tojson }};
 
     setBusy(true);
     empty.classList.add('d-none');
@@ -640,7 +661,7 @@
       const response = await fetch('{{ url_for("agent.agent_query") }}', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({question: text})
+        body: JSON.stringify({question: text, model: selectedModel})
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || I18n.t('Agent request failed.'));

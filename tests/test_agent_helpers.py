@@ -29,15 +29,27 @@ class AgentHelperTests(unittest.TestCase):
     def test_default_openrouter_provider_configuration_is_requested_model(self):
         expected_model = "anthropic/claude-sonnet-4.6"
         expected_base_url = "https://openrouter.ai/api/v1"
+        expected_models = [
+            "anthropic/claude-sonnet-4.6",
+            "anthropic/claude-opus-4.7",
+            "openai/gpt-5.4",
+            "google/gemini-3.1-pro-preview",
+            "z-ai/glm-5.1",
+        ]
         config_py = (ROOT / "config.py").read_text(encoding="utf-8")
         agent_py = (ROOT / "blueprints" / "agent.py").read_text(encoding="utf-8")
 
         self.assertIn("OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY',", config_py)
         self.assertIn(f"OPENROUTER_BASE_URL = os.environ.get('OPENROUTER_BASE_URL', '{expected_base_url}')", config_py)
         self.assertIn(f"OPENROUTER_MODEL = os.environ.get('OPENROUTER_MODEL', '{expected_model}')", config_py)
+        self.assertIn("OPENROUTER_MODEL_OPTIONS", config_py)
         self.assertIn("OPENROUTER_API_KEY", agent_py)
         self.assertIn(expected_base_url, agent_py)
         self.assertIn(expected_model, agent_py)
+        for model in expected_models:
+            with self.subTest(model=model):
+                self.assertIn(model, config_py)
+                self.assertIn(model, agent_py)
 
     def test_validate_readonly_sql_accepts_select_and_with(self):
         self.assertEqual(_validate_readonly_sql("SELECT * FROM donors"), "SELECT * FROM donors")
@@ -258,6 +270,28 @@ class AgentHelperTests(unittest.TestCase):
         self.assertEqual(result, "recovered")
         self.assertEqual(mock_open.call_count, 2)
 
+    def test_call_openrouter_uses_selected_model_override(self):
+        app, db_path = self._make_temp_app()
+        app.config["OPENROUTER_API_KEY"] = "test-key"
+        app.config["OPENROUTER_MODEL"] = "anthropic/claude-sonnet-4.6"
+        response = MagicMock()
+        response.__enter__.return_value = response
+        response.read.return_value = json.dumps(
+            {"choices": [{"message": {"content": " ok "}}]}
+        ).encode("utf-8")
+
+        try:
+            with app.app_context():
+                with patch("blueprints.agent._open_openrouter_request", return_value=response) as mock_open:
+                    result = agent_module._call_openrouter("hello", model="openai/gpt-5.4")
+        finally:
+            os.unlink(db_path)
+
+        self.assertEqual(result, "ok")
+        request = mock_open.call_args.args[0]
+        payload = json.loads(request.data.decode("utf-8"))
+        self.assertEqual(payload["model"], "openai/gpt-5.4")
+
     def test_answer_prompt_requires_direct_answer_in_user_language(self):
         prompt = _build_answer_prompt(
             "哪些捐款人捐了 100 美元？",
@@ -295,6 +329,57 @@ class AgentHelperTests(unittest.TestCase):
         self.assertEqual(payload["total_rows"], 1)
         self.assertEqual(payload["columns"], ["name", "amount"])
         self.assertEqual(payload["rows"], [{"name": "Ada", "amount": 100.0}])
+
+    def test_agent_query_passes_selected_model_to_all_openrouter_calls(self):
+        app, db_path = self._make_temp_app()
+        app.register_blueprint(agent_bp)
+        app.config["OPENROUTER_API_KEY"] = "test-key"
+        try:
+            with patch(
+                "blueprints.agent._call_openrouter",
+                side_effect=[
+                    '{"sql": "SELECT name, amount FROM donors", "rationale": "Find matching donors."}',
+                    "Ada donated $100.00.",
+                ],
+            ) as mock_call:
+                response = app.test_client().post(
+                    "/api/agent/query",
+                    json={
+                        "question": "Who donated $100?",
+                        "model": "openai/gpt-5.4",
+                    },
+                )
+        finally:
+            os.unlink(db_path)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(mock_call.call_count, 2)
+        for call in mock_call.call_args_list:
+            with self.subTest(call=call):
+                self.assertEqual(call.kwargs["model"], "openai/gpt-5.4")
+
+    def test_agent_query_rejects_unsupported_model(self):
+        app, db_path = self._make_temp_app()
+        app.register_blueprint(agent_bp)
+        app.config["OPENROUTER_API_KEY"] = "test-key"
+        try:
+            with patch(
+                "blueprints.agent._call_openrouter",
+                side_effect=AssertionError("unsupported models should not reach OpenRouter"),
+            ):
+                response = app.test_client().post(
+                    "/api/agent/query",
+                    json={
+                        "question": "Who donated $100?",
+                        "model": "unknown/provider",
+                    },
+                )
+        finally:
+            os.unlink(db_path)
+
+        payload = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("supported OpenRouter model", payload["error"])
 
     def test_agent_query_repairs_generated_sql_with_unknown_enum_value(self):
         app, db_path = self._make_temp_app()
@@ -496,9 +581,12 @@ class AgentHelperTests(unittest.TestCase):
         for hook in [
             "agent-workspace",
             "agentQuestionForm",
+            "agentModelSelect",
             "agentSqlTrace",
             "agentResultTable",
             "renderRows",
+            "selectedModel",
+            "JSON.stringify({question: text, model: selectedModel})",
         ]:
             self.assertIn(hook, template)
         self.assertNotIn("Result Preview", template)

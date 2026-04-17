@@ -124,8 +124,8 @@ python app.py
 
 ## AI Agent Configuration
 - `/agent` is available to admin, finance, and event coordinator users.
-- `config.py` defines `OPENROUTER_API_KEY`, `OPENROUTER_BASE_URL`, `OPENROUTER_MODEL`, `OPENROUTER_TIMEOUT`, and `AGENT_ROW_LIMIT`.
-- The default model is `anthropic/claude-sonnet-4.6`; the default base URL is `https://openrouter.ai/api/v1`.
+- `config.py` defines `OPENROUTER_API_KEY`, `OPENROUTER_BASE_URL`, `OPENROUTER_MODEL`, `OPENROUTER_MODEL_OPTIONS`, `OPENROUTER_TIMEOUT`, and `AGENT_ROW_LIMIT`.
+- The default model is `anthropic/claude-sonnet-4.6`; selectable models are `anthropic/claude-sonnet-4.6`, `anthropic/claude-opus-4.7`, `openai/gpt-5.4`, `google/gemini-3.1-pro-preview`, and `z-ai/glm-5.1`; the default base URL is `https://openrouter.ai/api/v1`.
 - `OPENROUTER_API_KEY` is intentionally blank by default; set it directly in `config.py` for this private project or provide it through the environment.
 - The agent sends database schema and user questions to OpenRouter, validates that generated SQL is a single read-only SQLite `SELECT` or `WITH` statement, applies a row limit, executes it against `elder_care.db`, then asks the model to summarize the returned rows.
 
@@ -188,9 +188,9 @@ python app.py
 22. Database fix: removed broken foreign key constraint on `donations.donation_type` that referenced empty table name `""`, causing "no such table: main." error when `PRAGMA foreign_keys = ON`
 23. AI Agent module (`/agent`)
     - Backend (`blueprints/agent.py`): OpenRouter chat-completions integration, SQLite schema extraction, SQL JSON parsing and repair prompt, read-only SQL validation, automatic row limit, stage-specific timeout/connection errors
-    - Frontend (`templates/agent/index.html`): prompt form, starter prompts, answer panel, read-only status, latest SQL trace, result table, model/context sidebar
+    - Frontend (`templates/agent/index.html`): prompt form, starter prompts, answer panel, read-only status, latest SQL trace, result table, model selector/context sidebar
     - Access control: available to finance and event coordinator roles; admin inherits access through `User.has_role`
-    - Config: `OPENROUTER_API_KEY`, `OPENROUTER_BASE_URL`, `OPENROUTER_MODEL`, `OPENROUTER_TIMEOUT`, `AGENT_ROW_LIMIT`
+    - Config: `OPENROUTER_API_KEY`, `OPENROUTER_BASE_URL`, `OPENROUTER_MODEL`, `OPENROUTER_MODEL_OPTIONS`, `OPENROUTER_TIMEOUT`, `AGENT_ROW_LIMIT`
 24. Sample data expansion: donors increased to 21 and donations to 27 while keeping the gift catalog at 8 existing gifts; added more linked gift distribution, delivery, feedback, receipt, and event participation records; 3 employees and 3 volunteers are also donors
 25. Marital status support for persons and donors
     - Backend: `persons` and `donors` CRUD reads/writes `marital_status`; matching records are synchronized between the two tables by first name, last name, and email

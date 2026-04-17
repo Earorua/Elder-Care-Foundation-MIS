@@ -20,6 +20,15 @@ from blueprints.bi import (
 
 agent_bp = Blueprint("agent", __name__)
 
+DEFAULT_OPENROUTER_MODEL = "anthropic/claude-sonnet-4.6"
+OPENROUTER_MODEL_OPTIONS = [
+    "anthropic/claude-sonnet-4.6",
+    "anthropic/claude-opus-4.7",
+    "openai/gpt-5.4",
+    "google/gemini-3.1-pro-preview",
+    "z-ai/glm-5.1",
+]
+
 BLOCKED_SQL_WORDS = {
     "alter",
     "attach",
@@ -80,9 +89,11 @@ SQL_ALIAS_RESERVED_WORDS = {
 @login_required
 @role_required("finance", "event_coordinator")
 def agent_index():
+    model_options = _agent_model_options()
     return render_template(
         "agent/index.html",
-        model_name=current_app.config.get("OPENROUTER_MODEL", "anthropic/claude-sonnet-4.6"),
+        model_name=_default_agent_model(model_options),
+        model_options=model_options,
         row_limit=current_app.config.get("AGENT_ROW_LIMIT", 200),
     )
 
@@ -101,12 +112,16 @@ def agent_query():
     question = body.get("question", "").strip()
     if not question:
         return jsonify(error="Enter a database question first."), 400
+    try:
+        selected_model = _select_agent_model(body)
+    except ValueError as exc:
+        return jsonify(error=str(exc)), 400
 
     stage = "generating SQL"
     try:
         schema = _get_database_schema()
-        sql_payload = _generate_sql_payload(question, schema)
-        sql_payload = _repair_sql_semantics_if_needed(question, schema, sql_payload)
+        sql_payload = _generate_sql_payload(question, schema, model=selected_model)
+        sql_payload = _repair_sql_semantics_if_needed(question, schema, sql_payload, model=selected_model)
         stage = "executing SQL"
         sql = _ensure_limit(
             _validate_readonly_sql(sql_payload.get("sql", "")),
@@ -122,6 +137,7 @@ def agent_query():
             _build_answer_prompt(question, sql, columns, result_rows),
             max_tokens=900,
             temperature=0.2,
+            model=selected_model,
         )
     except ValueError as exc:
         return jsonify(error=str(exc)), 400
@@ -145,7 +161,34 @@ def agent_query():
         columns=columns,
         rows=result_rows[:50],
         total_rows=len(result_rows),
+        model=selected_model,
     )
+
+
+def _agent_model_options():
+    options = current_app.config.get("OPENROUTER_MODEL_OPTIONS", OPENROUTER_MODEL_OPTIONS)
+    cleaned = []
+    for option in options:
+        value = str(option).strip()
+        if value and value not in cleaned:
+            cleaned.append(value)
+    return cleaned or list(OPENROUTER_MODEL_OPTIONS)
+
+
+def _default_agent_model(model_options=None):
+    options = model_options or _agent_model_options()
+    configured_model = str(current_app.config.get("OPENROUTER_MODEL", DEFAULT_OPENROUTER_MODEL)).strip()
+    return configured_model if configured_model in options else options[0]
+
+
+def _select_agent_model(body):
+    requested_model = str(body.get("model") or "").strip()
+    model_options = _agent_model_options()
+    if not requested_model:
+        return _default_agent_model(model_options)
+    if requested_model not in model_options:
+        raise ValueError("Select a supported OpenRouter model.")
+    return requested_model
 
 
 def _strip_sql_fences(sql):
@@ -342,7 +385,7 @@ def _format_enum_value_context(enum_values):
     return "\n".join(lines)
 
 
-def _repair_sql_semantics_if_needed(question, schema, sql_payload):
+def _repair_sql_semantics_if_needed(question, schema, sql_payload, model=None):
     issues = _find_unknown_enum_filters(
         sql_payload.get("sql", ""),
         _get_enum_values_by_column(),
@@ -354,6 +397,7 @@ def _repair_sql_semantics_if_needed(question, schema, sql_payload):
         _build_sql_semantic_repair_prompt(question, schema, sql_payload, issues),
         max_tokens=700,
         temperature=0,
+        model=model,
     )
     return _extract_json_object(repair_response)
 
@@ -464,11 +508,12 @@ def _extract_json_object(text):
         raise ValueError(f"The model returned malformed JSON: {exc.msg}.") from exc
 
 
-def _generate_sql_payload(question, schema):
+def _generate_sql_payload(question, schema, model=None):
     raw_response = _call_openrouter(
         _build_sql_prompt(question, schema),
         max_tokens=700,
         temperature=0.1,
+        model=model,
     )
     try:
         return _extract_json_object(raw_response)
@@ -479,6 +524,7 @@ def _generate_sql_payload(question, schema):
         _build_sql_repair_prompt(question, schema, raw_response),
         max_tokens=700,
         temperature=0,
+        model=model,
     )
     try:
         return _extract_json_object(repair_response)
@@ -604,12 +650,12 @@ def _build_answer_prompt(question, sql, columns, rows):
     )
 
 
-def _call_openrouter(prompt, max_tokens=800, temperature=0.2):
+def _call_openrouter(prompt, max_tokens=800, temperature=0.2, model=None):
     api_key = current_app.config.get("OPENROUTER_API_KEY", "")
     base_url = current_app.config.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1").rstrip("/")
-    model = current_app.config.get("OPENROUTER_MODEL", "anthropic/claude-sonnet-4.6")
+    selected_model = model or current_app.config.get("OPENROUTER_MODEL", DEFAULT_OPENROUTER_MODEL)
     payload = {
-        "model": model,
+        "model": selected_model,
         "messages": [{"role": "user", "content": prompt}],
         "temperature": temperature,
         "max_tokens": max_tokens,

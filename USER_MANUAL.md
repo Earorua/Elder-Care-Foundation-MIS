@@ -489,6 +489,7 @@ AI Agent 用于通过自然语言查询 SQLite 数据库。用户输入问题后
 - 在 `config.py` 中设置 `OPENROUTER_API_KEY`，或在启动 Flask 前设置环境变量 `OPENROUTER_API_KEY`
 - 默认接口地址为 `https://openrouter.ai/api/v1`
 - 默认模型为 `anthropic/claude-sonnet-4.6`
+- 可在 AI Agent 页面右侧的 Model 下拉框切换模型：`anthropic/claude-sonnet-4.6`、`anthropic/claude-opus-4.7`、`openai/gpt-5.4`、`google/gemini-3.1-pro-preview`、`z-ai/glm-5.1`。所有选项都使用 `https://openrouter.ai/api/v1`。
 - 默认超时时间为 120 秒
 - 默认结果行数限制为 200 行
 
@@ -498,12 +499,13 @@ AI Agent 用于通过自然语言查询 SQLite 数据库。用户输入问题后
 
 1. 使用 `admin`、`finance_user` 或 `coordinator` 登录系统
 2. 在侧边栏点击「AI Agent」
-3. 在问题输入框中输入自然语言问题，例如：
+3. 在右侧 Model 下拉框中选择要使用的大模型
+4. 在问题输入框中输入自然语言问题，例如：
    - Which donors gave more than $500, and what gifts did they receive?
    - Show upcoming schedules with person names and event names.
    - Which gifts have the lowest current stock?
-4. 点击「Ask Agent」
-5. 页面会显示自然语言回答、最新生成的 SQL、结果表格和返回行数
+5. 点击「Ask Agent」
+6. 页面会显示自然语言回答、最新生成的 SQL、结果表格和返回行数
 
 ### 16.3 安全限制
 
@@ -513,7 +515,7 @@ AI Agent 只允许执行只读查询。系统会拒绝 `INSERT`、`UPDATE`、`DE
 
 - **未配置 API Key**：检查 `config.py` 或环境变量中的 `OPENROUTER_API_KEY`，配置后重启 Flask。
 - **请求超时**：问题过宽或模型响应较慢时可能超时，可缩小问题范围，或在 `config.py` 中调大 `OPENROUTER_TIMEOUT`。
-- **连接失败**：检查网络、代理、`OPENROUTER_BASE_URL` 和 `OPENROUTER_MODEL` 是否正确。
+- **连接失败**：检查网络、代理、`OPENROUTER_BASE_URL`、`OPENROUTER_MODEL` 或页面选择的模型是否正确。
 - **SQL 被拒绝**：说明模型生成了非只读 SQL 或多条 SQL。换一种更明确的问题重试，例如指定要查询的对象和统计口径。
 
 ---
