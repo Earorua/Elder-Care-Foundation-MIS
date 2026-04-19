@@ -560,4 +560,4 @@ AI Agent 只允许执行只读查询。系统会拒绝 `INSERT`、`UPDATE`、`DE
 
 Any logged-in user can open `/suggestions` to submit a system optimization suggestion. The form records the current account automatically, so no contact fields are required.
 
-Administrators can review submitted suggestions from the Administration area under "System Optimization Suggestions". Admins can update each suggestion status to New, Reviewed, Planned, or Resolved and add internal notes.
+Administrators can review submitted suggestions in `Administration > System Optimization Suggestions`. Admins can update each suggestion status to New, Reviewed, Planned, or Resolved and add internal notes.
