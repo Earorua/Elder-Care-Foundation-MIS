@@ -23,6 +23,8 @@ PRIORITIES = ("Low", "Medium", "High", "Urgent")
 STATUSES = ("New", "Reviewed", "Planned", "Resolved")
 TITLE_MAX_LENGTH = 120
 CONTENT_MAX_LENGTH = 2000
+SUBMIT_CSRF_SESSION_KEY = "suggestions_submit_csrf_token"
+ADMIN_CSRF_SESSION_KEY = "suggestions_admin_csrf_token"
 
 
 def ensure_suggestions_table(db):
@@ -100,16 +102,16 @@ def insert_suggestion(data, user):
     )
 
 
-def _get_admin_csrf_token():
-    token = session.get("suggestions_admin_csrf_token")
+def _get_csrf_token(session_key):
+    token = session.get(session_key)
     if not token:
         token = secrets.token_urlsafe(32)
-        session["suggestions_admin_csrf_token"] = token
+        session[session_key] = token
     return token
 
 
-def _valid_admin_csrf_token(token):
-    session_token = session.get("suggestions_admin_csrf_token")
+def _valid_csrf_token(session_key, token):
+    session_token = session.get(session_key)
     if not token or not session_token:
         return False
     return compare_digest(token, session_token)
@@ -148,6 +150,11 @@ def update_suggestion_status(suggestion_id, status, admin_notes):
 @login_required
 def submit_suggestion():
     if request.method == "POST":
+        csrf_token = request.form.get("csrf_token")
+        if not _valid_csrf_token(SUBMIT_CSRF_SESSION_KEY, csrf_token):
+            flash("Invalid request token", "danger")
+            return redirect(url_for("suggestions.submit_suggestion"))
+
         data, errors = validate_suggestion_form(request.form)
         if errors:
             for error in errors:
@@ -157,6 +164,7 @@ def submit_suggestion():
                 categories=CATEGORIES,
                 priorities=PRIORITIES,
                 form_data=data,
+                csrf_token=_get_csrf_token(SUBMIT_CSRF_SESSION_KEY),
             )
 
         try:
@@ -172,6 +180,7 @@ def submit_suggestion():
         categories=CATEGORIES,
         priorities=PRIORITIES,
         form_data={},
+        csrf_token=_get_csrf_token(SUBMIT_CSRF_SESSION_KEY),
     )
 
 
@@ -183,7 +192,7 @@ def admin_suggestions():
         "suggestions/admin_list.html",
         suggestions=list_suggestions(),
         statuses=STATUSES,
-        csrf_token=_get_admin_csrf_token(),
+        csrf_token=_get_csrf_token(ADMIN_CSRF_SESSION_KEY),
     )
 
 
@@ -195,7 +204,7 @@ def update_status(suggestion_id):
     admin_notes = (request.form.get("admin_notes") or "").strip()
     csrf_token = request.form.get("csrf_token")
 
-    if not _valid_admin_csrf_token(csrf_token):
+    if not _valid_csrf_token(ADMIN_CSRF_SESSION_KEY, csrf_token):
         flash("Invalid request token", "danger")
         return redirect(url_for("suggestions.admin_suggestions"))
 

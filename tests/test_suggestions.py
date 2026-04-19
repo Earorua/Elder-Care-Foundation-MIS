@@ -103,6 +103,15 @@ def extract_admin_csrf_token(response):
     return match.group(1).decode("utf-8")
 
 
+def extract_submit_csrf_token(response):
+    match = re.search(
+        rb'<input type="hidden" name="csrf_token" value="([^"]+)"\s*/?>',
+        response.data,
+    )
+    assert match is not None, "submission csrf_token hidden input not found"
+    return match.group(1).decode("utf-8")
+
+
 class SuggestionDataModelTests(unittest.TestCase):
     def test_table_helper_creates_expected_columns_and_constants(self):
         from blueprints.suggestions import (
@@ -188,6 +197,7 @@ class SuggestionDataModelTests(unittest.TestCase):
             'id="langToggleBtn"',
             'data-i18n="System Optimization Suggestions"',
             'data-i18n="Submit Suggestion"',
+            '<input type="hidden" name="csrf_token" value="{{ csrf_token }}">',
             'data-i18n="Suggestion Title"',
             'data-i18n="Suggestion Details"',
             'data-i18n-placeholder="Briefly describe the improvement"',
@@ -257,6 +267,8 @@ class SuggestionDataModelTests(unittest.TestCase):
             "Submitted suggestions will appear here.",
             "Search suggestions...",
             "Invalid request token",
+            "Suggestion title must be 120 characters or fewer",
+            "Suggestion details must be 2000 characters or fewer",
         ]:
             with self.subTest(key=key):
                 self.assertIn(f"'{key}':", i18n)
@@ -300,6 +312,8 @@ class SuggestionDataModelTests(unittest.TestCase):
             app = make_app(db_path)
             client = app.test_client()
             login(client, "viewer", "viewer123")
+            suggestion_page = client.get("/suggestions")
+            csrf_token = extract_submit_csrf_token(suggestion_page)
             response = client.post(
                 "/suggestions",
                 data={
@@ -307,6 +321,7 @@ class SuggestionDataModelTests(unittest.TestCase):
                     "category": "Usability",
                     "priority": "High",
                     "content": "Please add saved filter presets to the dashboard.",
+                    "csrf_token": csrf_token,
                 },
                 follow_redirects=False,
             )
@@ -338,6 +353,8 @@ class SuggestionDataModelTests(unittest.TestCase):
             app = make_app(db_path)
             client = app.test_client()
             login(client, "viewer", "viewer123")
+            suggestion_page = client.get("/suggestions")
+            csrf_token = extract_submit_csrf_token(suggestion_page)
             response = client.post(
                 "/suggestions",
                 data={
@@ -345,6 +362,7 @@ class SuggestionDataModelTests(unittest.TestCase):
                     "category": "Bad Category",
                     "priority": "Bad Priority",
                     "content": "",
+                    "csrf_token": csrf_token,
                 },
                 follow_redirects=True,
             )
@@ -362,6 +380,86 @@ class SuggestionDataModelTests(unittest.TestCase):
         self.assertIn(b"Please enter suggestion details", response.data)
         self.assertIn(b"Please select a valid suggestion category", response.data)
         self.assertIn(b"Please select a valid suggestion priority", response.data)
+
+    def test_submission_rejects_missing_csrf_token(self):
+        db_path = make_temp_db()
+        try:
+            app = make_app(db_path)
+            client = app.test_client()
+            login(client, "viewer", "viewer123")
+            response = client.post(
+                "/suggestions",
+                data={
+                    "title": "Protect suggestion submission",
+                    "category": "Security",
+                    "priority": "High",
+                    "content": "A request token should be required here.",
+                },
+                follow_redirects=True,
+            )
+            conn = sqlite3.connect(db_path)
+            count = conn.execute(
+                "SELECT COUNT(*) FROM system_optimization_suggestions"
+            ).fetchone()[0]
+            conn.close()
+        finally:
+            os.unlink(db_path)
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(0, count)
+        self.assertIn(b"Invalid request token", response.data)
+
+    def test_disabled_user_loaded_from_session_is_redirected_to_login(self):
+        db_path = make_temp_db()
+        try:
+            app = make_app(db_path)
+            client = app.test_client()
+            login(client, "viewer", "viewer123")
+            conn = sqlite3.connect(db_path)
+            conn.execute(
+                'UPDATE "User" SET is_active = 0 WHERE user_name = ?',
+                ("viewer",),
+            )
+            conn.commit()
+            conn.close()
+            response = client.get("/suggestions", follow_redirects=False)
+        finally:
+            os.unlink(db_path)
+
+        self.assertEqual(302, response.status_code)
+        self.assertIn("/login", response.headers["Location"])
+
+    def test_submission_rejects_overlength_title_and_content(self):
+        db_path = make_temp_db()
+        try:
+            app = make_app(db_path)
+            client = app.test_client()
+            login(client, "viewer", "viewer123")
+            suggestion_page = client.get("/suggestions")
+            csrf_token = extract_submit_csrf_token(suggestion_page)
+            response = client.post(
+                "/suggestions",
+                data={
+                    "title": "T" * 121,
+                    "category": "Functionality",
+                    "priority": "Low",
+                    "content": "D" * 2001,
+                    "csrf_token": csrf_token,
+                },
+                follow_redirects=True,
+            )
+            conn = sqlite3.connect(db_path)
+            count = conn.execute(
+                "SELECT COUNT(*) FROM system_optimization_suggestions"
+            ).fetchone()[0]
+            conn.close()
+        finally:
+            os.unlink(db_path)
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(0, count)
+        self.assertIn(b"Suggestion title must be 120 characters or fewer", response.data)
+        self.assertIn(b"Suggestion details must be 2000 characters or fewer", response.data)
 
     def test_non_admin_cannot_access_admin_suggestions(self):
         db_path = make_temp_db()
@@ -382,6 +480,8 @@ class SuggestionDataModelTests(unittest.TestCase):
             app = make_app(db_path)
             client = app.test_client()
             login(client, "viewer", "viewer123")
+            suggestion_page = client.get("/suggestions")
+            csrf_token = extract_submit_csrf_token(suggestion_page)
             client.post(
                 "/suggestions",
                 data={
@@ -389,6 +489,7 @@ class SuggestionDataModelTests(unittest.TestCase):
                     "category": "Reporting",
                     "priority": "Medium",
                     "content": "A print-friendly schedule view would help coordinators.",
+                    "csrf_token": csrf_token,
                 },
             )
             client.get("/logout")
@@ -408,6 +509,8 @@ class SuggestionDataModelTests(unittest.TestCase):
             app = make_app(db_path)
             client = app.test_client()
             login(client, "viewer", "viewer123")
+            suggestion_page = client.get("/suggestions")
+            csrf_token = extract_submit_csrf_token(suggestion_page)
             client.post(
                 "/suggestions",
                 data={
@@ -415,6 +518,7 @@ class SuggestionDataModelTests(unittest.TestCase):
                     "category": "Performance",
                     "priority": "Urgent",
                     "content": "Large chart queries should return faster.",
+                    "csrf_token": csrf_token,
                 },
             )
             client.get("/logout")
@@ -450,6 +554,8 @@ class SuggestionDataModelTests(unittest.TestCase):
             app = make_app(db_path)
             client = app.test_client()
             login(client, "viewer", "viewer123")
+            suggestion_page = client.get("/suggestions")
+            csrf_token = extract_submit_csrf_token(suggestion_page)
             client.post(
                 "/suggestions",
                 data={
@@ -457,6 +563,7 @@ class SuggestionDataModelTests(unittest.TestCase):
                     "category": "Functionality",
                     "priority": "Low",
                     "content": "Search should include notes.",
+                    "csrf_token": csrf_token,
                 },
             )
             client.get("/logout")
@@ -490,6 +597,8 @@ class SuggestionDataModelTests(unittest.TestCase):
             app = make_app(db_path)
             client = app.test_client()
             login(client, "viewer", "viewer123")
+            suggestion_page = client.get("/suggestions")
+            csrf_token = extract_submit_csrf_token(suggestion_page)
             client.post(
                 "/suggestions",
                 data={
@@ -497,6 +606,7 @@ class SuggestionDataModelTests(unittest.TestCase):
                     "category": "Security",
                     "priority": "High",
                     "content": "Admin actions should require a request token.",
+                    "csrf_token": csrf_token,
                 },
             )
             client.get("/logout")

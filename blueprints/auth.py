@@ -35,6 +35,10 @@ class User(UserMixin):
     def is_admin(self):
         return self.role == 'admin'
 
+    @property
+    def is_active(self):
+        return bool(self.is_active_flag)
+
     def has_role(self, *roles):
         return self.role in roles or self.role == 'admin'
 

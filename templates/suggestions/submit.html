@@ -49,6 +49,7 @@
 
   <div class="card p-4">
     <form method="post" action="{{ url_for('suggestions.submit_suggestion') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
       <div class="mb-3">
         <label class="form-label" for="title" data-i18n="Suggestion Title">Suggestion Title</label>
         <input class="form-control" id="title" name="title" maxlength="120" required
