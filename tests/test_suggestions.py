@@ -266,6 +266,8 @@ class SuggestionDataModelTests(unittest.TestCase):
         self.assertEqual(0, count)
         self.assertIn(b"Please enter a suggestion title", response.data)
         self.assertIn(b"Please enter suggestion details", response.data)
+        self.assertIn(b"Please select a valid suggestion category", response.data)
+        self.assertIn(b"Please select a valid suggestion priority", response.data)
 
 
 if __name__ == "__main__":

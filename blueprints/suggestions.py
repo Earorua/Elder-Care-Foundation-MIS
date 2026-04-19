@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from db import execute_db
@@ -116,6 +116,7 @@ def submit_suggestion():
             flash("Suggestion submitted successfully", "success")
             return redirect(url_for("suggestions.submit_suggestion"))
         except Exception:
+            current_app.logger.exception("Failed to submit system optimization suggestion")
             flash("Failed to submit suggestion", "danger")
 
     return render_template(
