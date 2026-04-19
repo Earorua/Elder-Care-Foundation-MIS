@@ -177,6 +177,90 @@ class SuggestionDataModelTests(unittest.TestCase):
         self.assertIn("suggestion_id", columns)
         self.assertIn("submitter_user_id", columns)
 
+    def test_templates_expose_i18n_and_shared_style_hooks(self):
+        submit = SUBMIT_TEMPLATE.read_text(encoding="utf-8")
+        admin = ADMIN_TEMPLATE.read_text(encoding="utf-8")
+        base = BASE_TEMPLATE.read_text(encoding="utf-8")
+
+        for hook in [
+            "static/css/style.css",
+            "static/js/i18n.js",
+            'id="langToggleBtn"',
+            'data-i18n="System Optimization Suggestions"',
+            'data-i18n="Submit Suggestion"',
+            'data-i18n="Suggestion Title"',
+            'data-i18n="Suggestion Details"',
+            'data-i18n-placeholder="Briefly describe the improvement"',
+            'data-i18n-placeholder="Describe the problem, expected improvement, and affected workflow"',
+        ]:
+            with self.subTest(template="submit", hook=hook):
+                self.assertIn(hook, submit)
+
+        for hook in [
+            '{% extends "base.html" %}',
+            'data-i18n="System Optimization Suggestions"',
+            'data-i18n="Submitted By"',
+            'data-i18n="Submitted Date"',
+            'data-i18n="Admin Notes"',
+            "i18n_value(suggestion.category)",
+            "i18n_value(suggestion.priority)",
+            "i18n_value(suggestion.status)",
+        ]:
+            with self.subTest(template="admin", hook=hook):
+                self.assertIn(hook, admin)
+
+        self.assertIn("current_user.is_admin", base)
+        self.assertIn("suggestions.admin_suggestions", base)
+
+    def test_i18n_contains_suggestion_keys(self):
+        i18n = I18N_JS.read_text(encoding="utf-8")
+
+        for key in [
+            "System Optimization Suggestions",
+            "Submit Suggestion",
+            "Suggestion Title",
+            "Suggestion Details",
+            "Briefly describe the improvement",
+            "Describe the problem, expected improvement, and affected workflow",
+            "Submit improvement ideas for administrators to review.",
+            "Review submitted improvement ideas and update their status.",
+            "Category",
+            "Priority",
+            "Submitted By",
+            "Submitted Date",
+            "Admin Notes",
+            "Functionality",
+            "Usability",
+            "Performance",
+            "Data Quality",
+            "Security",
+            "Reporting",
+            "Other",
+            "Low",
+            "Medium",
+            "High",
+            "Urgent",
+            "New",
+            "Reviewed",
+            "Planned",
+            "Resolved",
+            "Suggestion submitted successfully",
+            "Suggestion status updated",
+            "Invalid suggestion status",
+            "Suggestion not found",
+            "Failed to submit suggestion",
+            "Please enter a suggestion title",
+            "Please enter suggestion details",
+            "Please select a valid suggestion category",
+            "Please select a valid suggestion priority",
+            "No suggestions found",
+            "Submitted suggestions will appear here.",
+            "Search suggestions...",
+            "Invalid request token",
+        ]:
+            with self.subTest(key=key):
+                self.assertIn(f"'{key}':", i18n)
+
     def test_anonymous_user_is_redirected_from_submission_page_to_login(self):
         db_path = make_temp_db()
         try:
