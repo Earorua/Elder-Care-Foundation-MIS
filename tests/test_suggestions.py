@@ -13,6 +13,7 @@ SUGGESTIONS_BP = ROOT / "blueprints" / "suggestions.py"
 SUBMIT_TEMPLATE = ROOT / "templates" / "suggestions" / "submit.html"
 ADMIN_TEMPLATE = ROOT / "templates" / "suggestions" / "admin_list.html"
 BASE_TEMPLATE = ROOT / "templates" / "base.html"
+DASHBOARD_TEMPLATE = ROOT / "templates" / "dashboard" / "index.html"
 I18N_JS = ROOT / "static" / "js" / "i18n.js"
 
 
@@ -186,10 +187,48 @@ class SuggestionDataModelTests(unittest.TestCase):
         self.assertIn("suggestion_id", columns)
         self.assertIn("submitter_user_id", columns)
 
+    def test_list_suggestions_uses_stored_submitted_time_without_timezone_conversion(self):
+        from blueprints.suggestions import ensure_suggestions_table, list_suggestions
+
+        db_path = make_temp_db()
+        try:
+            app = make_app(db_path)
+            with app.app_context():
+                from db import get_db
+
+                db = get_db()
+                ensure_suggestions_table(db)
+                db.execute(
+                    "INSERT INTO system_optimization_suggestions "
+                    "(submitter_user_id, submitter_name, submitter_role, title, category, "
+                    "priority, content, status, created_at, updated_at) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    [
+                        1,
+                        "viewer",
+                        "viewer",
+                        "Check local time",
+                        "Usability",
+                        "Medium",
+                        "Submitted date should match local time.",
+                        "New",
+                        "2026-04-19 16:00:00",
+                        "2026-04-19 16:00:00",
+                    ],
+                )
+                db.commit()
+                row = list_suggestions()[0]
+        finally:
+            os.unlink(db_path)
+
+        self.assertEqual("2026-04-19 16:00:00", row["created_at"])
+        self.assertEqual("2026-04-19 16:00:00", row["created_at_display"])
+
     def test_templates_expose_i18n_and_shared_style_hooks(self):
         submit = SUBMIT_TEMPLATE.read_text(encoding="utf-8")
         admin = ADMIN_TEMPLATE.read_text(encoding="utf-8")
         base = BASE_TEMPLATE.read_text(encoding="utf-8")
+        dashboard = DASHBOARD_TEMPLATE.read_text(encoding="utf-8")
 
         for hook in [
             "filename='css/style.css'",
@@ -215,12 +254,22 @@ class SuggestionDataModelTests(unittest.TestCase):
             "i18n_value(suggestion.category)",
             "i18n_value(suggestion.priority)",
             "i18n_value(suggestion.status)",
+            "suggestion.created_at_display",
         ]:
             with self.subTest(template="admin", hook=hook):
                 self.assertIn(hook, admin)
 
         self.assertIn("current_user.is_admin", base)
         self.assertIn("suggestions.admin_suggestions", base)
+
+        self.assertNotIn("suggestions.submit_suggestion", admin)
+        self.assertIn("suggestions.submit_suggestion", base)
+        self.assertIn('data-i18n="Submit Suggestion"', base)
+        self.assertLess(
+            base.index('class="topbar-right"'),
+            base.index("suggestions.submit_suggestion"),
+        )
+        self.assertNotIn("suggestions.submit_suggestion", dashboard)
 
     def test_i18n_contains_suggestion_keys(self):
         i18n = I18N_JS.read_text(encoding="utf-8")
@@ -330,6 +379,14 @@ class SuggestionDataModelTests(unittest.TestCase):
             row = conn.execute(
                 "SELECT * FROM system_optimization_suggestions"
             ).fetchone()
+            created_delta_seconds = conn.execute(
+                "SELECT ABS(strftime('%s', ?) - strftime('%s', datetime('now', 'localtime')))",
+                [row["created_at"]],
+            ).fetchone()[0]
+            updated_delta_seconds = conn.execute(
+                "SELECT ABS(strftime('%s', ?) - strftime('%s', datetime('now', 'localtime')))",
+                [row["updated_at"]],
+            ).fetchone()[0]
             conn.close()
         finally:
             os.unlink(db_path)
@@ -346,6 +403,8 @@ class SuggestionDataModelTests(unittest.TestCase):
         self.assertEqual("viewer", row["submitter_role"])
         self.assertIsNotNone(row["created_at"])
         self.assertIsNotNone(row["updated_at"])
+        self.assertLessEqual(created_delta_seconds, 5)
+        self.assertLessEqual(updated_delta_seconds, 5)
 
     def test_submission_rejects_empty_text_and_invalid_fixed_values(self):
         db_path = make_temp_db()

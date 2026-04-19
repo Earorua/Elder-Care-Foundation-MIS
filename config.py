@@ -10,6 +10,7 @@ OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY', '')
 OPENROUTER_BASE_URL = os.environ.get('OPENROUTER_BASE_URL', 'https://openrouter.ai/api/v1')
 OPENROUTER_MODEL_OPTIONS = [
     'anthropic/claude-sonnet-4.6',
+    'anthropic/claude-opus-4.6-fast',
     'anthropic/claude-opus-4.7',
     'openai/gpt-5.4',
     'google/gemini-3.1-pro-preview',

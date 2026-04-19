@@ -125,7 +125,7 @@ python app.py
 ## AI Agent Configuration
 - `/agent` is available to admin, finance, and event coordinator users.
 - `config.py` defines `OPENROUTER_API_KEY`, `OPENROUTER_BASE_URL`, `OPENROUTER_MODEL`, `OPENROUTER_MODEL_OPTIONS`, `OPENROUTER_TIMEOUT`, and `AGENT_ROW_LIMIT`.
-- The default model is `anthropic/claude-sonnet-4.6`; selectable models are `anthropic/claude-sonnet-4.6`, `anthropic/claude-opus-4.7`, `openai/gpt-5.4`, `google/gemini-3.1-pro-preview`, and `z-ai/glm-5.1`; the default base URL is `https://openrouter.ai/api/v1`.
+- The default model is `anthropic/claude-sonnet-4.6`; selectable models are `anthropic/claude-sonnet-4.6`, `anthropic/claude-opus-4.6-fast`, `anthropic/claude-opus-4.7`, `openai/gpt-5.4`, `google/gemini-3.1-pro-preview`, and `z-ai/glm-5.1`; the default base URL is `https://openrouter.ai/api/v1`.
 - `OPENROUTER_API_KEY` is intentionally blank by default; set it directly in `config.py` for this private project or provide it through the environment.
 - The agent sends database schema and user questions to OpenRouter, validates that generated SQL is a single read-only SQLite `SELECT` or `WITH` statement, applies a row limit, executes it against `elder_care.db`, then asks the model to summarize the returned rows.
 

@@ -489,7 +489,7 @@ AI Agent 用于通过自然语言查询 SQLite 数据库。用户输入问题后
 - 在 `config.py` 中设置 `OPENROUTER_API_KEY`，或在启动 Flask 前设置环境变量 `OPENROUTER_API_KEY`
 - 默认接口地址为 `https://openrouter.ai/api/v1`
 - 默认模型为 `anthropic/claude-sonnet-4.6`
-- 可在 AI Agent 页面右侧的 Model 下拉框切换模型：`anthropic/claude-sonnet-4.6`、`anthropic/claude-opus-4.7`、`openai/gpt-5.4`、`google/gemini-3.1-pro-preview`、`z-ai/glm-5.1`。所有选项都使用 `https://openrouter.ai/api/v1`。
+- 可在 AI Agent 页面右侧的 Model 下拉框切换模型：`anthropic/claude-sonnet-4.6`、`anthropic/claude-opus-4.6-fast`、`anthropic/claude-opus-4.7`、`openai/gpt-5.4`、`google/gemini-3.1-pro-preview`、`z-ai/glm-5.1`。所有选项都使用 `https://openrouter.ai/api/v1`。
 - 默认超时时间为 120 秒
 - 默认结果行数限制为 200 行
 
@@ -558,6 +558,6 @@ AI Agent 只允许执行只读查询。系统会拒绝 `INSERT`、`UPDATE`、`DE
 | AI Agent 界面 | Ask Agent ↔ 询问助手、Read-only SQL ↔ 只读 SQL |
 ## System Optimization Suggestions
 
-Any logged-in user can open `/suggestions` to submit a system optimization suggestion. The form records the current account automatically, so no contact fields are required.
+Any logged-in user can open `/suggestions` or use the top bar `Submit Suggestion` button to submit a system optimization suggestion. The form records the current account automatically, so no contact fields are required.
 
 Administrators can review submitted suggestions in `Administration > System Optimization Suggestions`. Admins can update each suggestion status to New, Reviewed, Planned, or Resolved and add internal notes.

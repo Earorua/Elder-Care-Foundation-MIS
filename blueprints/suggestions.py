@@ -89,7 +89,8 @@ def insert_suggestion(data, user):
         "INSERT INTO system_optimization_suggestions "
         "(submitter_user_id, submitter_name, submitter_role, title, category, "
         "priority, content, status, created_at, updated_at) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?, 'New', datetime('now'), datetime('now'))",
+        "VALUES (?, ?, ?, ?, ?, ?, ?, 'New', "
+        "datetime('now', 'localtime'), datetime('now', 'localtime'))",
         [
             user.id,
             user.user_name,
@@ -119,7 +120,8 @@ def _valid_csrf_token(session_key, token):
 
 def list_suggestions():
     return query_db(
-        "SELECT * FROM system_optimization_suggestions "
+        "SELECT *, created_at AS created_at_display "
+        "FROM system_optimization_suggestions "
         "ORDER BY datetime(created_at) DESC, suggestion_id DESC"
     )
 
@@ -138,7 +140,7 @@ def update_suggestion_status(suggestion_id, status, admin_notes):
 
     db.execute(
         "UPDATE system_optimization_suggestions "
-        "SET status = ?, admin_notes = ?, updated_at = datetime('now') "
+        "SET status = ?, admin_notes = ?, updated_at = datetime('now', 'localtime') "
         "WHERE suggestion_id = ?",
         [status, admin_notes, suggestion_id],
     )

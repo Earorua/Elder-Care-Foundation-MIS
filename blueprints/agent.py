@@ -23,6 +23,7 @@ agent_bp = Blueprint("agent", __name__)
 DEFAULT_OPENROUTER_MODEL = "anthropic/claude-sonnet-4.6"
 OPENROUTER_MODEL_OPTIONS = [
     "anthropic/claude-sonnet-4.6",
+    "anthropic/claude-opus-4.6-fast",
     "anthropic/claude-opus-4.7",
     "openai/gpt-5.4",
     "google/gemini-3.1-pro-preview",

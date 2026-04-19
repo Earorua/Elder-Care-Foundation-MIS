@@ -31,6 +31,7 @@ class AgentHelperTests(unittest.TestCase):
         expected_base_url = "https://openrouter.ai/api/v1"
         expected_models = [
             "anthropic/claude-sonnet-4.6",
+            "anthropic/claude-opus-4.6-fast",
             "anthropic/claude-opus-4.7",
             "openai/gpt-5.4",
             "google/gemini-3.1-pro-preview",
