@@ -183,8 +183,8 @@ class SuggestionDataModelTests(unittest.TestCase):
         base = BASE_TEMPLATE.read_text(encoding="utf-8")
 
         for hook in [
-            "static/css/style.css",
-            "static/js/i18n.js",
+            "filename='css/style.css'",
+            "filename='js/i18n.js'",
             'id="langToggleBtn"',
             'data-i18n="System Optimization Suggestions"',
             'data-i18n="Submit Suggestion"',
