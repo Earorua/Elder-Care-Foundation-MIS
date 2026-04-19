@@ -1,7 +1,8 @@
 from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
-from db import execute_db
+from blueprints.auth import role_required
+from db import execute_db, get_db, query_db
 
 
 suggestions_bp = Blueprint("suggestions", __name__)
@@ -96,6 +97,35 @@ def insert_suggestion(data, user):
     )
 
 
+def list_suggestions():
+    return query_db(
+        "SELECT * FROM system_optimization_suggestions "
+        "ORDER BY datetime(created_at) DESC, suggestion_id DESC"
+    )
+
+
+def update_suggestion_status(suggestion_id, status, admin_notes):
+    if status not in STATUSES:
+        raise ValueError("Invalid suggestion status")
+
+    db = get_db()
+    row = db.execute(
+        "SELECT suggestion_id FROM system_optimization_suggestions WHERE suggestion_id = ?",
+        [suggestion_id],
+    ).fetchone()
+    if row is None:
+        return False
+
+    db.execute(
+        "UPDATE system_optimization_suggestions "
+        "SET status = ?, admin_notes = ?, updated_at = datetime('now') "
+        "WHERE suggestion_id = ?",
+        [status, admin_notes, suggestion_id],
+    )
+    db.commit()
+    return True
+
+
 @suggestions_bp.route("/suggestions", methods=["GET", "POST"])
 @login_required
 def submit_suggestion():
@@ -125,3 +155,34 @@ def submit_suggestion():
         priorities=PRIORITIES,
         form_data={},
     )
+
+
+@suggestions_bp.route("/admin/suggestions")
+@login_required
+@role_required("admin")
+def admin_suggestions():
+    return render_template(
+        "suggestions/admin_list.html",
+        suggestions=list_suggestions(),
+        statuses=STATUSES,
+    )
+
+
+@suggestions_bp.route("/admin/suggestions/<int:suggestion_id>/status", methods=["POST"])
+@login_required
+@role_required("admin")
+def update_status(suggestion_id):
+    status = (request.form.get("status") or "").strip()
+    admin_notes = (request.form.get("admin_notes") or "").strip()
+
+    try:
+        updated = update_suggestion_status(suggestion_id, status, admin_notes)
+    except ValueError:
+        flash("Invalid suggestion status", "danger")
+        return redirect(url_for("suggestions.admin_suggestions"))
+
+    if updated:
+        flash("Suggestion status updated", "success")
+    else:
+        flash("Suggestion not found", "warning")
+    return redirect(url_for("suggestions.admin_suggestions"))

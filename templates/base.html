@@ -77,6 +77,7 @@
       {% if current_user.is_admin %}
       <div class="section-label" data-i18n="Administration">Administration</div>
       <a class="nav-link" href="{{ url_for('auth.users_list') }}"><i class="bi bi-shield-lock me-2"></i><span data-i18n="User Management">User Management</span></a>
+      <a class="nav-link" href="{{ url_for('suggestions.admin_suggestions') }}"><i class="bi bi-lightbulb me-2"></i><span data-i18n="System Optimization Suggestions">System Optimization Suggestions</span></a>
       {% endif %}
 
       <div style="margin-top:auto; padding-top:.75rem; border-top:1px solid rgba(255,255,255,.05);">

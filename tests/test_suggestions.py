@@ -269,6 +269,115 @@ class SuggestionDataModelTests(unittest.TestCase):
         self.assertIn(b"Please select a valid suggestion category", response.data)
         self.assertIn(b"Please select a valid suggestion priority", response.data)
 
+    def test_non_admin_cannot_access_admin_suggestions(self):
+        db_path = make_temp_db()
+        try:
+            app = make_app(db_path)
+            client = app.test_client()
+            login(client, "viewer", "viewer123")
+            response = client.get("/admin/suggestions", follow_redirects=False)
+        finally:
+            os.unlink(db_path)
+
+        self.assertEqual(302, response.status_code)
+        self.assertIn("/", response.headers["Location"])
+
+    def test_admin_can_see_submitted_suggestions(self):
+        db_path = make_temp_db()
+        try:
+            app = make_app(db_path)
+            client = app.test_client()
+            login(client, "viewer", "viewer123")
+            client.post(
+                "/suggestions",
+                data={
+                    "title": "Add printable schedule",
+                    "category": "Reporting",
+                    "priority": "Medium",
+                    "content": "A print-friendly schedule view would help coordinators.",
+                },
+            )
+            client.get("/logout")
+            login(client, "admin", "admin123")
+            response = client.get("/admin/suggestions")
+        finally:
+            os.unlink(db_path)
+
+        self.assertEqual(200, response.status_code)
+        self.assertIn(b"Add printable schedule", response.data)
+        self.assertIn(b"viewer", response.data)
+        self.assertIn(b"Reporting", response.data)
+
+    def test_admin_can_update_suggestion_status_and_notes(self):
+        db_path = make_temp_db()
+        try:
+            app = make_app(db_path)
+            client = app.test_client()
+            login(client, "viewer", "viewer123")
+            client.post(
+                "/suggestions",
+                data={
+                    "title": "Speed up BI charts",
+                    "category": "Performance",
+                    "priority": "Urgent",
+                    "content": "Large chart queries should return faster.",
+                },
+            )
+            client.get("/logout")
+            login(client, "admin", "admin123")
+            response = client.post(
+                "/admin/suggestions/1/status",
+                data={"status": "Planned", "admin_notes": "Queued for the next release."},
+                follow_redirects=False,
+            )
+            conn = sqlite3.connect(db_path)
+            conn.row_factory = sqlite3.Row
+            row = conn.execute(
+                "SELECT status, admin_notes FROM system_optimization_suggestions "
+                "WHERE suggestion_id = 1"
+            ).fetchone()
+            conn.close()
+        finally:
+            os.unlink(db_path)
+
+        self.assertEqual(302, response.status_code)
+        self.assertEqual("Planned", row["status"])
+        self.assertEqual("Queued for the next release.", row["admin_notes"])
+
+    def test_admin_status_update_rejects_invalid_status(self):
+        db_path = make_temp_db()
+        try:
+            app = make_app(db_path)
+            client = app.test_client()
+            login(client, "viewer", "viewer123")
+            client.post(
+                "/suggestions",
+                data={
+                    "title": "Improve search",
+                    "category": "Functionality",
+                    "priority": "Low",
+                    "content": "Search should include notes.",
+                },
+            )
+            client.get("/logout")
+            login(client, "admin", "admin123")
+            response = client.post(
+                "/admin/suggestions/1/status",
+                data={"status": "Bad Status", "admin_notes": "No change"},
+                follow_redirects=True,
+            )
+            conn = sqlite3.connect(db_path)
+            status = conn.execute(
+                "SELECT status FROM system_optimization_suggestions WHERE suggestion_id = 1"
+            ).fetchone()[0]
+            conn.close()
+        finally:
+            os.unlink(db_path)
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual("New", status)
+        self.assertIn(b"Invalid suggestion status", response.data)
+
 
 if __name__ == "__main__":
     unittest.main()

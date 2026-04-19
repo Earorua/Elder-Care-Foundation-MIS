@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% from "macros/i18n_values.html" import value as i18n_value %}
+{% block title %}System Optimization Suggestions - Elder Care MIS{% endblock %}
+{% block breadcrumb %}<span data-i18n="System Optimization Suggestions">System Optimization Suggestions</span>{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4 class="mb-1"><i class="bi bi-lightbulb-fill me-2"></i><span data-i18n="System Optimization Suggestions">System Optimization Suggestions</span> <span class="record-count"><i class="bi bi-database"></i>{{ suggestions|length }} <span data-i18n="records">records</span></span></h4>
+    <p class="page-subtitle" data-i18n="Review submitted improvement ideas and update their status.">Review submitted improvement ideas and update their status.</p>
+  </div>
+  <a class="btn btn-outline-primary" href="{{ url_for('suggestions.submit_suggestion') }}"><i class="bi bi-plus-lg me-1"></i><span data-i18n="Submit Suggestion">Submit Suggestion</span></a>
+</div>
+
+<div class="table-info-bar">
+  <div class="table-search mb-3">
+    <div class="input-group" style="max-width:320px;">
+      <span class="input-group-text"><i class="bi bi-search"></i></span>
+      <input type="text" class="form-control" data-i18n-placeholder="Search suggestions..." placeholder="Search suggestions..." id="tableSearch">
+    </div>
+  </div>
+</div>
+
+{% if suggestions %}
+<div class="card p-0">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead class="table-header">
+        <tr>
+          <th data-i18n="ID">ID</th>
+          <th data-i18n="Suggestion Title">Suggestion Title</th>
+          <th data-i18n="Category">Category</th>
+          <th data-i18n="Priority">Priority</th>
+          <th data-i18n="Status">Status</th>
+          <th data-i18n="Submitted By">Submitted By</th>
+          <th data-i18n="Role">Role</th>
+          <th data-i18n="Submitted Date">Submitted Date</th>
+          <th data-i18n="Actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for suggestion in suggestions %}
+        <tr>
+          <td>{{ suggestion.suggestion_id }}</td>
+          <td>
+            <div class="fw-semibold">{{ suggestion.title }}</div>
+            <div class="text-muted" style="white-space:normal;max-width:360px;">{{ suggestion.content }}</div>
+            {% if suggestion.admin_notes %}
+            <div class="mt-1 small"><span class="fw-semibold" data-i18n="Admin Notes">Admin Notes</span>: {{ suggestion.admin_notes }}</div>
+            {% endif %}
+          </td>
+          <td>{{ i18n_value(suggestion.category) }}</td>
+          <td><span class="badge bg-{{ 'danger' if suggestion.priority == 'Urgent' else 'warning' if suggestion.priority == 'High' else 'primary' if suggestion.priority == 'Medium' else 'secondary' }}">{{ i18n_value(suggestion.priority) }}</span></td>
+          <td><span class="badge bg-{{ 'success' if suggestion.status == 'Resolved' else 'primary' if suggestion.status == 'Planned' else 'warning' if suggestion.status == 'Reviewed' else 'secondary' }}">{{ i18n_value(suggestion.status) }}</span></td>
+          <td>{{ suggestion.submitter_name }}</td>
+          <td>{{ suggestion.submitter_role }}</td>
+          <td>{{ suggestion.created_at }}</td>
+          <td>
+            <form method="post" action="{{ url_for('suggestions.update_status', suggestion_id=suggestion.suggestion_id) }}" class="d-flex flex-column gap-2" style="min-width:220px;">
+              <select name="status" class="form-select form-select-sm" aria-label="Status">
+                {% for status in statuses %}
+                <option value="{{ status }}" data-i18n="{{ status }}" {{ 'selected' if suggestion.status == status }}>{{ status }}</option>
+                {% endfor %}
+              </select>
+              <input name="admin_notes" class="form-control form-control-sm" value="{{ suggestion.admin_notes or '' }}" data-i18n-placeholder="Admin Notes" placeholder="Admin Notes">
+              <button type="submit" class="btn btn-sm btn-primary"><i class="bi bi-check-lg me-1"></i><span data-i18n="Save">Save</span></button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="empty-state">
+  <i class="bi bi-lightbulb"></i>
+  <h6 data-i18n="No suggestions found">No suggestions found</h6>
+  <p data-i18n="Submitted suggestions will appear here.">Submitted suggestions will appear here.</p>
+</div>
+{% endif %}
+{% endblock %}
