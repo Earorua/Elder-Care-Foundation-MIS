@@ -25,6 +25,7 @@ def create_app():
     from blueprints.finance import finance_bp
     from blueprints.bi import bi_bp
     from blueprints.agent import agent_bp
+    from blueprints.suggestions import suggestions_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
@@ -35,6 +36,7 @@ def create_app():
     app.register_blueprint(finance_bp)
     app.register_blueprint(bi_bp)
     app.register_blueprint(agent_bp)
+    app.register_blueprint(suggestions_bp)
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -63,6 +65,9 @@ def _seed_admin():
         db.commit()
 
     _ensure_donor_supplier_fields(db)
+    from blueprints.suggestions import ensure_suggestions_table
+
+    ensure_suggestions_table(db)
 
     existing = query_db('SELECT user_id FROM "User" WHERE user_name = ?', ['admin'], one=True)
     if not existing:

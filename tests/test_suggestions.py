@@ -148,6 +148,125 @@ class SuggestionDataModelTests(unittest.TestCase):
         self.assertEqual(("Low", "Medium", "High", "Urgent"), PRIORITIES)
         self.assertEqual(("New", "Reviewed", "Planned", "Resolved"), STATUSES)
 
+    def test_app_startup_creates_suggestions_table(self):
+        db_path = make_temp_db()
+        try:
+            app = make_app(db_path)
+            with app.app_context():
+                conn = sqlite3.connect(db_path)
+                columns = [
+                    row[1]
+                    for row in conn.execute(
+                        "PRAGMA table_info(system_optimization_suggestions)"
+                    ).fetchall()
+                ]
+                conn.close()
+        finally:
+            os.unlink(db_path)
+
+        self.assertIn("suggestion_id", columns)
+        self.assertIn("submitter_user_id", columns)
+
+    def test_anonymous_user_is_redirected_from_submission_page_to_login(self):
+        db_path = make_temp_db()
+        try:
+            app = make_app(db_path)
+            response = app.test_client().get("/suggestions")
+        finally:
+            os.unlink(db_path)
+
+        self.assertEqual(302, response.status_code)
+        self.assertIn("/login", response.headers["Location"])
+        self.assertIn("next=", response.headers["Location"])
+
+    def test_any_authenticated_role_can_load_submission_page(self):
+        for username, password in [
+            ("viewer", "viewer123"),
+            ("finance_user", "finance123"),
+            ("coordinator", "coord123"),
+            ("admin", "admin123"),
+        ]:
+            with self.subTest(username=username):
+                db_path = make_temp_db()
+                try:
+                    app = make_app(db_path)
+                    client = app.test_client()
+                    login_response = login(client, username, password)
+                    response = client.get("/suggestions")
+                finally:
+                    os.unlink(db_path)
+
+                self.assertEqual(302, login_response.status_code)
+                self.assertEqual(200, response.status_code)
+                self.assertIn(b"System Optimization Suggestions", response.data)
+
+    def test_authenticated_user_can_submit_suggestion_with_account_snapshot(self):
+        db_path = make_temp_db()
+        try:
+            app = make_app(db_path)
+            client = app.test_client()
+            login(client, "viewer", "viewer123")
+            response = client.post(
+                "/suggestions",
+                data={
+                    "title": "Improve dashboard filters",
+                    "category": "Usability",
+                    "priority": "High",
+                    "content": "Please add saved filter presets to the dashboard.",
+                },
+                follow_redirects=False,
+            )
+            conn = sqlite3.connect(db_path)
+            conn.row_factory = sqlite3.Row
+            row = conn.execute(
+                "SELECT * FROM system_optimization_suggestions"
+            ).fetchone()
+            conn.close()
+        finally:
+            os.unlink(db_path)
+
+        self.assertEqual(302, response.status_code)
+        self.assertEqual("Improve dashboard filters", row["title"])
+        self.assertEqual("Usability", row["category"])
+        self.assertEqual("High", row["priority"])
+        self.assertEqual(
+            "Please add saved filter presets to the dashboard.", row["content"]
+        )
+        self.assertEqual("New", row["status"])
+        self.assertEqual("viewer", row["submitter_name"])
+        self.assertEqual("viewer", row["submitter_role"])
+        self.assertIsNotNone(row["created_at"])
+        self.assertIsNotNone(row["updated_at"])
+
+    def test_submission_rejects_empty_text_and_invalid_fixed_values(self):
+        db_path = make_temp_db()
+        try:
+            app = make_app(db_path)
+            client = app.test_client()
+            login(client, "viewer", "viewer123")
+            response = client.post(
+                "/suggestions",
+                data={
+                    "title": "   ",
+                    "category": "Bad Category",
+                    "priority": "Bad Priority",
+                    "content": "",
+                },
+                follow_redirects=True,
+            )
+            conn = sqlite3.connect(db_path)
+            count = conn.execute(
+                "SELECT COUNT(*) FROM system_optimization_suggestions"
+            ).fetchone()[0]
+            conn.close()
+        finally:
+            os.unlink(db_path)
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(0, count)
+        self.assertIn(b"Please enter a suggestion title", response.data)
+        self.assertIn(b"Please enter suggestion details", response.data)
+
 
 if __name__ == "__main__":
     unittest.main()
