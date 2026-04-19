@@ -196,3 +196,9 @@ python app.py
     - Backend: `persons` and `donors` CRUD reads/writes `marital_status`; matching records are synchronized between the two tables by first name, last name, and email
     - Frontend: `/persons` and `/donors` tables and add/edit modals include a Marital Status field with Unknown / Single / Married / Divorced / Widowed values
     - i18n/tests: English/Chinese translations added for marital status labels and values; `tests/test_marital_status_ui.py` covers template hooks, CRUD SQL hooks, and i18n keys
+## System Optimization Suggestions
+
+- `blueprints/suggestions.py` owns the login-required `/suggestions` submission flow and admin-only `/admin/suggestions` review flow.
+- Suggestions are stored in `system_optimization_suggestions`, created at startup by `ensure_suggestions_table(db)`.
+- Any authenticated active user can submit suggestions. Only `admin` users can view and update the admin review module.
+- The standalone submission page reuses the existing global CSS, logo, Bootstrap assets, and `static/js/i18n.js`.

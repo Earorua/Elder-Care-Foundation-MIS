@@ -556,3 +556,8 @@ AI Agent 只允许执行只读查询。系统会拒绝 `INSERT`、`UPDATE`、`DE
 | BI 预设标签 | Donation Analysis ↔ 捐款分析 |
 | BI 图表控件 | All metrics ↔ 所有指标 |
 | AI Agent 界面 | Ask Agent ↔ 询问助手、Read-only SQL ↔ 只读 SQL |
+## System Optimization Suggestions
+
+Any logged-in user can open `/suggestions` to submit a system optimization suggestion. The form records the current account automatically, so no contact fields are required.
+
+Administrators can review submitted suggestions from the Administration area under "System Optimization Suggestions". Admins can update each suggestion status to New, Reviewed, Planned, or Resolved and add internal notes.
