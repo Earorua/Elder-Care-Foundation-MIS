@@ -1,4 +1,7 @@
-from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
+import secrets
+from hmac import compare_digest
+
+from flask import Blueprint, current_app, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required
 
 from blueprints.auth import role_required
@@ -97,6 +100,21 @@ def insert_suggestion(data, user):
     )
 
 
+def _get_admin_csrf_token():
+    token = session.get("suggestions_admin_csrf_token")
+    if not token:
+        token = secrets.token_urlsafe(32)
+        session["suggestions_admin_csrf_token"] = token
+    return token
+
+
+def _valid_admin_csrf_token(token):
+    session_token = session.get("suggestions_admin_csrf_token")
+    if not token or not session_token:
+        return False
+    return compare_digest(token, session_token)
+
+
 def list_suggestions():
     return query_db(
         "SELECT * FROM system_optimization_suggestions "
@@ -165,6 +183,7 @@ def admin_suggestions():
         "suggestions/admin_list.html",
         suggestions=list_suggestions(),
         statuses=STATUSES,
+        csrf_token=_get_admin_csrf_token(),
     )
 
 
@@ -174,6 +193,11 @@ def admin_suggestions():
 def update_status(suggestion_id):
     status = (request.form.get("status") or "").strip()
     admin_notes = (request.form.get("admin_notes") or "").strip()
+    csrf_token = request.form.get("csrf_token")
+
+    if not _valid_admin_csrf_token(csrf_token):
+        flash("Invalid request token", "danger")
+        return redirect(url_for("suggestions.admin_suggestions"))
 
     try:
         updated = update_suggestion_status(suggestion_id, status, admin_notes)

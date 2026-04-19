@@ -56,6 +56,7 @@
           <td>{{ suggestion.created_at }}</td>
           <td>
             <form method="post" action="{{ url_for('suggestions.update_status', suggestion_id=suggestion.suggestion_id) }}" class="d-flex flex-column gap-2" style="min-width:220px;">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
               <select name="status" class="form-select form-select-sm" aria-label="Status">
                 {% for status in statuses %}
                 <option value="{{ status }}" data-i18n="{{ status }}" {{ 'selected' if suggestion.status == status }}>{{ status }}</option>

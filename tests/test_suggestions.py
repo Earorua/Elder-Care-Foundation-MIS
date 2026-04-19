@@ -1,4 +1,5 @@
 import os
+import re
 import sqlite3
 import tempfile
 import unittest
@@ -91,6 +92,15 @@ def login(client, username, password):
         data={"username": username, "password": password},
         follow_redirects=False,
     )
+
+
+def extract_admin_csrf_token(response):
+    match = re.search(
+        rb'<input type="hidden" name="csrf_token" value="([^"]+)"\s*/?>',
+        response.data,
+    )
+    assert match is not None, "csrf_token hidden input not found"
+    return match.group(1).decode("utf-8")
 
 
 class SuggestionDataModelTests(unittest.TestCase):
@@ -325,9 +335,15 @@ class SuggestionDataModelTests(unittest.TestCase):
             )
             client.get("/logout")
             login(client, "admin", "admin123")
+            admin_page = client.get("/admin/suggestions")
+            csrf_token = extract_admin_csrf_token(admin_page)
             response = client.post(
                 "/admin/suggestions/1/status",
-                data={"status": "Planned", "admin_notes": "Queued for the next release."},
+                data={
+                    "status": "Planned",
+                    "admin_notes": "Queued for the next release.",
+                    "csrf_token": csrf_token,
+                },
                 follow_redirects=False,
             )
             conn = sqlite3.connect(db_path)
@@ -361,9 +377,15 @@ class SuggestionDataModelTests(unittest.TestCase):
             )
             client.get("/logout")
             login(client, "admin", "admin123")
+            admin_page = client.get("/admin/suggestions")
+            csrf_token = extract_admin_csrf_token(admin_page)
             response = client.post(
                 "/admin/suggestions/1/status",
-                data={"status": "Bad Status", "admin_notes": "No change"},
+                data={
+                    "status": "Bad Status",
+                    "admin_notes": "No change",
+                    "csrf_token": csrf_token,
+                },
                 follow_redirects=True,
             )
             conn = sqlite3.connect(db_path)
@@ -377,6 +399,40 @@ class SuggestionDataModelTests(unittest.TestCase):
         self.assertEqual(200, response.status_code)
         self.assertEqual("New", status)
         self.assertIn(b"Invalid suggestion status", response.data)
+
+    def test_admin_status_update_rejects_missing_csrf_token(self):
+        db_path = make_temp_db()
+        try:
+            app = make_app(db_path)
+            client = app.test_client()
+            login(client, "viewer", "viewer123")
+            client.post(
+                "/suggestions",
+                data={
+                    "title": "Protect admin actions",
+                    "category": "Security",
+                    "priority": "High",
+                    "content": "Admin actions should require a request token.",
+                },
+            )
+            client.get("/logout")
+            login(client, "admin", "admin123")
+            response = client.post(
+                "/admin/suggestions/1/status",
+                data={"status": "Planned", "admin_notes": "No token"},
+                follow_redirects=True,
+            )
+            conn = sqlite3.connect(db_path)
+            status = conn.execute(
+                "SELECT status FROM system_optimization_suggestions WHERE suggestion_id = 1"
+            ).fetchone()[0]
+            conn.close()
+        finally:
+            os.unlink(db_path)
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual("New", status)
+        self.assertIn(b"Invalid request token", response.data)
 
 
 if __name__ == "__main__":
